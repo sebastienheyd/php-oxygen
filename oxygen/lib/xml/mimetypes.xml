@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mimetypes>
+
+<!-- ========= IMAGES ========= -->
+
+	<mime ext="bmp">image/bmp</mime>
+	<mime ext="gif">image/gif</mime>
+	<mime ext="jpg">image/jpeg</mime>
+	<mime ext="jpe">image/jpeg</mime>
+	<mime ext="jpeg">image/jpeg</mime>    
+	<mime ext="png">image/png</mime>
+	<mime ext="tiff">image/tiff</mime>
+	<mime ext="tif">image/tif</mime>
+	
+<!-- ========= TEXT DOCUMENTS ========= -->
+	
+    <mime ext="css">text/css</mime>
+    <mime ext="csv">text/csv</mime>
+    <mime ext="htm">text/html</mime>
+    <mime ext="html">text/html</mime>
+    <mime ext="shtml">text/html</mime>
+    <mime ext="txt">text/plain</mime>
+    <mime ext="text">text/plain</mime>
+    <mime ext="log">text/plain</mime>
+    <mime ext="rtx">text/richtext</mime>
+    <mime ext="rtf">text/rtf</mime>
+    <mime ext="xml">text/xml</mime>
+    <mime ext="xsl">text/xml</mime>    
+    
+<!-- ========= APPLICATION DOCUMENTS ========= -->    
+    
+    <mime ext="php">application/x-httpd-php</mime>
+    <mime ext="doc">application/msword</mime>
+    <mime ext="docx">application/vnd.openxmlformats-officedocument.wordprocessingml.document</mime>
+    <mime ext="js">application/javascript</mime>
+    <mime ext="json">application/json</mime>
+    <mime ext="ogg">application/ogg</mime>
+    <mime ext="pdf">application/pdf</mime>
+    <mime ext="ppt">application/mspowerpoint</mime>
+    <mime ext="rar">application/x-rar-compressed</mime>
+    <mime ext="swf">application/x-shockwave-flash</mime>
+    <mime ext="xhtml">application/xhtml+xml</mime>		
+    <mime ext="xls">application/msexcel</mime>		
+    <mime ext="xlsx">application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</mime>		
+    <mime ext="zip">application/zip</mime>		
+						
+<!-- ========= AUDIO TYPES ========= -->		
+
+    <mime ext="mp2">audio/mpeg</mime>
+    <mime ext="mp3">audio/mpeg</mime>
+    <mime ext="ra">audio/vnd.rn-realaudio</mime>
+    <mime ext="wav">audio/x-wav</mime>
+    <mime ext="wma">audio/x-ms-wma</mime>
+
+<!-- ========= VIDEOS TYPES ========= -->	
+	
+    <mime ext="avi">video/x-msvideo</mime>	
+    <mime ext="flv">video/x-flv</mime>	
+    <mime ext="mpg">video/mpeg</mime>	
+    <mime ext="mpe">video/mpeg</mime>	
+    <mime ext="mpeg">video/mpeg</mime>	
+    <mime ext="mov">video/quicktime</mime>	
+    <mime ext="qt">video/quicktime</mime>	
+    <mime ext="wmv">video/x-ms-wmv</mime>    
+
+</mimetypes>

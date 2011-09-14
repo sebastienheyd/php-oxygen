@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../../'; var lang = 'fr'; var bc = {'Classe Db': '../db.html'};</script>        
+        <script type="text/javascript" src="../../../js/loader.js"></script>        
+    </head>
+    <body>              
+        <h1>Exécuter des requêtes</h1>
+        <p>PHP Oxygen dispose d'un certains nombre de méthodes pour exécuter des requêtes dans la base de données.</p>
+        <h2>Exemples rapides</h2>
+        <p>
+            Pour exécuter ses requêtes, la classe Db se base sur le principe des requêtes préparées de <a href="http://www.php.net/manual/fr/book.pdo.php">PDO</a> avec quelques raccourcis. 
+            On pourra par exemple utiliser le code suivant :
+        </p>      
+        <php>
+            Db::getInstance('default')->prepare('SELECT * FROM user WHERE login=?')->execute('John')->fetch(PDO::FETCH_ASSOC);
+        </php>
+        <p>
+            Ceci permet de préparer la requête, de l'exécuter et de récupérer ses résultats. Avec PHP Oxygen il sera plus court d'écrire :
+        </p>
+        <php>
+            Db::query('SELECT * FROM user WHERE login=?')->execute('John')->fetch();
+        </php>
+        <p>
+            Ou encore si vous n'utilisez aucun <a href="#marqueur">marqueur interrogatif</a> (?) ou <a href="#variables_nommees">marqueur nominatif</a> (:nom) et que vous écrivez directement les variables dans la requête :
+        </p>
+        <php>
+            Db::query('SELECT * FROM user WHERE login="John"')->fetch();
+        </php>
+          
+        <p>
+            Les trois façons donneront exactement le même résultat, c'est à dire renvoyer l'utilisateur ayant pour login "John" sous forme d'un tableau associatif.
+        </p>   
+        <php>
+            /*
+            Array
+            (
+                [id] => 26
+                [login] => John
+                ...
+            */            
+        </php>
+        
+        <h2>Requêtes préparées</h2>
+        <p>
+            PHP Oxygen permet d'utiliser des requêtes préparées pour interragir avec les bases de données (supportées) grâce à PDO (<a href="http://www.php.net/manual/fr/pdo.prepared-statements.php">Voir la page sur php.net</a>).
+            Le principe est d'écrire d'abord la requête puis de l'exécuter en fournissant ou pas des variables. Exemple :
+        </p>
+        <php>
+            $query = Db::query('SELECT * FROM user WHERE login=?');     // Préparation de la requête
+            $query->execute("John");                                    // Exécution de la requête et substitution du marqueur ? par "John"
+            $result = $query->fetch();                                  // Récupération du résultat sous la forme d'un tableau associatif
+        </php>
+        <blockquote class="info">
+            Les requêtes préparées utilisent moins de ressources et s'exécutent plus rapidement car lorsque la requête est préparée, la base de données va analyser, compiler et optimiser son plan pour exécuter la requête 
+        </blockquote>
+        
+        <h3>query()</h3>
+        <p>
+            Méthode statique qui définit la requête SQL qui sera exécutée ultérieurement. 
+            Vous pouvez <a href="configuration.html">définir une autre configuration</a> à utiliser pour définir quelle base de données doit être interrogée en l'indiquant comme second argument.
+        </p>
+        <php>
+            Db::query('SELECT * FROM users');                           // Prépare la requête pour la configuration par défaut
+            Db::query('SELECT * FROM users', 'config2');                // Prépare la requête pour la configuration "config2"
+            
+            // Equivalent à
+            Db::getInstance()->prepare('SELECT * FROM users');          // Prépare la requête pour la configuration par défaut
+            Db::getInstance('config2')->prepare('SELECT * FROM users'); // Prépare la requête pour la configuration "config2"
+        </php>
+        
+        <h3>execute()</h3>
+        <p>
+            Exécute la requête préparée précédemment. C'est avec cette méthode que vous allez pouvoir passer vos variables à la requête en utilisant les marqueurs (voir ci-dessous).
+        </p>
+        
+        <h2>Marqueurs de variables</h2>
+        <p>
+            Avec PHP Oxygen (et PDO), il est possible de substituer les variables dans une requête en utilisant des marqueurs soit interrogatifs, soit nominatifs. 
+            L'avantage de cette solution est de pouvoir exécuter la même requête de façon répétitive en modifiant uniquement les variables passées à la requête. 
+            De plus, en utilisant les marqueurs, vous garantissez la sécurité de vos requêtes car les variables seront automatiquement échappées par PDO.
+        </p>
+        <blockquote class="warning">
+            Vous ne pouvez pas utiliser les marqueurs interrogatifs et les marqueurs nominatifs dans une même requête, choisissez l'un ou l'autre. 
+            De plus, pour des questions de sécurité et même si c'est possible : ne saisissez pas de variables directement dans une requête préparée.
+        </blockquote>
+        
+        <a name="marqueur"></a><h3>Marqueur interrogatif</h3>
+        <p>Le marqueur interrogatif (ou marqueur point d'interrogation) permet de marquer chaque variable dans la requête en l'identifiant par le symbole point d'interrogation. 
+           A l'exécution de la requête, ils sont substitués par les variables qui doivent être fournies dans le même ordre que les marqueurs dans la requête.</p>
+        <php>
+            $q = Db::query('SELECT * FROM users WHERE login=? AND password=?');
+            
+            $user1 = $q->execute('John', 'pass')->fetch();      // Exécute la requête avec login="John" et password="pass" et récupère les résultats
+            
+            // ou
+            $args = array('Bob', 'otherpass');
+            $user2 = $q->execute($args)->fetch();  // Exécute la requête avec login="Bob" et password="otherpass" et récupère les résultats       
+        </php>
+        
+        <a name="variables_nommees"></a><h3>Marqueur nominatif</h3>
+        <p>
+            On peut également utiliser des marqueurs nominatifs, pour cela on utilisera le double point (:) et une chaine de caractères pour marquer la variable dans la requête. 
+            Il suffira alors de créer un tableau associatif que l'on utilisera comme argument de execute(). Dans ce cas l'ordre des variables passées n'est pas important.
+        </p>
+        <php>
+            $q = DB::query('SELECT * FROM users WHERE login=:name AND password=:password');
+            
+            // Exécute la requête avec login="John" et password="pass" et récupère le résultat
+            $q->execute(array('name'=>'John', 'password'=>'pass'))->fetch();
+            
+            // Exécute la requête avec login="Bob" et password="otherpass" et récupère le résultat
+            $q->execute(array('password'=>'otherpass', 'name'=>'Bob'))->fetch();
+        </php>
+        
+        <h2>Récupérer les résultats</h2>
+        <p>Voir la page "<a href="resultats.html">Récupérer les résultats d'une requête</a>"</p>        
+        
+        <h2>Afficher la dernière requête exécutée</h2>
+        <p>
+            Vous pouvez visualiser la requête SQL comme exécutée par le serveur mysql avec les valeurs des variables à la place des marqueurs, soit en effectuant directement un echo de l'objet soit en utilisant la fonction getLastQuery() comme par exemple :   
+        </p>
+        <php>
+            $q = DB::query('SELECT * FROM customers WHERE customerNumber=?');
+                
+            $res = $q->execute(103)->fetch();    // le résultat de la requête est stocké dans $res
+            
+            // Les deux fonctions suivantes affichent "SELECT * FROM customers WHERE customerNumber=103"
+            echo $q;
+            echo $q->getLastQuery();
+            
+            // ... cependant pour stocker la requête dans une variable seul getLastQuery() fonctionne :
+            $sql = $q->getLastQuery();
+        </php> 
+        <blockquote class="info">
+            Si vous exécutez plusieurs fois la même requête avec des variables différentes et que vous appelez getLastQuery(), seule la dernière requête sera affichée.
+        </blockquote>         
+    </body>            
+</html>

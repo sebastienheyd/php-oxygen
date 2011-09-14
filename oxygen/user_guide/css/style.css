@@ -1,0 +1,303 @@
+hr { 
+    display: none;
+}
+
+a{
+    text-decoration: none;
+}
+
+body
+{
+    font-size: 14px;
+    overflow-y: scroll;
+}
+
+#content
+{
+    padding: 15px;
+}
+
+h1, h2
+{
+    border-bottom: 1px solid #999;
+}
+
+h1, h2, h3, h4
+{
+    color: #0066CC;
+}
+
+h1
+{
+    font-size: 2em;
+    line-height: 1.5em;
+    border-bottom: 1px solid #999;
+}
+
+h2
+{
+    font-size: 1.5em;
+}
+
+h3
+{
+    font-family: monospace;
+    font-size: 1.25em;
+    font-weight: bold;
+    line-height: 1.75em;
+    border-bottom: 1px dashed #DDD;
+    color: #7f007f;
+}
+
+h4
+{
+    font-size: 1em;
+    font-weight: bold;
+}
+
+blockquote
+{
+    border: 1px solid #D0D0D0;
+    padding: 5px;
+    background: #F9F9F9;
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px; 
+    border-radius: 5px; 
+}
+
+blockquote.warning
+{
+    border: 1px solid #FBC2C4;
+    background: #FBE3E4 url('../images/error.png') no-repeat 5px center;
+    padding: 7px 7px 7px 42px;
+    font-style: normal;
+    color: #8A1F11;
+}
+
+blockquote.info
+{
+    border: 1px solid #92CAE4;
+    background: #D5EDF8 url('../images/information.png') no-repeat 5px center;
+    padding: 7px 7px 7px 42px;
+    font-style: normal;
+    color: #205791;
+}
+
+blockquote.idea, blockquote.trick
+{
+    border: 1px solid #C6D880;
+    background: #E6EFC2 url('../images/lightbulb.png') no-repeat 5px center;
+    padding: 7px 7px 7px 42px;
+    font-style: normal;
+    color: #264409;
+}
+
+ol
+{
+    font-weight: bold;
+    margin-left: 1.5em;
+}
+
+ol span
+{
+    font-weight: normal;
+}
+
+ul
+{
+    list-style-image: url("../images/arrow.gif");
+    margin-left: 1.5em;
+}
+
+dl
+{
+    margin-left: 1.5em;
+}
+
+#content table
+{
+    width: auto;
+    border-collapse: collapse;
+    margin-left: 1.5em;
+}
+
+#content th
+{
+    text-align: center;    
+}
+
+#content thead th
+{
+    background-color: #DADADA;
+}
+
+#content tbody tr:nth-child(2n) td, tbody tr.even td
+{
+    background-color: #F3F3F3;
+}
+
+#content th, #content td
+{
+    border: 1px solid #999;
+    padding: 5px 10px;
+}
+
+#menuContainer
+{
+    position: relative;
+}
+
+#menu
+{
+    background: #7BC2D6;
+    color: #FFF;
+    font: 80%/140% "Lucida Sans Unicode",verdana,helvetica,sans-serif;
+    border-bottom: 7px solid #418FA5;
+    padding: 10px;
+    z-index: 2;
+    -moz-box-shadow: 0 0 10px #666;
+}
+
+#menu table
+{
+    margin: 0;
+}
+
+#menu th, #menu td, #menu caption
+{
+    padding: 0;
+    width: 25%;
+    vertical-align: top;
+}
+
+#menu ul, #menu ol
+{
+    list-style-image: none;
+    list-style-type: none;
+    padding: 0 5px;
+    margin: 0;
+}
+
+#menu li
+{
+    font-weight: normal;
+    margin-left: 10px;
+}
+
+#menu span.menuTitle
+{
+    font-size: 1.1em; 
+    color: #418FA5;
+}
+
+#menu li.menuLabel
+{
+    list-style: none;
+    font-weight: bold;
+    margin: 10px;
+}
+
+#menu li.menuLabel ul
+{
+    margin-top: 3px;
+}
+
+#menu li a
+{
+    background: url('../images/arrow.gif') no-repeat 5px 5px;
+    color: #1A3842;
+    text-decoration: none;
+    padding: 0 10px 0 25px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+#menu li a:hover
+{
+    color: #FFF;
+    background: #418FA5 url('../images/arrow.gif') no-repeat 5px 5px;
+}
+
+#menu li.disabled
+{
+    opacity: 0.3;
+    text-decoration: none;
+    background: url('../images/arrow.gif') no-repeat 5px 5px;
+}
+
+#menu li.disabled a:hover
+{
+    color: #1A3842;
+    background: url('../images/arrow.gif') no-repeat 5px 5px;
+}
+
+#menuButton
+{
+    margin-left: 75%;
+    padding: 0 25px 4px 25px;
+    background: #418FA5;
+    color: #FFF;
+    position: absolute;
+    font-size: 0.8em;
+    cursor: pointer;
+    border-radius: 0 0 10px 10px;
+    -moz-border-radius: 0 0 10px 10px;
+    -webkit-border-radius: 0 0 10px 10px;
+    -moz-box-shadow: 0 3px 3px #CCC;
+}
+
+#menuButton:hover
+{
+    color: #EEE;
+}
+
+.col2, .col3, .col4
+{
+    border-left: 1px solid #418FA5;
+}
+
+.col1, .col2, .col3
+{
+    border-right: 1px solid #FFF;
+}
+
+#header
+{ 
+    padding: 2em 1em 0 1em;
+}
+
+#header h4
+{
+    font-size: 1.1em;
+    color: #418FA5;
+    border-bottom: 1px solid #999;
+    margin-bottom: 0.1em;
+}
+
+#breadCrumb
+{
+    font-size: 0.8em;
+}
+
+#breadCrumb a, #footer a
+{
+    text-decoration: none;
+}
+
+#footer
+{
+    border-top: 1px solid #999;
+    font-size: 0.8em;
+    text-align: center;
+    color: #999;
+    margin: 1em;
+    padding: 0.5em;
+}
+
+img.logo
+{
+    position: relative;
+    left: 50%;
+    margin-left: -124px;
+}

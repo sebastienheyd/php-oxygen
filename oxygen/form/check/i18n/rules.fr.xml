@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" datatype="plaintext" original="rules">
+    <body>
+      <trans-unit id="1">
+        <source>%name% field is required</source>
+        <target>%name% est requis</target>
+      </trans-unit>
+      <trans-unit id="2">
+        <source>%name% is not a correct e-mail</source>
+        <target>%name% n'est pas une adresse e-mail correcte</target>
+      </trans-unit>
+      <trans-unit id="3">
+        <source>%name% must have at least %nb% characters</source>
+        <target>%name% doit avoir au moins %nb% caractères</target>
+      </trans-unit>
+      <trans-unit id="4">
+        <source>%name% must be between %nb1% and %nb2% characters</source>
+        <target>%name% doit avoir entre %nb1% et %nb2% caractères</target>
+      </trans-unit>
+      <trans-unit id="5">
+        <source>%name% must not exceed %nb% characters</source>
+        <target>%name% ne doit pas dépasser %nb% caractères</target>
+      </trans-unit>
+      <trans-unit id="6">
+        <source>%name% must have at least %nb% characters</source>
+        <target>%name% doit avoir au moins %nb% caractères</target>
+      </trans-unit>
+      <trans-unit id="7">
+        <source>%name% does not match</source>
+        <target>%name% n'est pas concordant</target>
+      </trans-unit>
+      <trans-unit id="8">
+        <source>%name% must contain only alphabetic characters</source>
+        <target>%name% doit contenir que des caractères alphabétiques</target>
+      </trans-unit>
+      <trans-unit id="9">
+        <source>%name% must contain only alpha-numeric characters</source>
+        <target>%name% doit contenir que des caractères alpha-numériques</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

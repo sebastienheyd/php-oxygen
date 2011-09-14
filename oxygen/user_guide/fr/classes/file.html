@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe File</h1>
+        <p>
+           La classe File permet l'affichage, le parsing, la récupération des informations et la manipulation d'un fichier.
+        </p>    
+        
+        <h2>Référence des fonctions</h2>        
+        
+        <p>Les fonctions suivantes permettent la manipulation sur un seul fichier qu'il faut instancier.</p>
+        
+        <h3>load()</h3>
+        <p>
+            Il s'agit de la méthode statique pour instancier la classe pour un fichier. Retourne false si le fichier n'est pas trouvé.
+        </p>
+        <php>
+            File::load(FW_DIR.DS.'init.php'); // Instancie File pour le fichier 'init.php'
+        </php>
+        
+        <h3>getFileName()</h3>
+        <p>Retourne le nom du fichier avec ou sans l'extension.</p>
+        <php>
+            File::load(FW_DIR.DS.'init.php')->getFileName();        // Retourne "index.php"
+            File::load(FW_DIR.DS.'init.php')->getFileName(false);   // Retourne "index"
+        </php>
+        
+        <h3>getMimeType()</h3>
+        <p>Retourne le mimetype du fichier instancié par la classe basé sur l'extension de ce dernier.</p>
+        <php>
+            File::load(FW_DIR.DS.'init.php')->getMimeType();        // Retourne "application/x-httpd-php"
+        </php>
+        
+        <h3>getMimeTypeFrom()</h3>
+        <p>Cette fonction statique retourne le mimetype de l'extension ou du nom de fichier fourni.</p>
+        <php>
+            File::getMimeTypeFrom('jpg');           // Retourne "image/jpeg"
+            File::getMimeTypeFrom('image.gif');     // Retourne "image/gif"
+        </php>
+        <blockquote class="info">
+            Cette fonction utilise les données provenant du fichier oxygen/lib/xml/mimetypes.xml. Vous pouvez, si vous le désirez, ajouter des nouvelles extensions. 
+            A noter également que cette fonction est utilisée par la fonction getMimeType() donc automatiquement vous ajoutez les extensions pour cette fonction également.
+        </blockquote>
+        
+        <h3>isImage()</h3>
+        <p>Retourne un booléen indiquant si le fichier instancié est une image. Cette fonction se base sur la fonction getimagesize de php et non sur l'extension.</p>
+        
+        <h3>getSize()</h3>
+        <p>Retourne la taille du fichier instancié. Il est possible d'afficher ou non les unités de taille en Bytes ou Octets.</p>
+        <php>
+            File::load('image.jpg')->getSize();             // Retourne par exemple 323
+            File::load('image.jpg')->getSize(true);         // Retourne par exemple 134Ko
+            File::load('image.jpg')->getSize(true, false);  // Retourne par exemple 154KB            
+        </php>
+        
+        <h3>isInDir()</h3>
+        <p>
+            Retourne un booléen indiquant si le fichier se trouve dans le dossier ou un des sous-dossiers du dossier indiqué. 
+            Par défaut la méthode vérifie si le fichier se trouve dans le dossier du projet, cela empêche les méthodes dangeureuses d'accéder aux fichiers du système.
+        </p>
+        <php>
+            File::load('/var/passwd')->isInDir('/usr');         // Retourne une erreur
+            File::load('/var/passwd')->isInDir('/usr', false);  // Retourne false
+            File::load('/var/passwd')->isInDir('/', false);     // Retourne true
+            File::load(FW_DIR.'/init.php')->isInDir();          // Retourne true            
+        </php>
+        
+        <h3>getContents()</h3>
+        <p>Retourne le contenu du fichier instancié.</p>
+        <blockquote class="info">
+            Cette méthode est sécurisée par isInDir() mais il est possible de passer outre en indiquant un nouveau dossier racine comme argument de la méthode.
+        </blockquote>        
+        <php>
+            $content = File::load('config.xml')->getContents();
+            
+            // Ou
+            
+            $content = File::load('/var/passwd')->getContents('/');
+        </php>
+        
+        <h3>output()</h3>
+        <p>Retourne et affiche le contenu du fichier dans le navigateur.</p>
+        <blockquote class="info">
+            Cette méthode est sécurisée par isInDir() mais il est possible de passer outre en indiquant un nouveau dossier racine comme argument de la méthode.
+        </blockquote>
+        <blockquote class="info">
+            Cette méthode est sécurisée par isInDir() mais il est possible de passer outre en indiquant un nouveau dossier racine comme argument de la méthode.
+        </blockquote>        
+        <php>
+            File::load('image.jpg')->output();      // Affiche l'image dans le navigateur
+            
+            // Ou
+            
+            File::load('/var/passwd')->ouput('/');  // Affiche le contenu de passwd en définissant un autre dossier racine
+        </php>
+        
+        <h3>forceDownload()</h3>
+        <p>Force le téléchargement du fichier instancié dans le navigateur.</p>
+        <blockquote class="info">
+            Cette méthode est sécurisée par isInDir() mais il est possible de passer outre en indiquant un nouveau dossier racine comme argument de la méthode.
+        </blockquote>
+        <php>
+            File::load('image.jpg')->forceDownload();           // Force le téléchargement du fichier "image.jpg"
+            File::load('image.jpg')->forceDownload('pic.jpg');  // Force le téléchargement du fichier "image.jpg" sous le nom "pic.jpg"
+            
+            // Force le téléchargement du fichier "/var/passwd" sous le nom "passwd.txt" o_O
+            File::load('var/passwd')->forceDownload('passwd.txt', '/');  
+        </php>
+        
+    </body>            
+</html>

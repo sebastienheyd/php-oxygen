@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe Session</h1>
+        <p>
+            La classe Session permet de gérer la session en cours. Une session permet de conserver des données en mémoire qui pourront être récupérées et utilisées partout sur le site.
+            Par exemple, vous pouvez conserver des identifiants en session pour éviter à l'internaute de se reconnecter à chaque page. 
+            Attention cependant à ne pas confondre avec les cookies, qui eux restent sur la machine même après la fermeture du navigateur, ce qui n'est pas le cas de la session.
+        </p>        
+        
+        <h2>
+            Exemples d'utilisation
+        </h2>
+        <p>Il existe plusieurs façon d'utiliser la classe Session, la première en utilisant les fonctions statiques :</p>
+        <php>
+            Session::set('login', 'john');       // Enregistre "john" en session avec la clé "login"            
+            $login = Session::get('login');      // $login = "john"            
+            Session::delete('login');            // Supprime la clé login et sa valeur de la session
+        </php>
+        <p>La seconde façon en instanciant la classe et en utilisant les setters "magiques" :</p>
+        <php>
+            $session = Session::getInstance();   // On instancie la classe            
+            $session->setLogin('john');          // Enregistre "john" en session avec la clé "login"            
+            $login = $session->getLogin('john'); // $login = "john"            
+            $session->unsetLogin();              // Supprime la clé login et sa valeur de la session
+        </php>
+        <p>Et enfin en utilisant définissant directement les variables de la classe</p>
+        <php>
+            $session = Session::getInstance();   // On instancie la classe
+            $session->login = 'john';            // Enregistre "john" en session avec la clé "login"
+            $login = $session->login;            // $login = "john"
+            unset($session->login);              // Supprime la clé login et sa valeur de la session          
+        </php>
+        
+        <h2>Configuration</h2>
+        <p>
+            Les données de session sont en général enregistrées dans des fichiers sur le serveur, mais il est possible de les inscrire en base de données par exemple.
+            Cela peut être nécessaire lorsque votre site doit être hébergé sur plusieurs serveurs et que les internautes sont "balancés" d'un serveur à l'autre (load balancing) et qu'ils doivent conserver les mêmes données d'un serveur à l'autre (comme un panier par exemple).
+            Il est possible de configurer la classe pour utiliser la base de données en ajoutant les lignes suivantes à votre fichier de configuration (dans le dossier webapp/config) :
+        </p>
+        <pre class="brush:xml">
+            &lt;session>
+                &lt;type>database&lt;/type>
+                &lt;table>session&lt;/table>
+            &lt;/session>
+        </pre>
+        <blockquote class="info">
+            La balise table contient le nom de la table où seront stockées les données des sessions, si la table n'existe pas elle sera automatiquement créé, attention donc à ne pas donner le nom d'une table existante.
+        </blockquote>
+        
+        <h2>Référence des fonctions</h2>
+        
+        <h3>set()</h3>
+        <p>Définit une variable en session. Fonction statique.</p>
+        
+        <h3>get()</h3>
+        <p>Récupère une variable en session ou renvoi une valeur par défaut. Fonction statique</p>
+        <php>
+            Session::get('login');          // Retourne null si login n'est pas déjà enregistré
+            Session::get('login', 'john')   // Retourne "john" si login n'est pas déjà enregistré
+        </php>
+        
+        <h3>delete()</h3>
+        <p>Supprime une variable de la session</p>
+        
+        <h3>start()</h3>
+        <p>Démarre une session, si une session existe déjà la fonction ne fait rien.</p>
+        
+        <h3>getId()</h3>
+        <p>Retourne l'identifiant de la session courante.</p>
+        
+        <h3>clean()</h3>
+        <p>Nettoie toutes les varibles stockées dans la session courante.</p>
+        
+        <h3>destroy()</h3>
+        <p>Détruit la session courante et en démarre une nouvelle.</p>
+    </body>            
+</html>

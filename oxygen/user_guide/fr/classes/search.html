@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe Search</h1>
+        <p>
+           La classe Search permet la recherche de fichiers et/ou de dossiers.
+        </p>    
+        
+        <h2>Instanciation</h2>
+        
+        <p>Trois méthodes statiques permettent d'instancier une recherche.</p>
+        
+        <h3>file()</h3>
+        <p>Instancie une recherche de fichier(s) uniquement.</p>
+        <php>
+            $search = Search::file();
+        </php>
+        
+        <h3>dir()</h3>
+        <p>Instancie une recherche de dossier(s) uniquement.</p>
+        <php>
+            $search = Search::dir();
+        </php>
+        
+        <h3>any()</h3>
+        <p>Instancie une recherche de fichier(s) et dossier(s).</p>
+        <php>
+            $search = Search::any();
+        </php>
+        
+        <h2>Critères de recherche</h2>
+        
+        <h3>in()</h3>
+        <p>Permet de définir le dossier racine à partir duquel sera effectuée la recherche.</p>
+        <php>
+            // prépare la recherche des fichiers *.php dans le dossier modules
+            $search = Search::file('*.php')->in(MODULES_DIR);
+        </php>    
+        
+        <h3>exclude()</h3>
+        <p>Permet d'exclure un/des dossier(s) de la recherche. La méthode peut prendre un ou plusieurs arguments pour plusieurs dossiers.</p>
+        <blockquote class="info">
+            Les dossiers .svn, _svn, cvs, .bzr, .git et .hg sont automatiquement ajoutés à la liste des dossiers à exclure.
+        </blockquote>
+        <php>
+             // prépare la recherche des fichiers *.php dans le dossier modules en excluant les modules admin et website
+             $search = Search::file('*.php')->in(MODULES_DIR)->exclude('admin', 'website');
+        </php>
+        
+        <h3>setDepth()</h3>
+        <p>Permet de définir la profondeur minimum et maximum de recherche. Par défaut la profondeur minimum est à 0 (le dossier racine) et maximum -1 (infinie)</p>
+        <php>
+             // prépare la recherche des fichiers *.php dans le dossier modules sans récursivité (profondeur=1)
+             $search = Search::file('*.php')->in(MODULES_DIR)->setDepth(1,1);
+        </php>
+        
+        <h2>Méthodes de récupération</h2>
+        
+        <h3>fetch()</h3>
+        <p>Retourne un tableau des chemins trouvés selon les critères fournis..</p>
+        <blockquote class="warning">
+            Afin d'éviter des problèmes de sécurité, la recherche est limitée par défaut aux fichiers du dossier projet (PROJECT_DIR). 
+            Si une tentative est faite de récupérer une liste de fichiers en dehors du dossier projet, une erreur est lancée.
+            Il est possible d'outrepasser cette limite en définissant le chemin souhaité comme argument de la méthode.
+        </blockquote>
+        
+    </body>            
+</html>

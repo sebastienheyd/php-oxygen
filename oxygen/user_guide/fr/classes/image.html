@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe Image</h1>
+        <p>
+           La classe Image est une extension de WideImage. Merci de vous référer à la <a href="http://wideimage.sourceforge.net/documentation/" target="_blank">documentation officielle</a>
+        </p>    
+        
+        <h2>Exemple d'utilisation</h2>
+        <php>
+            Image::load('exemple1.jpg')->resize(200, 100)->crop(50, 50, 30, 20)->rotate(20)->saveToFile('result.jpg');
+        </php>
+    </body>            
+</html>

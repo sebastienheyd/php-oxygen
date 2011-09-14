@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../../../'; var lang = 'fr'; var bc = {'Classe Db': '../../db.html', 'Active Record' : '../active_record.html'};</script>        
+        <script type="text/javascript" src="../../../../js/loader.js"></script>        
+    </head>
+    <body>             
+        <h1>Sélection de données</h1>
+        <p>
+            Voici les méthodes dédiées à la récupération des données.
+        </p>
+        <h3>select()</h3>
+        <p>
+            La méthode statique select() permet de démarrer une requête de sélection. Elle prend comme argument la/les colonne(s) à récupérer dans la/les table(s), par défaut la méthode prends tous les champs (*).
+        </p>
+        <php>
+            // SELECT * FROM `customers`
+            Db::select()->from('customers'); 
+            
+            // SELECT `customerNumber` , `postalCode`  FROM `customers`
+            Db::select('customerNumber', 'postalCode')->from('customers');
+            
+            // SELECT count(*) num, `c`.`customerNumber`, `e`.`email` FROM `customers` c, `employees` e
+            Db::select('count(*) num', 'c.customerNumber', 'e.email')->from('customers c', 'employees e')
+        </php>
+        <blockquote class="info">
+            L'échappement est effectué automatiquement sur les champs donnés, seul les champs contenant des parenthèses ne le sont pas.
+        </blockquote>        
+        <blockquote class="trick">
+            Consultez la page "<a href="resultats.html">Récupérer les résultats</a>" pour la liste complète des options de récupération des résultats.
+        </blockquote>
+        
+        <h3>distinct()</h3>
+        <p>Ajoute la condition DISTINCT à la requête</p>
+        <php>
+            // SELECT DISTINCT * FROM `customers`
+            Db::select()->distinct()->from('customers'); 
+        </php>
+        
+        <h3>from()</h3>
+        <p>Permet de définir la/les table(s) sur laquelle sera exécutée la requête.</p>
+        <php>
+            // SELECT `customerNumber` , `postalCode`  FROM `customers`
+            Db::select('customerNumber', 'postalCode')->from('customers');
+            
+             // SELECT count(*) num, `c`.`customerNumber`, `e`.`email` FROM `customers` c, `employees` e
+            Db::select('count(*) num', 'c.customerNumber', 'e.email')->from('customers c', 'employees e')
+        </php>
+        
+        <h3>join()</h3>
+        <p>Permet de joindre une table à la requête. Les arguments de la méthode sont :</p>
+        <ul>
+            <li>Le nom de la table à joindre</li>
+            <li>La condition de la jointure</li>
+            <li>Le type de jointure (LEFT, RIGHT, OUTER, INNER, LEFT OUTER, RIGHT OUTER)</li>
+        </ul>
+        <php>
+            // SELECT COUNT(*) num FROM `customers` c JOIN `employees` e ON `c`.`salesEmployee`=`e`.`employeeNumber`
+            DB::select('COUNT(*) num')->from('customers c')->join('employees e', 'c.salesEmployee = e.employeeNumber')
+            
+            // SELECT * FROM `customers` c LEFT JOIN `employees` e ON `c`.`salesEmployee`=`e`.`employeeNumber`
+            DB::select()->from('customers c')->join('employees e', 'c.salesEmployee = e.employeeNumber', 'LEFT')
+        </php> 
+        
+        <h3>where()</h3>
+        <p>Permet de restreindre les résultats en y ajoutant des conditions.</p>
+        <h4>1. Condition par défaut</h4>
+        <p>
+            La condition par défaut utilise l'opérateur égal (=), ce dernier est ajouté automatiquement. 
+            Les méthodes peuvent être chainées pour ajouter plusieurs conditions, ces dernières utiliseront alors la condition AND par défaut dans la requête. 
+            Pour ajouter la condition OR il faudra alors l'indiquer comme troisième argument de la méthode.
+        </p>
+        <php>            
+            // SELECT * FROM `customers`  WHERE `customerNumber` IS NULL
+            Db::select()->from('customers')->where('customerNumber');
+            
+            // SELECT * FROM `customers`  WHERE `customerNumber` = 103 AND `contactLastName` = "Schmitt"
+            Db::select()->from('customers')->where('customerNumber', 103)->where('contactLastName', 'Schmitt');
+            
+            // SELECT * FROM `customers`  WHERE `customerNumber`  IS NULL  OR `contactLastName` = "Murphy"
+            Db::select()->from('customers')->where('customerNumber', null, 'OR')->where('contactLastName', 'Murphy');
+        </php>
+            
+        <h4>2. Condition personnalisée</h4>
+        <p>
+            La condition personnalisée s'utilise de la même manière à la différence qu'on définit soi même l'opérateur à utiliser. 
+        </p>
+        <php>
+            // SELECT * FROM `customers`  WHERE `customerNumber` >= "120"
+            Db::select()->from('customers')->where('customerNumber >=', '120');
+            
+            // SELECT * FROM `customers`  WHERE `customerName` LIKE "a%" AND `customerNumber` != 103
+            Db::select()->from('customers')->where('customerName LIKE', 'a%')->where('customerNumber !=', 103);
+            
+            // SELECT COUNT(*) FROM `customers` c 
+            // JOIN `employees` e ON `c`.`salesEmployee`=`e`.`employeeNumber` 
+            // WHERE CONCAT(e.extension,e.reportsTo)="x64931102"
+            DB::select('COUNT(*)')->from('customers c')
+                    ->join('employees e', 'c.salesEmployee=e.employeeNumber')
+                    ->where('CONCAT(e.extension,e.reportsTo)=?', 'x64931102');
+        </php>
+        
+        <h4>3. Tableau de conditions</h4>
+        <p>
+            Il est possible d'utiliser un tableau associatif pour déclarer plusieurs conditions sans chainer la méthode where.
+        </p>
+        <php>
+            // SELECT * FROM `customers`  WHERE `customerName` LIKE "a%" AND `country` = "France"
+            DB::select()->from('customers')->where(array('customerName LIKE' => 'a%', 'country' => 'France'))
+            
+            // SELECT * FROM `customers`  WHERE `customerName` LIKE "a%" AND `customerNumber` != 103
+            DB::select()->from('customers')->where(array('customerName LIKE' => 'a%', 'customerNumber !=' => 103));
+        </php>
+        <blockquote class="warning">
+            Il n'est pas possible de définir si la condition est AND ou OR en utilisant un tableau de conditions.
+        </blockquote>
+        
+        <h3>whereIn()</h3>
+        <p>
+            Permet de filtrer les résultats en fonction d'un tableau de valeurs en retournant les résultats où le champ contient une des valeurs indiquées. 
+            Le troisième argument de la méthode indique si dans le chainage la méthode utilise la condition AND ou OR.
+        </p>
+        <php>
+            // SELECT * FROM `customers`  WHERE `customerNumber` IN (103,119,135)
+            DB::select()->from('customers')->whereIn('customerNumber', array(103, 119, 135));
+            
+            // SELECT * FROM `customers`  WHERE `customerNumber` IN (103,119,135) OR `contactLastName` LIKE "Sch%"
+            DB::select()->from('customers')->whereIn('customerNumber', array(103, 119, 135), 'OR')->where('contactLastName LIKE', 'Sch%');
+        </php>
+        
+        <h3>whereNotIn()</h3>
+        <p>
+            L'inverse de whereIn(). Permet de filtrer les résultats en fonction d'un tableau de valeurs en retournant les résultats où le champ contient pas une des valeurs indiquées. 
+            Le troisième argument de la méthode indique si dans le chainage la méthode utilise la condition AND ou OR.
+        </p> 
+        <php>
+            // SELECT * FROM `customers`  WHERE `customerNumber` NOT IN (103,119,135)
+            DB::select()->from('customers')->whereNotIn('customerNumber', array(103, 119, 135));
+        </php>  
+        
+        <h3>having()</h3>
+        <p>
+            Ajoute une condition having à la requête, ceci permet d'utiliser des variables générées comme filtre. 
+            Le troisième argument de la méthode indique si dans le chainage la méthode utilise la condition AND ou OR.
+        </p>
+        <h4>1. Condition par défaut</h4>
+        <p>
+            La condition par défaut utilise l'opérateur égal (=), ce dernier est ajouté automatiquement. 
+            Les méthodes peuvent être chainées pour ajouter plusieurs conditions, ces dernières utiliseront alors la condition AND par défaut dans la requête. 
+            Pour ajouter la condition OR il faudra alors l'indiquer comme troisième argument de la méthode.
+        </p>
+        <php>
+            // SELECT count(*) num FROM `customers` HAVING `num` = 10 AND `num` = 30
+            DB::select('COUNT(*)')->from('customers')->having('num', 10)->having('num', 30);
+        </php>
+        <h4>2. Condition personnalisée</h4>
+        <p>
+             La condition personnalisée s'utilise de la même manière à la différence qu'on définit soi même l'opérateur à utiliser.
+        </p>
+        <php>
+            // SELECT count(*) num FROM `customers` HAVING `num` > 10 OR `num` = 30
+            DB::select('COUNT(*)')->from('customers')->having('num >', 10, 'OR')->having('num', 30);
+        </php> 
+        <h4>3. Tableau de conditions</h4>
+        <p>
+            Il est possible d'utiliser un tableau associatif pour déclarer plusieurs conditions sans chainer la méthode having.
+        </p>        
+        <php>
+            // SELECT `country` , count(*) num FROM `customers`  GROUP BY `country`  HAVING `num` > 10 AND `num` < 30
+            DB::select('country', 'count(*) num')->from('customers')
+                                                 ->groupBy('country')
+                                                 ->having(array('num >' => 10, 'num <' => 30))
+                                                 ->fetchAll(PDO::FETCH_KEY_PAIR);                                                 
+            /*
+            Array
+            (
+                [France] => 12
+                [Germany] => 13
+            )
+            */
+        </php>
+        <blockquote class="warning">
+            Il n'est pas possible de définir si la condition est AND ou OR en utilisant un tableau de conditions.
+        </blockquote>        
+        
+        <h3>groupBy()</h3>
+        <p>
+            Permet de grouper les résultats en les indexant par la valeur d'un champ.
+        </p>
+        <php>
+            // SELECT `country`, count(*) FROM `customers` GROUP BY `country`
+            DB::select('country', 'count(*)')->from('customers')->groupBy('country')->fetchAll(PDO::FETCH_KEY_PAIR);
+            
+            /*
+            Array
+            (
+                [Australia] => 4
+                [Austria] => 2
+                [Belgium] => 2
+                [Canada] => 3 
+                ...
+            )
+            */
+        </php>
+        
+        <h3>orderBy()</h3>
+        <p>
+            Ordonne les résultats par la valeur ascendante ou descendante d'un/des champ(s). Le second argument indique le sens ASC (défaut) ou DESC.
+        </p>
+        <php>
+            // SELECT * FROM `customers` ORDER BY `customerNumber` DESC
+            DB::select()->from('customers')->orderBy('customerNumber', 'DESC');
+        </php>
+        
+        <h3>limit()</h3>
+        <p>
+            Limite le nombre de résultats à retourner et permet de définir l'offset à partir duquel retourner les résultats.
+        </p>
+        <php>
+            // SELECT * FROM `customers` LIMIT 5, 10
+            DB::select()->from('customers')->limit(10,5);
+        </php>
+        
+        <h3>build()</h3>
+        <p>
+            Retourne la requête SQL préparée au format texte.
+        </p>
+        <php>
+            DB::select()->from('customers')->build();   // Retourne "SELECT * FROM `customers`"
+        </php>                
+    </body>            
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+<head>
+<title>Error</title>
+<link rel="stylesheet" type="text/css" href="{$HTTP_PREFIX}/css/error/style.css" />
+</head>
+<body>
+	<div id="content">
+		<h1><img src="{$HTTP_PREFIX}/img/error/warning.png" alt="{$type}" title="{$type}" class="img32" /> [{$type}]</h1>
+		<h2>{$message}</h2>
+        <div id="menu"><button id="showStack">Show stack trace</button></div>
+        <div id="stack">
+        {if $nbStack > 0}
+            {foreach from=$bt item=line key=k}
+            <div class="stackItem">
+                <table>
+                    <tr>
+                        <td>{$nbStack--}.&nbsp;&nbsp;</td>
+                        
+                        <td>
+                            <strong>{if isset($line.exception)}{$line.exception|htmlentities}{else}{$line.function|htmlentities}({$line.args|htmlentities}){/if}</strong><br />
+                            {if isset($line.line) && isset($line.file)}
+                            {if $line.file}in <i>{$line.file}</i> line {$line.line}{/if} ...
+                            {/if}
+                        </td>
+                        
+                    </tr>
+                    {if isset($line.fragment) && !empty($line.fragment)}
+                    <tr class="fragments">
+                        <td></td>
+                        <td>
+                            <table class="code">
+                                {foreach from=$line.fragment item=fragment key=num}
+                                {if $num == $line.line}<tr class="selected">{else}<tr>{/if}
+                                    <td>{$num}.&nbsp;&nbsp;</td>
+                                    <td>{$fragment}</td>
+                                </tr>    
+                                {/foreach}                    
+                            </table>
+                        </td>
+                    </tr>
+                    {/if}
+                </table>
+            </div>
+            {/foreach}
+        {/if}
+        </div>
+	</div>
+    <script type="text/javascript" src="{$HTTP_PREFIX}/js/jquery.min.js"></script> 
+    <script type="text/javascript" src="{$HTTP_PREFIX}/js/error.js"></script>
+</body>
+</html>

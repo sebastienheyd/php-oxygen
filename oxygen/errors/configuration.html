@@ -1,0 +1,122 @@
+<html>
+<head>
+<title>Welcome to PHP Oxygen</title>
+<link rel="stylesheet" type="text/css" href="{$HTTP_PREFIX}/css/reset.css" />
+<style type="text/css">
+
+body {
+    background:             #FFF url('/img/bg.png') fixed repeat-x;
+    margin:                 40px;
+    font-family:            Lucida Grande, Verdana, Sans-serif;
+    color:                  #333;
+    font-size:              0.8em;
+    line-height:            1em;    
+}
+
+#content  {
+    background-color:       #FFF;
+    padding:                20px;
+    border-radius:          10px;
+    -moz-border-radius:     10px;
+    -webkit-border-radius:  10px;
+}
+
+h1 {
+    color:                  #0066CC;
+    font-weight:            bold;
+    font-size:              28px;
+    margin:                 0 0 4px 0;
+    line-height:            1.5em;
+    display: block;
+}
+
+p {
+    margin-top: 10px;
+}
+
+blockquote, pre {
+    margin-top:             10px;
+    background:             none repeat scroll 0 0 #F9F9F9;
+    border:                 1px solid #D0D0D0;
+    border-radius:          5px 5px 5px 5px;
+    padding:                10px;
+    font-family: monospace, "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier !important;    
+}
+
+img {
+    float:                  left;
+    margin-right:           20px;
+    margin-top:             5px;
+}
+
+td {
+    vertical-align:         top;
+}
+
+a {
+    color: #333;    
+}
+
+a:hover {
+    color: #666;
+}
+
+ul {
+    margin-top: 10px;
+}
+
+li {
+    margin-left: 30px;
+    list-style: disc;
+    line-height: 18px;
+}
+
+pre {
+    color: blue;
+}
+
+.arg {
+    color : #009900;
+}
+
+.value {
+    color: #aa7700;
+}
+
+.dtd {
+    color : #390000;
+}
+</style>
+</head>
+<body>
+	<div id="content">
+        <table>
+            <tr>
+                <td><img src="{$HTTP_PREFIX}/img/logo.png" /></td>
+                <td>
+                    <h1>Welcome to PHP Oxygen</h1>
+                    <p>This page is displayed because you have to configure PHP Oxygen to redirect to a default action in a module.</p>
+                    <p>You must define a default action to launch. For that you must have a default route configured in routes.xml. The file must be located here :</p>
+                    <blockquote>
+                    {php}echo trim(CACHE_DIR.DS.'routes.xml');{/php}
+                    </blockquote>
+                    <p>If not, you have two possibilities :</p>
+                    <ul>
+                        <li>Create routes.xml in the webapp/config folder.</li>
+                        <li>Create a module with a routes.xml file in the config folder. PHP Oxygen will automaticaly parse all routes.xml files in modules and build the file in webapp/config</li>
+                    </ul>
+                    <p>In the xml file, the default route seems like this :</p>
+                    <pre>
+<span class="dtd">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+&lt;routes&gt;
+    &lt;route <span class="arg">rule</span>=<span class="value">"default"</span> <span class="arg">redirect</span>=<span class="value">"module/action"</span> /&gt;
+&lt;/routes&gt;
+                    </pre>
+                    
+                    <p>For additional details please read the <a href="http://guide.php-oxygen.com">user guide</a></p>
+                </td>
+            </tr>
+        </table>	        
+	</div>
+</body>
+</html>

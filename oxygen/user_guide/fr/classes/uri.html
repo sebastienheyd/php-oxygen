@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe Uri</h1>
+        <p>
+           La classe Uri permet d'extraire et de manipuler les données provenant des uri.
+        </p>               
+        
+        <h2>Méthodes</h2>
+        
+        <h3>setUri()</h3>
+        <p>Permet de définir l'uri à parser et à utiliser. Est essentiellement utilisé par la classe Router pour réécrire les urls.</p>
+        <php>
+            Uri::getInstance()->setUri(); // Va récupérer l'uri de $_SERVER['REQUEST_URI']
+            Uri::getInstance()->setUri('default/example/test'); // Va utiliser 'default/example/test' comme uri
+        </php>
+
+        <h3>isDefined()</h3>
+        <p>Renvoi un boolean pour savoir si une uri à été explicitement définie par setUri() ou pas. Cela permet de savoir si une uri est provient d'une réécriture ou pas.</p>
+        <php>
+            Uri::getInstance()->setUri()->isDefined();                          // Va retourner false
+            Uri::getInstance()->setUri('default/example/test')->isDefined();    // Va retourner true
+        </php>
+        
+        <h3>getHost()</h3>
+        <p>Récupère le nom du host courant.</p>
+        <php>
+            // L'url est http://www.exemple.tld/demo/display/label
+            Uri::getInstance()->getHost(); // Retourne www.exemple.tld            
+        </php>        
+        
+        <h3>getUri()</h3>
+        <p>Récupère la chaîne complète de l'uri courante. La méthode prend comme argument un booléen indiquant si elle doit retourner l'uri définie explicitement ou l'uri originale (ou uri courante). Exemple :</p>
+        <php>
+            // L'url est http://www.exemple.tld/demo/display/label
+            Uri::getInstance()->getUri();       // Retourne /common/display/demo/display/label (uri réécrite par la classe Router par exemple).
+            Uri::getInstance()->getUri(true);   // Retourne /demo/display/label
+        </php>
+        
+        <h3>lastSegment()</h3>
+        <p>Récupère le dernier segment de l'uri. Exemple :</p>
+        <php>
+            // L'url est http://www.exemple.tld/demo/display/label
+            Uri::getInstance()->getUri(); // Retourne label            
+        </php>
+        
+        <h3>nbSegments()</h3>
+        <p>Retourne le nombre de segments qui composent l'uri. Exemple :</p>
+        <php>
+            // L'url est http://www.exemple.tld/demo/display/label
+            Uri::getInstance()->getUri(); // Retourne 3            
+        </php>
+        
+        <h3>substr()</h3>
+        <p>Retourne une portion des segments de l'uri en chaine de caractères définie par un offset et une longueur. Exemple :</p>
+        <php>
+            // L'url est http://www.exemple.tld/demo/display/label
+            Uri::getInstance()->substr(1,2); // Retourne "/display/label"   
+        </php>
+        
+        <h3>segmentsSlice()</h3>
+        <p>Retourne une portion des segments de l'uri sous la forme d'un tableau définie par un offset et une longueur. Exemple :</p>
+        <php>
+            // L'url est http://www.exemple.tld/demo/display/label
+            Uri::getInstance()->segmentsSlice(1,2); 
+            
+            /*
+            Array
+            (
+                [0] => display
+                [1] => label
+            )
+            */
+        </php> 
+        
+        <h3>segment()</h3>
+        <p>
+            Retourne le segment par sa position dans l'uri. 
+            La méthode prends deux arguments, le premier pour la position (commence par 1 pour la première position), le second indique une valeur par défaut si le segment n'existe pas (null par défaut).</p>
+        <php>
+            // L'url est http://www.exemple.tld/demo/display/label
+            Uri::getInstance()->segment(2); // Retourne "display"
+            Uri::getInstance()->segment(4, "default"); // Retourne "default"
+        </php>
+    </body>            
+</html>

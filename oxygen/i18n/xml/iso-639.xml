@@ -1,0 +1,908 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codes>
+    <language iso-639-1="ab" iso-639-2="abk">
+        <label lang="en">Abkhaz</label>
+        <label lang="fr">Abkhaze</label>
+        <label lang="native">Аҧсуа</label>
+    </language>
+    <language iso-639-1="aa" iso-639-2="aar">
+        <label lang="en">Afar</label>
+        <label lang="fr">Afar</label>
+        <label lang="native">Afaraf</label>
+    </language>
+    <language iso-639-1="af" iso-639-2="afr">
+        <label lang="en">Afrikaans</label>
+        <label lang="fr">Afrikaans</label>
+        <label lang="native">Afrikaans</label>
+    </language>
+    <language iso-639-1="ak" iso-639-2="aka">
+        <label lang="en">Akan</label>
+        <label lang="fr">Akan</label>
+        <label lang="native">Akan</label>
+    </language>
+    <language iso-639-1="sq" iso-639-2="alb">
+        <label lang="en">Albanian</label>
+        <label lang="fr">Albanais</label>
+        <label lang="native">Shqip</label>
+    </language>
+    <language iso-639-1="am" iso-639-2="amh">
+        <label lang="en">Amharic</label>
+        <label lang="fr">Amharique</label>
+        <label lang="native">አማርኛ</label>
+    </language>
+    <language iso-639-1="ar" iso-639-2="ara">
+        <label lang="en">Arabic</label>
+        <label lang="fr">Arabe</label>
+        <label lang="native">العربية</label>
+    </language>
+    <language iso-639-1="an" iso-639-2="arg">
+        <label lang="en">Aragonese</label>
+        <label lang="fr">Aragonais</label>
+        <label lang="native">Aragonés</label>
+    </language>
+    <language iso-639-1="hy" iso-639-2="arm">
+        <label lang="en">Armenian</label>
+        <label lang="fr">Arménien</label>
+        <label lang="native">Հայերեն</label>
+    </language>
+    <language iso-639-1="as" iso-639-2="asm">
+        <label lang="en">Assamese</label>
+        <label lang="fr">Assamais</label>
+        <label lang="native">অসমীয়া</label>
+    </language>
+    <language iso-639-1="av" iso-639-2="ava">
+        <label lang="en">Avaric</label>
+        <label lang="fr">Avar</label>
+        <label lang="native">авар мацӀ</label>
+    </language>
+    <language iso-639-1="ae" iso-639-2="ave">
+        <label lang="en">Avestan</label>
+        <label lang="fr">Avestique</label>
+        <label lang="native">Avesta</label>
+    </language>
+    <language iso-639-1="ay" iso-639-2="aym">
+        <label lang="en">Aymara</label>
+        <label lang="fr">Aymara</label>
+        <label lang="native">Aymar aru</label>
+    </language>
+    <language iso-639-1="az" iso-639-2="aze">
+        <label lang="en">Azerbaijani</label>
+        <label lang="fr">Azéri</label>
+        <label lang="native">Azərbaycanca</label>
+    </language>
+    <language iso-639-1="bm" iso-639-2="bam">
+        <label lang="en">Bambara</label>
+        <label lang="fr">Bambara</label>
+        <label lang="native">Bamanankan</label>
+    </language>
+    <language iso-639-1="ba" iso-639-2="bak">
+        <label lang="en">Bashkir</label>
+        <label lang="fr">Bachkir</label>
+        <label lang="native">башҡорт теле</label>
+    </language>
+    <language iso-639-1="eu" iso-639-2="baq">
+        <label lang="en">Basque</label>
+        <label lang="fr">Basque</label>
+        <label lang="native">Euskara</label>
+    </language>
+    <language iso-639-1="be" iso-639-2="bel">
+        <label lang="en">Belarusian</label>
+        <label lang="fr">Biélorusse</label>
+        <label lang="native">Беларуская мова</label>
+    </language>
+    <language iso-639-1="bn" iso-639-2="ben">
+        <label lang="en">Bengali</label>
+        <label lang="fr">Bengalî</label>
+        <label lang="native">বাংলা</label>
+    </language>
+    <language iso-639-1="bh" iso-639-2="bih">
+        <label lang="en">Bihari</label>
+        <label lang="fr">Bihari</label>
+        <label lang="native">भोजपुरी</label>
+    </language>
+    <language iso-639-1="bi" iso-639-2="bis">
+        <label lang="en">Bislama</label>
+        <label lang="fr">Bichelamar</label>
+        <label lang="native">Bislama</label>
+    </language>
+    <language iso-639-1="bs" iso-639-2="bos">
+        <label lang="en">Bosnian</label>
+        <label lang="fr">Bosnien</label>
+        <label lang="native">Bosanski jezik</label>
+    </language>
+    <language iso-639-1="br" iso-639-2="bre">
+        <label lang="en">Breton</label>
+        <label lang="fr">Breton</label>
+        <label lang="native">Brezhoneg</label>
+    </language>
+    <language iso-639-1="bg" iso-639-2="bul">
+        <label lang="en">Bulgarian</label>
+        <label lang="fr">Bulgare</label>
+        <label lang="native">български език</label>
+    </language>
+    <language iso-639-1="my" iso-639-2="bur">
+        <label lang="en">Burmese</label>
+        <label lang="fr">Birman</label>
+        <label lang="native"></label>
+    </language>
+    <language iso-639-1="ca" iso-639-2="cat">
+        <label lang="en">Catalan</label>
+        <label lang="fr">Catalan</label>
+        <label lang="native">Català</label>
+    </language>
+    <language iso-639-1="ch" iso-639-2="cha">
+        <label lang="en">Chamorro</label>
+        <label lang="fr">Chamorro</label>
+        <label lang="native">Chamoru</label>
+    </language>
+    <language iso-639-1="ce" iso-639-2="che">
+        <label lang="en">Chechen</label>
+        <label lang="fr">Tchétchène</label>
+        <label lang="native">нохчийн мотт</label>
+    </language>
+    <language iso-639-1="ny" iso-639-2="nya">
+        <label lang="en">Chichewa</label>
+        <label lang="fr">Chichewa</label>
+        <label lang="native">ChiCheŵa</label>
+    </language>
+    <language iso-639-1="zh" iso-639-2="chi">
+        <label lang="en">Chinese</label>
+        <label lang="fr">Chinois</label>
+        <label lang="native">中文</label>
+    </language>
+    <language iso-639-1="cv" iso-639-2="chv">
+        <label lang="en">Chuvash</label>
+        <label lang="fr">Tchouvache</label>
+        <label lang="native">чӑваш чӗлхи</label>
+    </language>
+    <language iso-639-1="kw" iso-639-2="cor">
+        <label lang="en">Cornish</label>
+        <label lang="fr">Cornique</label>
+        <label lang="native">Kernewek</label>
+    </language>
+    <language iso-639-1="co" iso-639-2="cos">
+        <label lang="en">Corsican</label>
+        <label lang="fr">Corse</label>
+        <label lang="native">Corsu</label>
+    </language>
+    <language iso-639-1="cr" iso-639-2="cre">
+        <label lang="en">Cree</label>
+        <label lang="fr">Cri</label>
+        <label lang="native">ᓀᐦᐃᔭᐍᐏᐣ</label>
+    </language>
+    <language iso-639-1="hr" iso-639-2="scr">
+        <label lang="en">Croatian</label>
+        <label lang="fr">Croate</label>
+        <label lang="native">hrvatski jezik</label>
+    </language>
+    <language iso-639-1="cs" iso-639-2="cze">
+        <label lang="en">Czech</label>
+        <label lang="fr">Tchèque</label>
+        <label lang="native">česky</label>
+    </language>
+    <language iso-639-1="da" iso-639-2="dan">
+        <label lang="en">Danish</label>
+        <label lang="fr">Danois</label>
+        <label lang="native">Dansk</label>
+    </language>
+    <language iso-639-1="dv" iso-639-2="div">
+        <label lang="en">Divehi</label>
+        <label lang="fr">Divehi</label>
+        <label lang="native">ދިވެހި</label>
+    </language>
+    <language iso-639-1="nl" iso-639-2="dut">
+        <label lang="en">Dutch</label>
+        <label lang="fr">Néerlandais</label>
+        <label lang="native">Nederlands</label>
+    </language>
+    <language iso-639-1="dz" iso-639-2="dzo">
+        <label lang="en">Dzongkha</label>
+        <label lang="fr">Dzonghka</label>
+        <label lang="native">རྫོང་ཁ</label>
+    </language>
+    <language iso-639-1="en" iso-639-2="eng">
+        <label lang="en">English</label>
+        <label lang="fr">Anglais</label>
+        <label lang="native">English</label>
+    </language>
+    <language iso-639-1="eo" iso-639-2="epo">
+        <label lang="en">Esperanto</label>
+        <label lang="fr">Espéranto</label>
+        <label lang="native">Esperanto</label>
+    </language>
+    <language iso-639-1="et" iso-639-2="est">
+        <label lang="en">Estonian</label>
+        <label lang="fr">Estonien</label>
+        <label lang="native">Eesti keel</label>
+    </language>
+    <language iso-639-1="ee" iso-639-2="ewe">
+        <label lang="en">Ewe</label>
+        <label lang="fr">Ewe</label>
+        <label lang="native">Eʋegbe</label>
+    </language>
+    <language iso-639-1="fo" iso-639-2="fao">
+        <label lang="en">Faroese</label>
+        <label lang="fr">Féroïen</label>
+        <label lang="native">Føroyskt</label>
+    </language>
+    <language iso-639-1="fj" iso-639-2="fij">
+        <label lang="en">Fijian</label>
+        <label lang="fr">Fidjien</label>
+        <label lang="native">Vosa Vakaviti</label>
+    </language>
+    <language iso-639-1="fi" iso-639-2="fin">
+        <label lang="en">Finnish</label>
+        <label lang="fr">Finnois</label>
+        <label lang="native">Suomi</label>
+    </language>
+    <language iso-639-1="fr" iso-639-2="fre">
+        <label lang="en">French</label>
+        <label lang="fr">Français</label>
+        <label lang="native">Français</label>
+    </language>
+    <language iso-639-1="fy" iso-639-2="fry">
+        <label lang="en">Frisian</label>
+        <label lang="fr">Frison</label>
+        <label lang="native">Frysk</label>
+    </language>
+    <language iso-639-1="gd" iso-639-2="gla">
+        <label lang="en">Gaelic</label>
+        <label lang="fr">Gaélique</label>
+        <label lang="native">Gàidhlig</label>
+    </language>
+    <language iso-639-1="gl" iso-639-2="glg">
+        <label lang="en">Galician</label>
+        <label lang="fr">Galicien</label>
+        <label lang="native">Galego</label>
+    </language>
+    <language iso-639-1="lg" iso-639-2="lug">
+        <label lang="en">Ganda</label>
+        <label lang="fr">Ganda</label>
+        <label lang="native">Luganda</label>
+    </language>
+    <language iso-639-1="ka" iso-639-2="geo">
+        <label lang="en">Georgian</label>
+        <label lang="fr">Géorgien</label>
+        <label lang="native">ქართული</label>
+    </language>
+    <language iso-639-1="de" iso-639-2="ger">
+        <label lang="en">German</label>
+        <label lang="fr">Allemand</label>
+        <label lang="native">Deutsch</label>
+    </language>
+    <language iso-639-1="el" iso-639-2="gre">
+        <label lang="en">Greek</label>
+        <label lang="fr">Grec</label>
+        <label lang="native">Ελληνικά</label>
+    </language>
+    <language iso-639-1="kl" iso-639-2="kal">
+        <label lang="en">Greenlandic</label>
+        <label lang="fr">Groenlandais</label>
+        <label lang="native">Kalaallisut</label>
+    </language>
+    <language iso-639-1="gn" iso-639-2="grn">
+        <label lang="en">Guarani</label>
+        <label lang="fr">Guarani</label>
+        <label lang="native">Avañe'ẽ</label>
+    </language>
+    <language iso-639-1="gu" iso-639-2="guj">
+        <label lang="en">Gujarati</label>
+        <label lang="fr">Goudjrati</label>
+        <label lang="native">ગુજરાતી</label>
+    </language>
+    <language iso-639-1="ht" iso-639-2="hat">
+        <label lang="en">Haitian</label>
+        <label lang="fr">Haïtien</label>
+        <label lang="native">Kreyòl ayisyen</label>
+    </language>
+    <language iso-639-1="ha" iso-639-2="hau">
+        <label lang="en">Hausa</label>
+        <label lang="fr">Haoussa</label>
+        <label lang="native">هَوُسَ</label>
+    </language>
+    <language iso-639-1="he" iso-639-2="heb">
+        <label lang="en">Hebrew</label>
+        <label lang="fr">Hébreu</label>
+        <label lang="native">עברית</label>
+    </language>
+    <language iso-639-1="hz" iso-639-2="her">
+        <label lang="en">Herero</label>
+        <label lang="fr">Herero</label>
+        <label lang="native">Otjiherero</label>
+    </language>
+    <language iso-639-1="hi" iso-639-2="hin">
+        <label lang="en">Hindi</label>
+        <label lang="fr">Hindi</label>
+        <label lang="native">हिन्दी</label>
+    </language>
+    <language iso-639-1="ho" iso-639-2="hmo">
+        <label lang="en">Hiri Motu</label>
+        <label lang="fr">Hiri motu</label>
+        <label lang="native">Hiri Motu</label>
+    </language>
+    <language iso-639-1="hu" iso-639-2="hun">
+        <label lang="en">Hungarian</label>
+        <label lang="fr">Hongrois</label>
+        <label lang="native">Magyar</label>
+    </language>
+    <language iso-639-1="is" iso-639-2="ice">
+        <label lang="en">Icelandic</label>
+        <label lang="fr">Islandais</label>
+        <label lang="native">íslenska</label>
+    </language>
+    <language iso-639-1="io" iso-639-2="ido">
+        <label lang="en">Ido</label>
+        <label lang="fr">Ido</label>
+        <label lang="native">Ido</label>
+    </language>
+    <language iso-639-1="ig" iso-639-2="ibo">
+        <label lang="en">Igbo</label>
+        <label lang="fr">Igbo</label>
+        <label lang="native">Igbo</label>
+    </language>
+    <language iso-639-1="id" iso-639-2="ind">
+        <label lang="en">Indonesian</label>
+        <label lang="fr">Indonésien</label>
+        <label lang="native">Bahasa Indonesia</label>
+    </language>
+    <language iso-639-1="iu" iso-639-2="iku">
+        <label lang="en">Inuktitut</label>
+        <label lang="fr">Inuktitut</label>
+        <label lang="native">ᐃᓄᒃᑎᑐᑦ</label>
+    </language>
+    <language iso-639-1="ik" iso-639-2="ipk">
+        <label lang="en">Inupiaq</label>
+        <label lang="fr">Inupiaq</label>
+        <label lang="native">Iñupiaq</label>
+    </language>
+    <language iso-639-1="ga" iso-639-2="gle">
+        <label lang="en">Irish</label>
+        <label lang="fr">Irlandais</label>
+        <label lang="native">Gaeilge</label>
+    </language>
+    <language iso-639-1="it" iso-639-2="ita">
+        <label lang="en">Italian</label>
+        <label lang="fr">Italien</label>
+        <label lang="native">Italiano</label>
+    </language>
+    <language iso-639-1="ja" iso-639-2="jpn">
+        <label lang="en">Japanese</label>
+        <label lang="fr">Japonais</label>
+        <label lang="native">日本語</label>
+    </language>
+    <language iso-639-1="jv" iso-639-2="jav">
+        <label lang="en">Javanese</label>
+        <label lang="fr">Javanais</label>
+        <label lang="native">Basa Jawa</label>
+    </language>
+    <language iso-639-1="kn" iso-639-2="kan">
+        <label lang="en">Kannada</label>
+        <label lang="fr">Kannada</label>
+        <label lang="native">ಕನ್ನಡ</label>
+    </language>
+    <language iso-639-1="kr" iso-639-2="kau">
+        <label lang="en">Kanuri</label>
+        <label lang="fr">Kanouri</label>
+        <label lang="native">Kanuri</label>
+    </language>
+    <language iso-639-1="ks" iso-639-2="kas">
+        <label lang="en">Kashmiri</label>
+        <label lang="fr">Kashmiri</label>
+        <label lang="native">कॉशुर</label>
+    </language>
+    <language iso-639-1="kk" iso-639-2="kaz">
+        <label lang="en">Kazakh</label>
+        <label lang="fr">Kazakh</label>
+        <label lang="native">Қазақ тілі</label>
+    </language>
+    <language iso-639-1="km" iso-639-2="khm">
+        <label lang="en">Khmer</label>
+        <label lang="fr">Khmer</label>
+        <label lang="native">ភាសាខ្មែរ</label>
+    </language>
+    <language iso-639-1="ki" iso-639-2="kik">
+        <label lang="en">Kikuyu</label>
+        <label lang="fr">Kikuyu</label>
+        <label lang="native">Gĩkũyũ</label>
+    </language>
+    <language iso-639-1="rw" iso-639-2="kin">
+        <label lang="en">Kinyarwanda</label>
+        <label lang="fr">Kinyarwanda</label>
+        <label lang="native">KinyaRwanda</label>
+    </language>
+    <language iso-639-1="ky" iso-639-2="kir">
+        <label lang="en">Kirghiz</label>
+        <label lang="fr">Kirghize</label>
+        <label lang="native">кыргыз тили</label>
+    </language>
+    <language iso-639-1="kv" iso-639-2="kom">
+        <label lang="en">Komi</label>
+        <label lang="fr">Komi</label>
+        <label lang="native">коми кыв</label>
+    </language>
+    <language iso-639-1="kg" iso-639-2="kon">
+        <label lang="en">Kongo</label>
+        <label lang="fr">Kikongo</label>
+        <label lang="native">Kikongo</label>
+    </language>
+    <language iso-639-1="ko" iso-639-2="kor">
+        <label lang="en">Korean</label>
+        <label lang="fr">Coréen</label>
+        <label lang="native">한국어</label>
+    </language>
+    <language iso-639-1="kj" iso-639-2="kua">
+        <label lang="en">Kuanyama</label>
+        <label lang="fr">Kwanyama</label>
+        <label lang="native">Kuanyama</label>
+    </language>
+    <language iso-639-1="ku" iso-639-2="kur">
+        <label lang="en">Kurdish</label>
+        <label lang="fr">Kurde</label>
+        <label lang="native">Kurdî</label>
+    </language>
+    <language iso-639-1="lo" iso-639-2="lao">
+        <label lang="en">Lao</label>
+        <label lang="fr">Lao</label>
+        <label lang="native">ພາສາລາວ</label>
+    </language>
+    <language iso-639-1="la" iso-639-2="lat">
+        <label lang="en">Latin</label>
+        <label lang="fr">Latin</label>
+        <label lang="native">Latine</label>
+    </language>
+    <language iso-639-1="lv" iso-639-2="lav">
+        <label lang="en">Latvian</label>
+        <label lang="fr">Letton</label>
+        <label lang="native">Latviešu valoda</label>
+    </language>
+    <language iso-639-1="li" iso-639-2="lim">
+        <label lang="en">Limburgish</label>
+        <label lang="fr">Limbourgeois</label>
+        <label lang="native">Limburgs</label>
+    </language>
+    <language iso-639-1="ln" iso-639-2="lin">
+        <label lang="en">Lingala</label>
+        <label lang="fr">Lingala</label>
+        <label lang="native">Lingala</label>
+    </language>
+    <language iso-639-1="lt" iso-639-2="lit">
+        <label lang="en">Lithuanian</label>
+        <label lang="fr">Lituanien</label>
+        <label lang="native">Lietuvių kalba</label>
+    </language>
+    <language iso-639-1="lu" iso-639-2="lub">
+        <label lang="en">Luba-Katanga</label>
+        <label lang="fr">Luba-katanga</label>
+        <label lang="native"></label>
+    </language>
+    <language iso-639-1="lb" iso-639-2="ltz">
+        <label lang="en">Luxembourgish</label>
+        <label lang="fr">Luxembourgeois</label>
+        <label lang="native">Lëtzebuergesch</label>
+    </language>
+    <language iso-639-1="mk" iso-639-2="mac">
+        <label lang="en">Macedonian</label>
+        <label lang="fr">Macédonien</label>
+        <label lang="native">македонски јазик</label>
+    </language>
+    <language iso-639-1="mg" iso-639-2="mlg">
+        <label lang="en">Malagasy</label>
+        <label lang="fr">Malgache</label>
+        <label lang="native">Malagasy fiteny</label>
+    </language>
+    <language iso-639-1="ms" iso-639-2="may">
+        <label lang="en">Malay</label>
+        <label lang="fr">Malais</label>
+        <label lang="native">بهاس ملاي</label>
+    </language>
+    <language iso-639-1="ml" iso-639-2="mal">
+        <label lang="en">Malayalam</label>
+        <label lang="fr">Malayalam</label>
+        <label lang="native">മലയാളം</label>
+    </language>
+    <language iso-639-1="mt" iso-639-2="mlt">
+        <label lang="en">Maltese</label>
+        <label lang="fr">Maltais</label>
+        <label lang="native">Malti</label>
+    </language>
+    <language iso-639-1="gv" iso-639-2="glv">
+        <label lang="en">Manx</label>
+        <label lang="fr">Mannois</label>
+        <label lang="native">Manninagh</label>
+    </language>
+    <language iso-639-1="mi" iso-639-2="mao">
+        <label lang="en">Maori</label>
+        <label lang="fr">Maori</label>
+        <label lang="native">Te reo Māori</label>
+    </language>
+    <language iso-639-1="mr" iso-639-2="mar">
+        <label lang="en">Marathi</label>
+        <label lang="fr">Marathe</label>
+        <label lang="native">मराठी</label>
+    </language>
+    <language iso-639-1="mh" iso-639-2="mah">
+        <label lang="en">Marshallese</label>
+        <label lang="fr">Marshallais</label>
+        <label lang="native">Kajin M̧ajeļ</label>
+    </language>
+    <language iso-639-1="mo" iso-639-2="mol">
+        <label lang="en">Moldavian</label>
+        <label lang="fr">Moldave</label>
+        <label lang="native">лимба молдовеняскэ</label>
+    </language>
+    <language iso-639-1="mn" iso-639-2="mon">
+        <label lang="en">Mongolian</label>
+        <label lang="fr">Mongol</label>
+        <label lang="native">монгол хэл</label>
+    </language>
+    <language iso-639-1="na" iso-639-2="nau">
+        <label lang="en">Nauruan</label>
+        <label lang="fr">Nauruan</label>
+        <label lang="native">Ekakairũ Naoero</label>
+    </language>
+    <language iso-639-1="nv" iso-639-2="nav">
+        <label lang="en">Navajo</label>
+        <label lang="fr">Navajo</label>
+        <label lang="native">Diné bizaad</label>
+    </language>
+    <language iso-639-1="nd" iso-639-2="nde">
+        <label lang="en">Ndebele</label>
+        <label lang="fr">Ndébélé du Nord</label>
+        <label lang="native">isiNdebele</label>
+    </language>
+    <language iso-639-1="ng" iso-639-2="ndo">
+        <label lang="en">Ndonga</label>
+        <label lang="fr">Ndonga</label>
+        <label lang="native">Owambo</label>
+    </language>
+    <language iso-639-1="ne" iso-639-2="nep">
+        <label lang="en">Nepali</label>
+        <label lang="fr">Népalais</label>
+        <label lang="native">नेपाली</label>
+    </language>
+    <language iso-639-1="se" iso-639-2="sme">
+        <label lang="en">Northern Sami</label>
+        <label lang="fr">Same du Nord</label>
+        <label lang="native">Sámi</label>
+    </language>
+    <language iso-639-1="no" iso-639-2="nor">
+        <label lang="en">Norwegian</label>
+        <label lang="fr">Norvégien</label>
+        <label lang="native">Norsk</label>
+    </language>
+    <language iso-639-1="nb" iso-639-2="nob">
+        <label lang="en">Norwegian Bokmål</label>
+        <label lang="fr">Norvégien bokmål</label>
+        <label lang="native">Norsk bokmål</label>
+    </language>
+    <language iso-639-1="nn" iso-639-2="nno">
+        <label lang="en">Norwegian Nynorsk</label>
+        <label lang="fr">Norvégien nynorsk</label>
+        <label lang="native">Norsk nynorsk</label>
+    </language>
+    <language iso-639-1="ii" iso-639-2="iii">
+        <label lang="en">Nuosu</label>
+        <label lang="fr">Nuosu</label>
+        <label lang="native">ꆈꌠ꒿</label>
+    </language>
+    <language iso-639-1="oc" iso-639-2="oci">
+        <label lang="en">Occitan</label>
+        <label lang="fr">Occitan</label>
+        <label lang="native">Occitan</label>
+    </language>
+    <language iso-639-1="oj" iso-639-2="oji">
+        <label lang="en">Ojibwa</label>
+        <label lang="fr">Ojibwé</label>
+        <label lang="native">Anishinaabemowin</label>
+    </language>
+    <language iso-639-1="or" iso-639-2="ori">
+        <label lang="en">Oriya</label>
+        <label lang="fr">Oriya</label>
+        <label lang="native">ଓଡ଼ିଆ</label>
+    </language>
+    <language iso-639-1="om" iso-639-2="orm">
+        <label lang="en">Oromo</label>
+        <label lang="fr">Oromo</label>
+        <label lang="native">Afaan Oromoo</label>
+    </language>
+    <language iso-639-1="os" iso-639-2="oss">
+        <label lang="en">Ossetian</label>
+        <label lang="fr">Ossète</label>
+        <label lang="native">ирон ӕвзаг</label>
+    </language>
+    <language iso-639-1="pi" iso-639-2="pli">
+        <label lang="en">Pali</label>
+        <label lang="fr">Pali</label>
+        <label lang="native">पालि</label>
+    </language>
+    <language iso-639-1="fa" iso-639-2="per">
+        <label lang="en">Persian</label>
+        <label lang="fr">Persan</label>
+        <label lang="native">فارسی</label>
+    </language>
+    <language iso-639-1="pl" iso-639-2="pol">
+        <label lang="en">Polish</label>
+        <label lang="fr">Polonais</label>
+        <label lang="native">Polski</label>
+    </language>
+    <language iso-639-1="pt" iso-639-2="por">
+        <label lang="en">Portuguese</label>
+        <label lang="fr">Portugais</label>
+        <label lang="native">Português</label>
+    </language>
+    <language iso-639-1="ff" iso-639-2="ful">
+        <label lang="en">Pulaar</label>
+        <label lang="fr">Peul</label>
+        <label lang="native">Fulfulde</label>
+    </language>
+    <language iso-639-1="pa" iso-639-2="pan">
+        <label lang="en">Punjabi</label>
+        <label lang="fr">Pendjabi</label>
+        <label lang="native">ਪੰਜਾਬੀ</label>
+    </language>
+    <language iso-639-1="ps" iso-639-2="pus">
+        <label lang="en">Pushto</label>
+        <label lang="fr">Pachto</label>
+        <label lang="native">پښت</label>
+    </language>
+    <language iso-639-1="qu" iso-639-2="que">
+        <label lang="en">Quechuan</label>
+        <label lang="fr">Quechua</label>
+        <label lang="native">Kichwa</label>
+    </language>
+    <language iso-639-1="rm" iso-639-2="roh">
+        <label lang="en">Raeto-Romance</label>
+        <label lang="fr">Rhéto-roman</label>
+        <label lang="native">Rumantsch grischun</label>
+    </language>
+    <language iso-639-1="ro" iso-639-2="rum">
+        <label lang="en">Romanian</label>
+        <label lang="fr">Roumain</label>
+        <label lang="native">Română</label>
+    </language>
+    <language iso-639-1="rn" iso-639-2="run">
+        <label lang="en">Rundi</label>
+        <label lang="fr">Rundi</label>
+        <label lang="native">kiRundi</label>
+    </language>
+    <language iso-639-1="ru" iso-639-2="rus">
+        <label lang="en">Russian</label>
+        <label lang="fr">Russe</label>
+        <label lang="native">русский язык</label>
+    </language>
+    <language iso-639-1="sm" iso-639-2="smo">
+        <label lang="en">Samoan</label>
+        <label lang="fr">Samoan</label>
+        <label lang="native">gagana fa'a Samoa</label>
+    </language>
+    <language iso-639-1="sg" iso-639-2="sag">
+        <label lang="en">Sango</label>
+        <label lang="fr">Sango</label>
+        <label lang="native">yângâ tî sängö</label>
+    </language>
+    <language iso-639-1="sa" iso-639-2="san">
+        <label lang="en">Sanskrit</label>
+        <label lang="fr">Sanskrit</label>
+        <label lang="native">संस्कृतम्</label>
+    </language>
+    <language iso-639-1="sc" iso-639-2="srd">
+        <label lang="en">Sardinian</label>
+        <label lang="fr">Sarde</label>
+        <label lang="native">Sardu</label>
+    </language>
+    <language iso-639-1="sr" iso-639-2="scc">
+        <label lang="en">Serbian</label>
+        <label lang="fr">Serbe</label>
+        <label lang="native">српски језик</label>
+    </language>
+    <language iso-639-1="sn" iso-639-2="sna">
+        <label lang="en">Shona</label>
+        <label lang="fr">Shona</label>
+        <label lang="native">chiShona</label>
+    </language>
+    <language iso-639-1="sd" iso-639-2="snd">
+        <label lang="en">Sindhi</label>
+        <label lang="fr">Sindhi</label>
+        <label lang="native">سنڌي، سندھی</label>
+    </language>
+    <language iso-639-1="si" iso-639-2="sin">
+        <label lang="en">Sinhala</label>
+        <label lang="fr">Singhalais</label>
+        <label lang="native">සිංහල</label>
+    </language>
+    <language iso-639-1="sk" iso-639-2="slo">
+        <label lang="en">Slovak</label>
+        <label lang="fr">Slovaque</label>
+        <label lang="native">Slovenčina</label>
+    </language>
+    <language iso-639-1="sl" iso-639-2="slv">
+        <label lang="en">Slovenian</label>
+        <label lang="fr">Slovène</label>
+        <label lang="native">Slovenščina</label>
+    </language>
+    <language iso-639-1="so" iso-639-2="som">
+        <label lang="en">Somali</label>
+        <label lang="fr">Somali</label>
+        <label lang="native">Soomaaliga</label>
+    </language>
+    <language iso-639-1="st" iso-639-2="sot">
+        <label lang="en">Sotho</label>
+        <label lang="fr">Sotho du Sud</label>
+        <label lang="native">SeSotho</label>
+    </language>
+    <language iso-639-1="es" iso-639-2="spa">
+        <label lang="en">Spanish</label>
+        <label lang="fr">Espagnol</label>
+        <label lang="native">Español</label>
+    </language>
+    <language iso-639-1="su" iso-639-2="sun">
+        <label lang="en">Sundanese</label>
+        <label lang="fr">Sundanais</label>
+        <label lang="native">Basa Sunda</label>
+    </language>
+    <language iso-639-1="sw" iso-639-2="swa">
+        <label lang="en">Swahili</label>
+        <label lang="fr">Swahili</label>
+        <label lang="native">Kiswahili</label>
+    </language>
+    <language iso-639-1="ss" iso-639-2="ssw">
+        <label lang="en">Swati</label>
+        <label lang="fr">Swati</label>
+        <label lang="native">siSwati</label>
+    </language>
+    <language iso-639-1="sv" iso-639-2="swe">
+        <label lang="en">Swedish</label>
+        <label lang="fr">Suédois</label>
+        <label lang="native">Svenska</label>
+    </language>
+    <language iso-639-1="tl" iso-639-2="tgl">
+        <label lang="en">Tagalog</label>
+        <label lang="fr">Tagalog</label>
+        <label lang="native">Tagalog</label>
+    </language>
+    <language iso-639-1="ty" iso-639-2="tah">
+        <label lang="en">Tahitian</label>
+        <label lang="fr">Tahitien</label>
+        <label lang="native">Te reo Tahiti</label>
+    </language>
+    <language iso-639-1="tg" iso-639-2="tgk">
+        <label lang="en">Tajik</label>
+        <label lang="fr">Tadjik</label>
+        <label lang="native">тоҷикӣ</label>
+    </language>
+    <language iso-639-1="ta" iso-639-2="tam">
+        <label lang="en">Tamil</label>
+        <label lang="fr">Tamoul</label>
+        <label lang="native">தமிழ்</label>
+    </language>
+    <language iso-639-1="tt" iso-639-2="tat">
+        <label lang="en">Tatar</label>
+        <label lang="fr">Tatar</label>
+        <label lang="native">татарчаا</label>
+    </language>
+    <language iso-639-1="te" iso-639-2="tel">
+        <label lang="en">Telugu</label>
+        <label lang="fr">Télougou</label>
+        <label lang="native">తెలుగు</label>
+    </language>
+    <language iso-639-1="th" iso-639-2="tha">
+        <label lang="en">Thai</label>
+        <label lang="fr">Thaï</label>
+        <label lang="native">ภาษาไทย</label>
+    </language>
+    <language iso-639-1="bo" iso-639-2="tib">
+        <label lang="en">Tibetan</label>
+        <label lang="fr">Tibétain</label>
+        <label lang="native">བོད་ཡིག</label>
+    </language>
+    <language iso-639-1="ti" iso-639-2="tir">
+        <label lang="en">Tigrinya</label>
+        <label lang="fr">Tigrinya</label>
+        <label lang="native">ትግርኛ</label>
+    </language>
+    <language iso-639-1="to" iso-639-2="ton">
+        <label lang="en">Tongan</label>
+        <label lang="fr">Tongan</label>
+        <label lang="native">Faka-Tonga</label>
+    </language>
+    <language iso-639-1="ts" iso-639-2="tso">
+        <label lang="en">Tsonga</label>
+        <label lang="fr">Tsonga</label>
+        <label lang="native">XiTsonga</label>
+    </language>
+    <language iso-639-1="tn" iso-639-2="tsn">
+        <label lang="en">Tswana</label>
+        <label lang="fr">Tswana</label>
+        <label lang="native">SeTswana</label>
+    </language>
+    <language iso-639-1="tr" iso-639-2="tur">
+        <label lang="en">Turkish</label>
+        <label lang="fr">Turc</label>
+        <label lang="native">Türkçe</label>
+    </language>
+    <language iso-639-1="tk" iso-639-2="tuk">
+        <label lang="en">Turkmen</label>
+        <label lang="fr">Turkmène</label>
+        <label lang="native">Түркмен</label>
+    </language>
+    <language iso-639-1="tw" iso-639-2="twi">
+        <label lang="en">Twi</label>
+        <label lang="fr">Twi</label>
+        <label lang="native">Twi</label>
+    </language>
+    <language iso-639-1="ug" iso-639-2="uig">
+        <label lang="en">Uighur</label>
+        <label lang="fr">Ouïgour</label>
+        <label lang="native">Uyƣurqə</label>
+    </language>
+    <language iso-639-1="uk" iso-639-2="ukr">
+        <label lang="en">Ukrainian</label>
+        <label lang="fr">Ukrainien</label>
+        <label lang="native">українська мова</label>
+    </language>
+    <language iso-639-1="ur" iso-639-2="urd">
+        <label lang="en">Urdu</label>
+        <label lang="fr">Ourdou</label>
+        <label lang="native">اردو</label>
+    </language>
+    <language iso-639-1="uz" iso-639-2="uzb">
+        <label lang="en">Uzbek</label>
+        <label lang="fr">Ouzbek</label>
+        <label lang="native">O'zbek</label>
+    </language>
+    <language iso-639-1="ve" iso-639-2="ven">
+        <label lang="en">Venda</label>
+        <label lang="fr">Venda</label>
+        <label lang="native">TshiVenḓa</label>
+    </language>
+    <language iso-639-1="vi" iso-639-2="vie">
+        <label lang="en">Vietnamese</label>
+        <label lang="fr">Vietnamien</label>
+        <label lang="native">Tiếng Việt</label>
+    </language>
+    <language iso-639-1="vo" iso-639-2="vol">
+        <label lang="en">Volapük</label>
+        <label lang="fr">Volapük</label>
+        <label lang="native">Volapük</label>
+    </language>
+    <language iso-639-1="wa" iso-639-2="wln">
+        <label lang="en">Walloon</label>
+        <label lang="fr">Wallon</label>
+        <label lang="native">Walon</label>
+    </language>
+    <language iso-639-1="cy" iso-639-2="wel">
+        <label lang="en">Welsh</label>
+        <label lang="fr">Gallois</label>
+        <label lang="native">Cymraeg</label>
+    </language>
+    <language iso-639-1="wo" iso-639-2="wol">
+        <label lang="en">Wolof</label>
+        <label lang="fr">Wolof</label>
+        <label lang="native">Wolof</label>
+    </language>
+    <language iso-639-1="xh" iso-639-2="xho">
+        <label lang="en">Xhosa</label>
+        <label lang="fr">Xhosa</label>
+        <label lang="native">IsiXhosa</label>
+    </language>
+    <language iso-639-1="yi" iso-639-2="yid">
+        <label lang="en">Yiddish</label>
+        <label lang="fr">Yiddish</label>
+        <label lang="native">ייִדיש</label>
+    </language>
+    <language iso-639-1="yo" iso-639-2="yor">
+        <label lang="en">Yoruba</label>
+        <label lang="fr">Yoruba</label>
+        <label lang="native">Yorùbá</label>
+    </language>
+    <language iso-639-1="za" iso-639-2="zha">
+        <label lang="en">Zhuang</label>
+        <label lang="fr">Zhuang</label>
+        <label lang="native">Saɯ cueŋƅ</label>
+    </language>
+    <language iso-639-1="zu" iso-639-2="zul">
+        <label lang="en">Zulu</label>
+        <label lang="fr">Zoulou</label>
+        <label lang="native">IsiZulu</label>
+    </language>
+</codes>

@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../../../'; var lang = 'fr'; var bc = {'Classe Db': '../../db.html', 'Active Record' : '../active_record.html'};</script>        
+        <script type="text/javascript" src="../../../../js/loader.js"></script>        
+    </head>
+    <body>             
+        <h1>Insertion / modification / suppression de données</h1>
+        <p>
+            Voici les méthodes pour insérer, modifier ou supprimer des données dans la base.
+        </p>
+        <h3>insert()</h3>
+        <p>
+            Permet d'insérer des données dans la base. 
+            La méthode prend comme argument le nom de la table et un tableau associatif ayant le nom du champ comme clé et la valeur à insérer.
+            Le troisième argument optionnel est le nom de la configuration à utiliser pour se connecter à la base de données.
+        </p>
+        <php>
+            // INSERT INTO `customers` (`customerName`, `contactFirstName`) VALUES ('PHP Oxygen', 'Sébastien')
+            Db::insert('customers', array('customerName' => 'PHP Oxygen', 'contactFirstName' => 'Sébastien'), 'config2');
+        </php> 
+        
+        <h3>update()</h3>
+        <p>
+            Permet de modifier des données dans la base selon les conditions données. 
+            Les conditions sont formatées de la même manière que pour la sélection de données.
+        </p>
+        <php>         
+            // UPDATE `customers` SET `salesEmployee` = '1370' WHERE `salesEmployee` = '1206'
+            Db::update('customers', array('salesEmployee' => '1370'))->where('salesEmployee', '1206')->execute();
+            
+            // UPDATE `customers` SET `salesEmployee` = '1370' WHERE `salesEmployee` != '1370'
+            Db::update('customers', array('salesEmployee' => '1370'))->where('salesEmployee !=', '1370'))->execute('config2');
+            
+            // UPDATE `customers` SET `salesEmployee` = '1370' WHERE `salesEmployee` = '1206' AND `country` != 'France'
+            Db::update('customers', array('salesEmployee' => '1370'))->where(array('salesEmployee'=>'1206', 'country !=' => 'France'))->execute();
+        </php>
+        <blockquote class="info">
+            Il est possible d'exécuter la requête sur une autre base de données que celle par défaut en donnant le nom de la configuration comme argument de execute().
+        </blockquote>
+        
+        <h3>deleteFrom()</h3>
+        <p>
+            Permet de supprimer une ou plusieurs entrées dans une table de la base de données. Les conditions sont formatées de la même manière que pour la sélection de données.
+        </p>
+        <php>
+            // DELETE FROM customers WHERE `country` = 'Norway'
+            Db::deleteFrom('customers')->where('country', 'Norway')->execute();
+            
+            // DELETE FROM customers WHERE `country` = 'Norway' OR `country` = 'France'
+            Db::deleteFrom('customers')->where('country', 'Norway', 'OR')->where('country', 'France')->execute();
+        </php>
+    </body>            
+</html>
