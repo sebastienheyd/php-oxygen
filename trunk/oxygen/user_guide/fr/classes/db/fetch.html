@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../../'; var lang = 'fr'; var bc = {'Classe Db': '../db.html', 'Récupérer les résultats':'resultats.html'};</script>        
+        <script type="text/javascript" src="../../../js/loader.js"></script>        
+    </head>
+    <body>     
+        
+        <h1>Modes de récupération</h1>
+        <p>
+            Quand vous appelez la méthode fetch() ou fetchAll() de la class Db, le premier argument est un entier qui définit le mode de récupération souhaité. 
+            Pour simplifier son identification des constantes ont été difinies dans l'extension PDO de PHP. 
+            Voici les explications et des exemples sur les différents modes de récupération (fetch_style) utilisables avec PHP Oxygen.
+        </p>
+        
+        <h3>PDO::FETCH_ASSOC</h3>
+        <p>
+            Retourne le résultat de la requête sous forme d'un tableau associatif ayant pour clé le nom du champ associé à sa valeur.             
+        </p>
+        <blockquote class="info">
+            Il s'agit du mode par défaut des méthodes fetch() et fetchAll();
+        </blockquote>
+        <php>
+            $res = DB::query('SELECT * FROM customers WHERE customerNumber=103')->fetch(PDO::FETCH_ASSOC);
+            
+            // équivalent à 
+            $res = DB::query('SELECT * FROM customers WHERE customerNumber=103')->fetch();
+            
+            /*
+            Array
+            (
+                [customerNumber] => 103
+                [customerName] => Atelier graphique
+                [contactLastName] => Schmitt
+                [contactFirstName] => Carine 
+                ...
+            */
+            
+            echo $res['customerNumber'];    // Affiche 103
+        </php>
+        
+        <h3>PDO::FETCH_NUM</h3>
+        <p>
+            Retourne le résultat de la requête sous forme d'un tableau indexé par le numéro de colonne.
+        </p>
+        <php>
+            $res = DB::query('SELECT * FROM customers WHERE customerNumber=103')->fetch(PDO::FETCH_BOTH);
+            
+            /*
+            Array
+            (
+                [0] => 103
+                [1] => Atelier graphique
+                [2] => Schmitt
+                [3] => Carine 
+                ...
+            )*/
+            
+            echo $res[0];   // Affiche 103
+        </php>        
+        
+        <h3>PDO::FETCH_BOTH</h3>
+        <p>
+            Retourne le résultat de la requête sous forme d'un tableau associatif ayant pour clé le nom du champ associé à sa valeur et aussi le numéro de colonne ( commençant par 0 ) associé à sa valeur. 
+        </p>
+        <php>
+            $res = DB::query('SELECT * FROM customers WHERE customerNumber=103')->fetch(PDO::FETCH_BOTH);
+            
+            /*
+            Array
+            (
+                [customerNumber] => 103
+                [0] => 103
+                [customerName] => Atelier graphique
+                [1] => Atelier graphique
+                [contactLastName] => Schmitt
+                [2] => Schmitt
+                [contactFirstName] => Carine 
+                [3] => Carine 
+                ...
+            )*/
+            
+            echo $res['customerNumber'];    // Affiche 103
+            echo $res[0];                   // Affiche 103
+        </php>
+        
+        <h3>PDO::FETCH_OBJ</h3>
+        <p>
+            Retourne le résultat de la requête sous forme d'une instance de stdClass contenant les valeurs des colonnes comme des variables publiques. 
+        </p>
+        <php>
+            $res = DB::query('SELECT * FROM customers WHERE customerNumber=103')->fetch(PDO::FETCH_OBJ);
+            
+            /*
+            stdClass Object
+            (
+                [customerNumber] => 103
+                [customerName] => Atelier graphique
+                [contactLastName] => Schmitt
+                [contactFirstName] => Carine 
+                ...
+            )*/
+            
+            echo $res->customerNumber;  // Affiche 103;
+        </php>        
+        
+        <h3>PDO::FETCH_CLASS</h3>
+        <p>
+            Retourne le résultat de la requête sous la forme d'une instance d'une classe personnalisée que l'on indiquera comme second paramètre de fetch() et fetchAll().
+            Si la classe à déjà des variables correspondantes aux colonnes et que celle-ci ont déjà des valeurs, les valeurs sont écrasées si les variables ont une visibilité public ou protected. 
+            Si les variables n'existent pas dans la classe, elles sont créées avec une visibilité publique.
+        </p>
+        <blockquote class="warning">
+            Si la classe personnalisée n'existe pas PHP Oxygen renverra une erreur.
+        </blockquote>    
+        <php>
+            $res = DB::query('SELECT * FROM customers WHERE customerNumber=103')->fetch(PDO::FETCH_CLASS, 'Customer');
+            
+            /*
+            Customer Object
+            (
+                [customerNumber:protected] => 103
+                [customerName:protected] => Atelier graphique
+                [contactLastName:protected] => Schmitt
+                [contactFirstName:protected] => Carine
+                ...
+            )*/
+            
+            // Exemple :
+            echo $res->getCustomerNumber();      // Affiche 103 (si la méthode existe et renvoie $this->customerNumber)
+        </php>
+        <blockquote class="trick">
+            Le constructeur de la classe est appelé avant la récupération des données. 
+            Si dans votre constructeur vous modifiez vos données ajoutez le mode PDO::FETCH_PROPS_LATE conjointement à PDO::FETCH_CLASS. Exemple :
+        </blockquote>
+        <php>
+            $res = DB::query('SELECT * FROM customers WHERE customerNumber=103')->fetch(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, 'Customer');
+        </php>
+        
+        <h3>PDO::FETCH_COLUMN</h3>
+        <p>
+            Retourne les résultats pour une seule colonne. 
+            Il y a deux façons de faire : soit en indiquant la colonne à récupérer en l'identifiant dans la requête, soit en l'identifiant par son numéro (avec 0 pour la première colonne) dans la méthode execute().
+        </p>
+        <php>
+            // 1ère méthode
+            $res = DB::query('SELECT customerName FROM customers')->fetchAll(PDO::FETCH_COLUMN);  
+            
+            // 2eme méthode  
+            $res = DB::query('SELECT * FROM customers')->fetchAll(PDO::FETCH_COLUMN, 1);
+            
+            /*
+            Array
+            (
+                [0] => Atelier graphique
+                [1] => Signal Gift Stores
+                [2] => La Rochelle Gifts
+                ...
+            )
+            */
+        </php>
+        <blockquote class="info">
+            Ce mode de récupération est de très loin le plus rapide pour récupérer une liste de valeurs, n'hésitez donc pas à l'utiliser quand vous le pouvez.
+        </blockquote>
+        
+        <h3>PDO::FETCH_KEY_PAIR</h3>
+        <p>
+            Retourne les résultats en créant un tableau associatif utilisant la valeur de la première colonne comme clé et la seconde colonne comme valeur.
+        </p>
+        <php>
+            $res = DB::query('SELECT customerNumber, customerName FROM customers')->fetchAll(PDO::FETCH_KEY_PAIR);
+            
+            /*
+            Array
+            (
+                [103] => Atelier graphique
+                [112] => Signal Gift Stores
+                [119] => La Rochelle Gifts
+                ...
+            )
+            */
+        </php>
+        <blockquote class="info">
+            Ce mode est beaucoup plus rapide que d'utiliser PDO::FETCH_NUM (ou PDO::FETCH_ASSOC) puis construire un tableau associatif à la main. 
+            Il est par exemple idéal pour construire une paire identifiant / libellé afin de créer une liste déroulante dans un formulaire.
+        </blockquote>
+        
+        <h2>Les modificateurs</h2>
+        <p>
+            Les modificateurs sont utilisés en combinaison avec un mode de récupération. Pour cela on utilise le symbole "pipe" (le "ou" binaire) |
+        </p>
+        
+        <h3>PDO::FETCH_GROUP</h3>
+        <p>
+            Permet de regrouper les résultats selon la valeur de la première colonne de la requête.
+        </p>        
+        <blockquote class="warning">
+            Ces deux modificateurs sont utilisables uniquement avec la fonction fetchAll().
+        </blockquote>
+        <php>
+            $res = DB::query('SELECT country, customerNumber FROM customers')->fetchAll(PDO::FETCH_ASSOC|PDO::FETCH_GROUP);
+            
+            /*
+            Array
+            (
+                [France] => Array
+                    (
+                        [0] => stdClass Object
+                            (
+                                [customerNumber] => 103
+                            )
+
+                        [1] => stdClass Object
+                            (
+                                [customerNumber] => 119
+                            )
+
+                        ...
+                    )
+
+                [USA] => Array
+                    (
+                        [0] => stdClass Object
+                            (
+                                [customerNumber] => 112
+                            )
+
+                        [1] => stdClass Object
+                            (
+                                [customerNumber] => 129
+                            )
+
+                        ...
+                    )
+
+                [Germany] => Array
+                    (
+                        [0] => stdClass Object
+                            (
+                                [customerNumber] => 128
+                            )
+
+                         ...
+                    )
+                 ...
+            */
+        </php>
+        
+        <h3>PDO::FETCH_UNIQUE</h3>
+        <p>
+            Permet de récupérer les résultats indexés par la valeur de la première colonne de la requête.
+        </p>
+        <php>
+            $res = DB::query('SELECT customerNumber, customerName FROM customers')->fetchAll(PDO::FETCH_ASSOC|PDO::FETCH_UNIQUE);
+            
+            /*
+            Array
+            (
+                [103] => Array
+                    (
+                        [customerName] => Atelier graphique
+                    )
+
+                [112] => Array
+                    (
+                        [customerName] => Signal Gift Stores
+                    )
+
+                [119] => Array
+                    (
+                        [customerName] => La Rochelle Gifts
+                    )
+
+                [128] => Array
+                    (
+                        [customerName] => Blauer See Auto, Co.
+                    )
+
+                ...
+            */
+        </php>                
+    </body>            
+</html>

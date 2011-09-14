@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe Cron</h1>
+        <p>
+           La classe Cron permet de planifier des tâches sans avoir à modifier constamment la crontab du système. 
+           Cela peut être pratique pour pouvoir définir des tâches dynamiquement à partir de la base de données par exemple.           
+        </p>        
+        <blockquote class="info">
+            Pour fonctionner on appellera qu'un seul script toutes les minutes lequel vérifiera alors quels tâche(s) doit/doivent être exécutée(s) grâce à cette classe.
+        </blockquote>
+        
+        <h2>Exemple d'utilisation</h2>
+        La classe peut être utilisée de la façon suivante :
+        <php>
+            // === Exemple 1
+            
+            if(Cron::job('*/5 * * * *'))
+            {
+                // script à exécuter toutes les 5 minutes
+            }
+            
+            // === Exemple 2  
+            
+            $cron = Cron::getInstance();
+            
+            if($cron->setJob('5 12 * * 1')->execute())
+            {
+                // script à exécuter tous les lundis du mois à 12h05
+            }
+        </php>
+        
+        <h2>Variables</h2>
+        <p>
+            Les variables pouvant être utilisées par la classe Cron sont sensiblement les mêmes que pour la crontab unix et se présente sous la forme :
+        </p>
+        
+        <blockquote>mm hh jj MMM JJJ</blockquote>
+        
+        <p>Dans cette syntaxe :</p>
+        
+        <ul>
+            <li><strong>mm</strong> représente les minutes (de 0 à 59)</li>
+            <li><strong>hh</strong> représente l'heure (de 0 à 23)</li>
+            <li><strong>jj</strong> représente le numéro du jour du mois (de 1 à 31)</li>
+            <li><strong>MMM</strong> représente le numéro du mois (de 1 à 12)</li>
+            <li><strong>JJJ</strong> représente le chiffre correspondant au jour de la semaine (0 représente le dimanche, 1 représente le lundi, ..., 7 représente le dimanche)</li>
+        </ul>
+            
+        <p>Pour chaque unité de temps (minute/heure/...) les notations possibles sont :</p>
+
+        <ul>
+            <li>* : à chaque unité de temps (0, 1, 2, 3, 4...)</li>
+            <li>5,8 : les unités de temps 5 et 8</li>
+            <li>2-5 : les unités de temps de 2 à 5 (2, 3, 4, 5)</li>
+            <li>*/3 : toutes les 3 unités de temps (0, 3, 6, 9...)</li>
+            <li>10-20/3 : toutes les 3 unités de temps, entre la dixième et la vingtième (10, 13, 16, 19)</li>
+        </ul>
+
+        <p>Tout comme la crontab unix, il est possible d'utiliser des raccourcis pour les tâches courantes :</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Raccourcis</th><th>Descriptions</th><th>Equivalent</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>@yearly</td><td>Tous les ans</td><td>0 0 1 1 *</td></tr>
+                <tr><td>@annualy</td><td>Tous les ans</td><td>0 0 1 1 *</td></tr>
+                <tr><td>@monthly</td><td>Tous les mois</td><td>0 0 1 * *</td></tr>
+                <tr><td>@weekly</td><td>Toutes les semaines</td><td>0 0 * * 0</td></tr>
+                <tr><td>@daily</td><td>Tous les jours</td><td>0 0 * * *</td></tr>
+                <tr><td>@midnight</td><td>Tous les jours</td><td>0 0 * * *</td></tr>
+                <tr><td>@hourly</td><td>Toutes les heures</td><td>0 * * * *</td></tr>
+            </tbody>
+        </table>
+        
+        <h2>Références</h2>
+        <p>
+            <a href="http://fr.wikipedia.org/wiki/Crontab" target="_blank">Crontab sur Wikipedia</a>
+        </p>
+    </body>            
+</html>

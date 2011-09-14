@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe Template</h1>
+        <p>
+           La classe Template permet de générer et renvoyer des gabarits préformaté vers une variable ou vers le navigateur. 
+           Dans PHPOxygen nous avons privilégié le moteur de templating Smarty (en version 3) qui est un moteur réputé, puissant, stable et permettant l'ajout d'extension.           
+        </p>        
+        
+        <h2>Méthodes de Template</h2>
+        <p>
+            Quelques méthodes ont été ajoutées dans PHPOxygen pour s'interfacer avec Smarty.
+        </p>
+        
+        <h3>getInstance()</h3>
+        <p>Il s'agit de la méthode statique permettant d'instancier la classe Template. Elle prends comme paramètre le chemin vers le gabarit (template) à utiliser. Exemple :</p>
+        <php>
+            $tpl = Template::getInstance('/home/web/main.html');
+        </php>
+        
+        <h3>setDelimiter()</h3>
+        <p>
+            Smarty utilise des délimiteurs pour utiliser ses propres balises. 
+            Par défaut une balise Smarty est entourée de deux accolades. 
+            Exemple {$variable}. 
+            Avec la méthode setDelimiter il est possible de modifier les caractères utilisés comme délimiteurs pour le gabarit instancié.
+            La méthode prends deux paramètres, le premier pour le délimiteur gauche le second pour le droit.
+        </p>
+        <php>
+            $tpl = Template::getInstance('/home/web/main.html');            
+            $tpl->setDelimiter('[[', ']]');
+        </php>
+        
+        <h3>hasCache()</h3>
+        <p>
+            Cette méthode permet de savoir si il existe un cache pour le template instancié. La méthode prend optionnellement un identifiant de cache.
+        </p>
+        <php>
+            $tpl = Template::getInstance('/home/web/product.html');
+            
+            if(!$tpl->hasCache($product->id))       // Si le template n'a pas déjà été rendu pour cet id de produit
+            {
+                $tpl->assign('product', $product);  // On assigne le produit
+            }
+            
+            $tpl->render($product->id);             // On effectue le rendu avec l'id du produit comme identifiant de cache                        
+        </php>
+        
+        <h3>get()</h3>
+        <p>
+            La méthode get permet de récupérer le résultat du gabarit instancié dans une variable. 
+            La méthode prends optionnellement comme paramètre une chaine permettant de définir un identifiant de cache. 
+            Si aucun identifiant n'est défini, le gabarit est rendu sans mise en cache.
+            Exemple :
+        </p>
+        <php>
+            $tpl = Template::getInstance('/home/web/main.html');
+            $tpl->assign('variable', array('title'=>'Mon titre'));
+            $result = $tpl->get();
+        </php>
+        
+        <h3>render()</h3>
+        <p>Fonctionne comme la méthode get() ci-dessus à la différence que le gabarit n'est pas renvoyé et stockable dans une variable mais est directement affiché dans le navigateur.</p>
+    </body>            
+</html>

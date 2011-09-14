@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe String</h1>
+        <p>La classe string permet la manipulation, la génération ou encore la vérification des chaines de caractères.</p>
+        
+        <h2>Réference des fonctions</h2>
+        <blockquote class="info">Toutes les fonctions de la classe String sont statiques et peuvent être appelées dans n'importe quel fichier après initialisation du framework.</blockquote>
+        
+        <h3>checkIp()</h3>
+        <p>Vérifie que l'adresse IP fournie est correctement formatée en retournant true si elle est correcte, sinon false.</p>
+        <php>
+            String::checkIp('192.168.0.1'); // retournera true
+        </php>
+        <blockquote class="warning">
+            Attention, cette fonction ne vérifie pas que l'adresse IP existe et répond au ping.
+        </blockquote>
+        
+        <h3>checkEmail()</h3>
+        <p>Vérifie que l'adresse e-mail fournie est correctement formatée en retournant true si elle est correcte, sinon false.</p>
+        <php>
+            String::checkEmail('me@example.com'); // Retourne true
+            String::checkEmail('me@example'); // Retourne false
+        </php>
+        <blockquote class="warning">
+            Tout comme checkIP(), checkEmail() ne vérifie pas la validité de l'adresse ni si le domaine existe.
+        </blockquote>
+        
+        <h3>stripAccents()</h3>
+        <p>Supprime tous les accents d'une chaine de caractères. Note : la chaine doit être encodée en utf-8.</p>
+        <php>
+            String::stripAccents("L'été peut être chaud"); // Retourne "L'ete peut etre chaud"
+        </php>
+        
+        <h3>toUrl()</h3>
+        <p>
+            Convertit une phrase en une chaine compatible avec les urls (en supprimant les accents et les espaces par exemple). Cela est utile si vous voulez utiliser par exemple un titre comme url.
+            La fonction prends les arguments suivants :
+        </p>    
+        <ul>
+            <li>une chaine à convertir</li>
+            <li>un séparateur qui sera utilisé pour les caractères inconnus non autorisés, par défaut : "-"</li>
+            <li>un booléen pour indiquer que l'on veut convertir la chaine en minuscule (true par défaut)</li>
+            <li>un booléen pour indiquer que l'on veut conserver les slashes (false par défaut)</li>
+        </ul>
+        <php>
+            // Appel par défaut
+            String::toUrl("C'est intérressant'); // Retournera "c-est-interressant"
+            
+            // Avec un autre séparateur que -
+            String::toUrl("C'est intérressant", '_'); // Retournera "c_est_interressant"
+            
+            // En autorisant les majuscules
+            String::toUrl("article/C'est intérressant", '-', false); // Retournera "article-C-est-interressant"
+            
+            // En autorisant les slashes
+            String::toUrl("article/C'est intérressant", '-', true, false); // Retournera "article/c-est-interressant"
+        </php> 
+        
+        <h3>substru()</h3>
+        <p>Fonctionne comme la fonction substr() de php  mais pour les chaines encodées en utf-8, équivalent à mb_substr().</p>
+        
+        <h3>truncateAtLength()</h3>
+        <p>Coupe une chaine à une longueur précise.</p>
+        <php>
+            String::truncateAtLength("Ceci est une phrase", 4); // Retourne "Ceci..."
+            
+            // Ou en définissant un autre gabarit de fin
+            String:::truncateAtLength('Ceci est une phrase', 4, '[...]'); // Retourne "Ceci[...]"
+        </php>
+        
+        <h3>truncateAtWord()</h3>
+        <p>Fonctionne comme truncateAtLength(), mais s'arrête au mot ou se trouve le dernier caractère défini par la longueur.</p>
+        <php>
+            String::truncateAtWord('Ceci est une phrase.', 7); // Retourne "Ceci est..."            
+        </php>
+        <blockquote class="info">
+            Tout comme truncateAtLength(), le gabarit de fin est modifiable en modifiant le 3ème argument de la fonction (par défaut "...")
+        </blockquote>        
+        
+        <h3>truncateAtSentence()</h3>
+        <p>Fonctionne comme truncateAtLength(), mais s'arrête à la fin de la phrase ou se trouve le dernier caractère défini par la longueur.</p>
+        <php>
+            String::truncateAtSentence('Ceci est une phrase. Et celle là une autre', 4);
+            // Retourne "Ceci est une phrase..."
+        </php>
+        <blockquote class="info">
+            Tout comme truncateAtLength(), le gabarit de fin est modifiable en modifiant le 3ème argument de la fonction (par défaut "...")
+        </blockquote>
+        
+        <h3>escapeWordChars()</h3>
+        <p>Echappe et/ou convertit les caractères non reconnus en html en provenance de Microsoft&reg; Word&reg;</p>
+        
+        <h3>random()</h3>
+        <p>Génère une chaine de caractères aléatoires, paramétrable grâce aux variables de la fonction définissable dans l'ordre:</p>
+        <ul>
+            <li>La longueur de la chaine à générer</li>
+            <li>L'utilisation de chiffres, activé par défaut (true)</li>
+            <li>L'utilisation de caractères majuscules, activé par défaut </li>
+            <li>L'utilisation de caractères spéciaux, non activé par défaut </li>
+        </ul>
+        <php>
+            String::random(8, true, true, true); // Retourne par exemple "a4Tk#rIp"
+        </php>
+        <blockquote class="info">
+            Les caractères pouvant être confondus ont été volontairement retirés des caractères pouvant être compris dans la chaine générée. Exemple : l (la lettre L) et 1 (le chiffre 1) ou O (la lettre O) et 0 (le chiffre zéro)
+        </blockquote>
+        
+        <h3>camelize()</h3>
+        <p>Transforme une chaine de caractère non camelCased en une chaine camelisée.</p>
+        <php>
+            String::camelize('name_or_login'); // Retournera "NameOrLogin";
+            
+            // Ou en lcfirst
+            String::camelize('name_or_login', true); // Retournera "nameOrLogin"
+        </php>
+        
+        <h3>snakeCase()</h3>
+        <p>Transforme une chaine de caractère en camel case ou pascal case en snake case.</p>
+        <php>
+            String::snakeCase('NameOrLogin'); // Retournera "name_or_login";
+            String::snakeCase('nameOrLogin'); // Retournera "name_or_login"
+        </php>
+        
+        <h3>ucwords()</h3>
+        <p>
+            Version améliorée de ucwords de php, transforme en majuscule le premier caractère de chaque mot
+        </p>
+        <php>
+            String::ucwords("john-bob mac o'donnel"); // Retournera "John-Bob Mac O'Donnel"
+        </php>
+        
+        <h3>strpos()</h3>
+        <p>
+            Version améliorée de strpos de php, permet l'utilisation d'un tableau pour la recherche (la recherche renvoi alors la position de la première chaine trouvée). 
+            La fonction sera essentiellement utilisée pour vérifier la présence d'un mot dans une phrase.
+        </p>
+        <php>
+            if(String::strpos("john bob russel brian", array('mac', 'russel'))
+            {
+                echo "trouvé"; // "russel" à été trouvé
+            }
+        </php>
+        
+        <h3>getImgSrc()</h3>
+        <p>
+            Permet de récupérer les liens des images dans un texte, utile par exemple pour un download des images d'une page web.
+        </p>
+        <php>
+            String::getImgSrc(file_get_contents('http://www.php-oxygen.com'));
+            
+            /*
+            Array
+            (
+                [0] => default/logo.png
+            )
+            */
+        </php>
+    </body>            
+</html>

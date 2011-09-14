@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe I18n</h1>
+        <p>
+           La classe I18n permet la gestion de l'internationalisation en adaptant les contenus à des langues et cultures différentes.
+        </p>       
+        
+        <h2>Référence des fonctions</h2>
+        
+        <h3>setLocale()</h3>
+        <p>Permet de définir la langue et la région à utiliser dans les scripts. La fonction peut prendre comme arguments :</p>
+        <ul>
+            <li>Un code de langue sur deux caractères en minuscule ( <a href="http://fr.wikipedia.org/wiki/Liste_des_codes_ISO_639-1" target="_blank" >ISO 639-1</a> )</li>
+            <li>Un code de région sur deux caractères en majuscule ( <a href="http://fr.wikipedia.org/wiki/ISO_3166-1" target="_blank">ISO 3166-1</a> )</li>
+            <li>Un code composé du code langue en minuscule et du code région en majuscule séparé par un underscore, ex : fr_FR, de_CH</li>
+        </ul>
+        <blockquote class="warning">
+            Par défaut la langue est "en" et la région "US", si la localisation est différente veuillez à bien déclarer la langue et la région à utiliser à l'initialisation de votre application. Sans ça la localisation risque de ne pas être appliquée dans l'ensemble des scripts.
+        </blockquote>
+        <php>
+            I18n::setLocale('de');      // Définit l'allemand comme langue
+            I18n::setLocale('CH');      // Définit la Suisse comme région
+            I18n::setLocale('fr_CA');   // Définit le français comme langue et le Canada comme région
+        </php>
+        
+        <h3>translate()</h3>
+        <p>La fonction translate permet de traduire une chaine de caractères en utilisant un fichier au format XLIFF. Pour cela la fonction prends comme arguments dans l'ordre :</p>
+        <ul>
+            <li>Le chemin vers le fichier xliff à lire. Il s'agit du fichier contenant les traductions de la langue de destination.</li>
+            <li>La chaîne de caractères à traduire.</li>
+            <li>[option] Un tableau d'arguments à remplacer dans la chaîne de caractères.</li>
+            <li>[option] La langue source ( = langue de la chaine à traduire). Par défaut "en"</li>
+            <li>[option] Le nom du fichier d'origine où se trouve la chaîne de caractères. Par défaut "default"</li>
+        </ul>
+        <php>
+            I18n::translate('locales.fr.xlf', 'My name is %name%', array('name' => 'John'), 'en', 'i18n.php');
+            // Va retourner "Mon nom est John" si la traduction existe dans locales.fr.xlf pour le fichier i18n.php
+        </php>
+        <blockquote class="info">
+            Si le fichier de traduction n'existe pas il est automatiquement créé.<br /><br />Si la traduction n'existe pas dans le fichier appelé, elle est automatiquement ajoutée avec une valeur de traduction vide. 
+            Dans le cas où la chaîne de caractères à déjà été traduite pour un autre fichier d'origine elle sera alors reprise pour le fichier en cours.
+        </blockquote>
+        
+        <h3>getLocale()</h3>
+        <p>Retourne la culture courante composée du code langue en minuscule et du code de la région en majuscule séparés par un underscore. Ex : fr_FR, de_CH</p>
+        
+        <h3>getLocaleLabel()</h3>
+        <p>Retourne la culture courante sous format texte. La fonction peut prendre en argument la langue dans laquelle le texte doit être affiché si la langue courante définie par setLocale() n'est pas celle souhaitée pour l'affichage..</p>
+        <php>
+            I18n::getLocaleLabel();     // Retourne par exemple "English (United States)"
+            I18n::getLocaleLabel('fr'); // Retourne par exemple "Anglais (Etats-Unis)"
+        </php>
+        <blockquote class="info">
+            Vous pouvez définir "native" comme argument pour afficher la langue dans son écriture native.
+            Il est possible d'ajouter des traductions supplémentaires en éditant les fichiers ISO-3166.xml et ISO-639.xml dans le dossier i18n/xml du framework.
+        </blockquote>
+        
+        <h3>getLang()</h3>
+        <p>Retourne le code ISO-639-1 (deux caractères en minuscule) de la langue courante.</p>
+        
+        <h3>getLangLabel()</h3>
+        <p>Retourne la langue courante au format texte. La fonction prend comme argument la langue dans laquelle sera récupéré le texte. Vous pouvez définir "native" pour afficher la langue dans son écriture native.</p>
+        <php>
+            I18n::getLangLabel();           // Retourne par exemple "Belarusian"
+            I18n::getLangLabel('en');       // Retourne par exemple "Biélorusse"
+            I18n::getLangLabel('native');   // Retourne par exemple "Беларуская мова"
+        </php>
+        
+        <h3>getRegion()</h3>
+        <p>Retourne le code ISO 3166 (deux caractères en majuscule) de la région courante.</p>
+        
+        <h3>getRegionLabel()</h3>
+        <p>Retourne la région courante au format texte. La fonction prend comme argument la langue dans laquelle sera récupéré le texte.</p>
+        <php>
+            I18n::getRegionLabel();     // Retourne par exemple "Czech Republic"
+            I18n::getRegionLabel('en'); // Retourne par exemple "Tchèque, République"
+        </php>
+        
+        <h3>getBrowserLanguage()</h3>
+        <p>Retourne la langue courante du navigateur au format ISO 639-1 (2 caractères en minuscule). Par défaut retourne "en" si aucune langue n'est trouvée.</p>
+        
+    </body>            
+</html>

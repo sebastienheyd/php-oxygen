@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../../'; var lang = 'fr'; var bc = {'Classe Db': '../db.html'};</script>        
+        <script type="text/javascript" src="../../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Configuration</h1>
+        <p>
+            Pour configurer les accès à votre ou vos bases de données vous devez éditer votre fichier de configuration dans le dossier webapp/config.
+            Les paramètres des bases se trouvent dans la balise &lt;database />. 
+        </p>      
+        <p>
+            La configuration de base prend au moins quatre valeurs :
+        </p>
+        <ul>
+            <li><strong>driver</strong> : le pilote PDO à utiliser (voir la <a href="http://www.php.net/manual/fr/pdo.drivers.php">liste des pilotes supportés</a>)</li>
+            <li><strong>host</strong>: l'hôte sur lequel se connecter</li>
+            <li><strong>login</strong>: l'identifiant de connexion à la base de données</li>
+            <li><strong>password</strong>: le mot de passe de connexion</li>
+        </ul>
+        <pre class="brush:xml;">
+            &lt;?xml version="1.0" encoding="UTF-8"?>
+            <config>
+                <database>
+                    <default>
+                        <driver>mysql</driver>
+                        <host>localhost</host>
+                        <login>mylogin</login>
+                        <password>mypassword</password>
+                        &lt;base>mydbname&lt;/base>
+                    </default>
+                </database>
+            </config>
+        </pre>
+        <blockquote class="warning">
+            Pour que la classe Db fonctionne vous devez obligatoirement définir une configuration par défaut. Pour cela définissez vos paramètres dans la balise &lt;default />
+        </blockquote>
+        
+        <h2>Configurer et utiliser des bases de données supplémentaires</h2>
+        <p>
+            La configuration d'une autre base se fait de la même manière que pour la base par défaut, vous êtes libre alors de donner le nom que vous voulez pour cette/ces autre(s) configuration(s).
+        </p>
+        <pre class="brush:xml;">
+            &lt;?xml version="1.0" encoding="UTF-8"?>
+            <config>
+                <database>
+                    <default>
+                        <driver>mysql</driver>
+                        <host>localhost</host>
+                        <login>mylogin</login>
+                        <password>mypassword</password>
+                        &lt;base>mydbname&lt;/base>
+                    </default>
+                    <otherbase>
+                        <driver>mysql</driver>
+                        <host>localhost</host>
+                        <login>myotherlogin</login>
+                        <password>myotherpassword</password>
+                        &lt;base>myotherdbname&lt;/base>
+                    </otherbase>                    
+                </database>
+            </config>
+        </pre> 
+        <p>
+            Pour utiliser cette/ces configuration(s) vous aurez juste à indiquer quelle configuration vous voulez utiliser lors de vos traitements. Par exemple :
+        </p>
+        <php>
+            Db::query('SHOW TABLES')->fetchAllColumn();                 // Exécutera "SHOW TABLES" sur la configuration "default"
+            Db::query('SHOW TABLES', 'otherbase')->fetchAllColumn();    // Exécutera "SHOW TABLES" sur la configuration "otherbase"
+        </php>
+        <blockquote class="info">
+            La classe Db est de type multiton, c'est à dire qu'elle instancie la connexion seulement la première fois qu'elle est appelée pour une configuration donnée.
+        </blockquote>
+    </body>            
+</html>

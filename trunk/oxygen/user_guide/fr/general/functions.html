@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Fonctions procédurales</h1>
+        <p>
+            Certaines fonctions dans PHP Oxygen ne font pas partie d'une bibliothèque ou d'une classe. 
+            Ces fonctions sont activées lors de l'initialisation de PHP Oxygen et sont accesibles dans n'importe quel script.
+        </p>
+        <h2>Liste des fonctions</h2>
+        
+        <p>Les fonctions se trouvent toutes dans le fichier fonctions.php à la racine du dossier oxygen</p>
+        
+        <h3>get_called_class()</h3>
+        <p>Permet de récupérer le nom de la classe appelée par une fonction de cette dernière.</p>
+        <blockquote class="info">Il s'agit d'une fonction de rétro-compatibilité pour PHP 5.2 de la fonction du même nom pour PHP >= 5.3. Voir sur <a href="http://php.net/manual/fr/function.get-called-class.php">http://php.net/manual/fr/function.get-called-class.php</a></blockquote>
+        
+        <h3>lcfirst()</h3>
+        <p>Inverse de ucfirst : remplace la première lettre d'une chaine en minuscule.</p>
+        <php>
+            $str = "Ceci est un exemple";
+            echo lcfirst($str);             
+            // Affiche "ceci est un exemple";
+        </php>
+        <blockquote class="info">Il s'agit d'une fonction de rétro-compatibilité pour PHP 5.2 de la fonction du même nom pour PHP >= 5.3.</blockquote>
+        
+        <h3>ucfirst_last()</h3>
+        <p>Remplace la première lettre du dernier élément défini par un séparateur d'une chaine en majuscule. Ceci est utile pour les noms de classe. La fonction prends deux paramètres : le premier est la chaine elle même et le second le séparateur à utiliser (par défaut underscore _ ).</p>
+        <php>
+            echo ucfirst_last('m_default_index');       // Affiche "m_default_Index"
+            echo ucfirst_laft('m-defaut-test', '-');    // Affiche "m-default-Test"
+        </php>
+        
+        <h3>to_object()</h3>
+        <p>Convertit un tableau de données en un objet de type stdClass de façon récursive.</p>
+        
+        <h3>to_array()</h3>
+        <p>Convertit un objet en un tableau associatif de façon récursive.</p>
+        
+        <h3>get_module_file()</h3>
+        <p>Récupère le chemin d'un fichier dans un module. La méthode prends en compte les fichiers dans le dossier webapp. Le troisième paramètre de la méthode est un booléen indiquant si l'on doit vérifier que le fichier existe.</p>
+        <php>
+            get_module_file('backoffice', 'templates/main.html');
+            // Retourne par exemple /home/web/project/webapp/backoffice/templates/main.html
+        </php>
+        
+        <h3>class_file_path()</h3>
+        <p>Permet de récupérer le chemin absolu d'un fichier contenant une classe. C'est cette fonction qui est appelée par l'autoload pour inclure les fichiers à partir du nom de la classe.</p>
+        
+        <h3>set_header()</h3>
+        <p>Permet de définir l'en-tête http à renvoyer au navigateur. Le premier paramètre est un entier définissant le code de l'en-tête et le second (optionnel) un texte additionnel.</p>
+        <php>
+            // Exemple de header 404
+            set_header('404', 'Page not found');
+        </php>
+        
+        <h3>redirect()</h3>
+        <p>Cette fonction permet d'effectuer une redirection vers une url. Pour cela elle va utiliser la fonction header de php avec la possibilité d'utiliser une redirection par location ou refresh.</p>
+        <p>Un troisième argument permet de définir le code http à renvoyer, par défaut 302 (Déplacé temporairement)</p>
+        <blockquote class="info">
+            Si l'url donnée ne débute pas par http:// ou https://, l'hôte courant est automatiquement ajouté. Exemple: "/admin" donnera "http://localhost/admin"
+        </blockquote>
+        <php>
+            redirect('http://www.google.com');                  // Redirection vers l'url par location, header 302
+            redirect('http://www.google.com', 'refresh');       // Redirection vers l'url par refresh
+            redirect('http://www.google.com', 'location', 303); // Redirection vers l'url par location, header 303
+            redirect('/admin');                                 // Redirection vers http://localhost/admin (par exemple)
+        </php>
+        
+        <h3>refresh()</h3>
+        <p>Rafraichit la page courante en utilisant la fonction header de php et la méthode refresh.</p>
+        
+        <h3>first()</h3>
+        <p>Alias de la fonction reset() de php. Renvoi le premier élément d'un tableau.</p>
+        <php>
+            $arr = array('toto', 'tutu', 'titi', 'tata');
+            $result = first($arr);  // $result = 'toto'
+        </php>
+        
+        <h3>last()</h3>
+        <p>Alias de la fonction end() de php. Renvoi le dernier élément d'un tableau.</p>
+        <php>
+            $arr = array('toto', 'tutu', 'titi', 'tata');
+            $result = last($arr);  // $result = 'tata'
+        </php>        
+    </body>            
+</html>

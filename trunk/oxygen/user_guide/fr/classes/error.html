@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe Error</h1>
+        <p>
+           La classe Error permet la gestion des erreurs mais également leur personnalisation.
+        </p>               
+        
+        <h2>Méthodes</h2>
+        
+        <h3>show401()</h3>
+        <p>Méthode statique qui stoppe le script courant et affiche une erreur 401.</p>
+        <php>
+            Error::show401();
+        </php>
+        <blockquote class="info">
+            Le gabarit se trouve dans le dossier oxygen/errors. Ce dernier peut être surchargé en le recréant dans webapp/hooks/errors.
+        </blockquote>
+        
+        <h3>show404()</h3>
+        <p>Méthode statique qui stoppe le script courant et affiche une erreur 404.</p>
+        <php>
+            Error::show404();
+        </php>
+        <blockquote class="info">
+            Le gabarit se trouve dans le dossier oxygen/errors. Ce dernier peut être surchargé en le recréant dans webapp/hooks/errors.
+        </blockquote>
+        
+    </body>            
+</html>

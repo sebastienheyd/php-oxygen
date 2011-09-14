@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../../'; var lang = 'fr'; var bc = {'Classe Db': '../db.html'};</script>        
+        <script type="text/javascript" src="../../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Transactions</h1>
+        <p>
+            L'abstraction à la base de données de PHP Oxygen permet l'utilisation des transactions avec les bases de données le supportant. 
+            Avec MySQL par exemple, vous devez utiliser le moteur de stockage InnoDB ou BDB.
+        </p>
+        <p>
+            Les transactions permettent de ne pas insérer des données si une opération à provoquée une erreur. 
+            Par exemple : vous effectuez un traitement sur une liste d'utilisateurs mais vous avez oublié de gérer un cas, résultat votre base contient des données erronées.
+            En utilisant les transactions, si une donnée est fausse, tout ce qui aura été enregistré se remis dans son état d'origine. Vous pouvez donc corriger et relancer le script.
+        </p>
+        <p>
+            Une autre utilisation des transactions est d'éviter l'écriture simultanée d'une entité par plusieurs utilisateurs. 
+            Nous vous conseillons de trouver des sources en ligne si vous voulez approfondir le sujet.
+        </p>
+        
+        <h2>Utilisation des transactions</h2>
+        <p>
+            L'utilisation des transactions avec PHP Oxygen est très simple. Exemple :
+        </p>
+        <php>
+            Db::beginTransaction();
+            
+            Db::query('UNE REQUETE ...');
+            Db::query('UNE AUTRE REQUETE ...');
+            Db::query('UNE DERNIERE REQUETE ...');
+            
+            Db::endTransaction();
+        </php>
+        <p>
+            Voila ! Le fait d'encadrer vos requêtes par les méthodes beginTransaction() et endTransaction() suffit à démarrer et finir une transaction. 
+            Si vous êtes par exemple dans le cas d'une insertion de données et que vous faites une erreur dans la dernière requête, les données insérées dans les deux premières ne seront pas inscrites en base.           
+        </p>
+        <blockquote class="info">
+            En utilisant la méthode Db::endTransaction() et qu'une erreur se produit dans une des requêtes : les données sont réinitialisées, une exception est lancée et le script est stoppé. 
+            Si vous ne voulez pas qu'une erreur s'affiche et que le script continue, utilisez la méthode Db::commit(). Exemple :
+        </blockquote>
+        <php>
+            Db::beginTransaction();
+            
+            Db::query('UNE REQUETE ...');
+            Db::query('UNE AUTRE REQUETE ...');
+            
+            if(!Db::commit())
+            {
+                // Il y eu une erreur dans une requête (les données ont déjà été réinitialisées dans la bdd) 
+            }
+        </php>
+        <p>
+            Il est également possible de "bloquer" les enregistrements en cas d'erreur dans un script :
+        </p>
+        <php>
+            try
+            {
+                Db::beginTransaction();
+
+                Db::query('UNE REQUETE ...');
+                Db::query('UNE AUTRE REQUETE ...');
+                
+                // Pour l'exemple on lance une exception...
+                throw new Exception();
+
+                Db::endTransaction();
+            }
+            catch(Exception $e)
+            {
+                Db::rollBack();
+            }
+        </php>
+    </body>            
+</html>

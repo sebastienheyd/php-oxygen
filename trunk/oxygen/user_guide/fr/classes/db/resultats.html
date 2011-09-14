@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../../'; var lang = 'fr'; var bc = {'Classe Db': '../db.html'};</script>        
+        <script type="text/javascript" src="../../../js/loader.js"></script>        
+    </head>
+    <body>     
+        
+        <h1>Récupérer les résultats</h1>
+        <p>
+            Après l'exécution d'une requête, il existe plusieurs méthodes pour récupérer les résultats d'une requête dont la plupart s'inspirent des méthodes de récupération des données de PDO. 
+            Voici la liste des méthodes intégrées dans PHP Oxygen :
+        </p>                                   
+            
+        <h2>Méthodes de base</h2>
+        
+        <p>Il s'agit des méthodes de récupération génériques qui seront le plus souvent utilisées.</p>
+        
+        <blockquote class="info">
+            Ces deux méthodes prennent comme argument un entier indiquant le mode de récupération souhaité : si c'est un tableau associatif, une classe, etc...<br />
+            Consulter la page "<a href="fetch.html">Modes de récupération</a>" pour une liste des modes supportés et des exemples.
+        </blockquote> 
+        
+        <blockquote class="idea">
+            Si aucun marqueur de variable n'est présent dans votre requête SQL vous pouvez directement récupérer les résultats sans appeler la fonction execute(). 
+            Cette dernière sera alors automatiquement appelée.
+        </blockquote>            
+        
+        <h3>fetch()</h3>
+        <p>
+            Retourne la première ligne du tableau de résultats au format défini par le mode de récupération, par défaut un tableau associatif (PDO::FETCH_ASSOC).
+        </p>
+  
+        <php>
+            $res = DB::query('SELECT * FROM customers WHERE customerNumber=?')->execute(103)->fetch();
+            
+            // ou
+            
+            $res = DB::query('SELECT * FROM customers WHERE customerNumber=103')->fetch();
+            
+            /*
+            Array
+            (
+                [customerNumber] => 103
+                [customerName] => Atelier graphique
+                [contactLastName] => Schmitt
+                [contactFirstName] => Carine 
+                ...
+            */
+            
+            echo $res['customerNumber'];    // Affiche 103
+        </php>        
+        
+        <h3>fetchAll()</h3>
+        <p>
+            Retourne un tableau de toutes les lignes de résultats récupérées par la requête, chaque résultat est au format défini par le mode de récupération, par défaut un tableau associatif (PDO::FETCH_ASSOC).
+        </p>
+        
+        <php>
+            $res = DB::query('SELECT customerNumber, customerName FROM customers')->fetchAll();
+            
+            /*
+            Array
+            (
+                [0] => Array
+                    (
+                        [customerNumber] => 103
+                        [customerName] => Atelier graphique
+                    )    
+                    
+                [1] => Array
+                    (
+                        [customerNumber] => 112
+                        [customerName] => Signal Gift Stores
+                    ) 
+                
+                ...
+            )
+            */
+            
+            echo $res[0]['customerNumber'];    // Affiche 103            
+        </php>
+        
+        <h2>Autres fonctions</h2>
+        
+        <h3>fetchObject()</h3>
+        <p>
+            Retourne le résultat de la requête sous la forme d'une instance d'une classe personnalisée que l'on indiquera comme premier paramètre de la méthode (par défaut "stdClass"). 
+            Cette méthode utilise la fonction fetchObject() de PDO et n'est pas un alias de fetch(PDO::FETCH_CLASS).
+        </p>
+        <php>
+            $res = DB::query('SELECT * FROM customers WHERE customerNumber=?')->execute(103)->fetchObject('Customer');
+            
+            // ou
+            
+            $res = DB::query('SELECT * FROM customers WHERE customerNumber=103')->fetchObject('Customer');
+            
+            /*
+            Customer Object
+            (
+                [customerNumber:protected] => 103
+                [customerName:protected] => Atelier graphique
+                [contactLastName:protected] => Schmitt
+                [contactFirstName:protected] => Carine 
+                ...
+            )
+            */
+        </php>
+        <blockquote class="warning">
+            Cette méthode permet de définir que les variables d'objet ayant pour visibilité public ou protected. Si la classe appelée n'existe pas PHP Oxygen renvoi une erreur.
+        </blockquote>        
+        
+        <h3>count()</h3>
+        <p>
+            Retourne le nombre de lignes affectées par la dernière requête DELETE, INSERT ou UPDATE.
+        </p>
+        <php>
+            $q = DB::query('SELECT customerNumber, customerName FROM customers');
+            
+            if($q->count() > 0)             // Si le nombre de ligne est supérieur à 0
+            {
+                $res = $q->fetchAll();      // On récupère les résultats
+            }
+        </php>  
+        <blockquote class="info">
+            Vous pouvez appeler count() avant ou après avoir récupérer les résultats par fetch() ou fetchAll().
+        </blockquote>
+        
+        <h2>Alias</h2>
+        
+        <h3>fetchAllColumn()</h3>
+        <p>
+            Alias de fetchAll(PDO::FETCH_COLUMN). Retourne un tableau contenant une seule colonne des résultats récupérés par la requête. 
+            Par défaut la première colonne est renvoyée mais il est possible de renvoyer n'importe quelle colonne en indiquant son index à la méthode (0 étant la première colonne).
+        </p>
+        <php>
+            $q = DB::query('SELECT * FROM customers')->fetchAllColumn(1);
+            
+             /*
+            Array
+            (
+                [0] => Atelier graphique
+                [1] => Signal Gift Stores
+                [2] => Australian Collectors, Co.
+                ...
+            )
+            */
+        </php>
+        
+        <h3>fetchAllObject()</h3>
+        <p>
+            Alias de fetchAll(PDO::FETCH_CLASS). Retourne un tableau des résultats de la requête sous forme d'instances d'une classe personnalisée que l'on indiquera comme premier paramètre de la méthode (par défaut "stdClass"). 
+            Le second paramètre si égal à true permet de définir si le constructeur doit être appelé avant le chargement des données dans l'objet (false par défaut).
+        </p>
+        <php>
+        $res = DB::query('SELECT * FROM customers')->fetchAllObject('Customer');
+          
+        /*
+        Array
+        (
+            [0] => Customer Object
+                (
+                    [customerNumber:protected] => 103
+                    [customerName:protected] => Atelier graphique
+                    [contactLastName:protected] => Schmitt
+                    ...
+                )
+
+            [1] => Customer Object
+                (
+                    [customerNumber:protected] => 112
+                    [customerName:protected] => Signal Gift Stores
+                    [contactLastName:protected] => King
+                    ...
+                )
+
+            [2] => Customer Object
+                (
+                    [customerNumber:protected] => 114
+                    [customerName:protected] => Australian Collectors, Co.
+                    [contactLastName:protected] => Ferguson
+                    ...
+                )      
+            
+            ...
+        )
+        */
+        </php>
+    </body>            
+</html>

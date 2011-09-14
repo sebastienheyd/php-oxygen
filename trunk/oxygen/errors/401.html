@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>Error 401</title>
+<style type="text/css">
+
+body {
+    background-color:       #FFF;
+    margin:                 40px;
+    font-family:            Lucida Grande, Verdana, Sans-serif;
+    font-size:              12px;
+    color:                  #333;
+}
+
+#content  {
+    background-color:       #FFDDDD;
+    padding:                20px;
+    border-radius:          10px;
+    -moz-border-radius:     10px;
+    -webkit-border-radius:  10px;
+}
+
+h1 {
+    color:                  #990000;
+    font-weight:            bold;
+    font-size:              28px;
+    margin:                 0 0 4px 0;
+}
+
+img
+{
+    float: left;
+    margin-right: 10px;
+    margin-top: 5px;
+}
+
+td
+{
+    vertical-align: top;
+}
+</style>
+</head>
+<body>
+	<div id="content">
+        <table>
+            <tr>
+                <td><img src="{$HTTP_PREFIX}/img/error/warning.png" /></td>
+                <td>
+                    <h1>401 - You are not authorized to view this page</h1>
+                    You do not have permission to view this directory or page using the credentials that you supplied.
+                </td>
+            </tr>
+        </table>	        
+	</div>
+</body>
+</html>

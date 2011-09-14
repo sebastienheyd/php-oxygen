@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Contrôleurs</h1>
+        <p>Un contrôleur est une classe qui est nommée et placée de façon à ce qu'elle puisse être associée à une uri.</p>
+        <p>Si on prend l'uri suivante :</p>
+        <blockquote>
+            http://example.com/<strong style="color:brown">news</strong>/<strong style="color:green">list</strong>
+        </blockquote>
+        <p>Dans cet exemple, PHP Oxygen va chercher le fichier <strong style="color:green">list</strong>.class.php dans le dossier action du module <strong style="color:brown">news</strong> puis appeler la méthode execute() déclarée dedans.</p>
+        <blockquote class="info">
+            Si vous n'avez qu'un seul segment dans l'uri, la classe appelée sera alors index.class.php dans le module nommée par le premier segment.
+        </blockquote>
+        
+        <h2>Hello World !</h2>
+        <p>Nous allons créer un simple contrôleur permettant d'afficher "Hello World !" dans le navigateur.</p>
+        <p>Tout d'abord créez un dossier nommé test dans le dossier module puis créez un sous dossier action dans ce dernier.</p>
+        <p>Créez ensuite un fichier nommé index.class.php dans le dossier action.</p>
+        <p>Dans ce fichier placez le code suivant :</p>
+        <php>
+            class m_test_action_Index extends Action
+            {
+                public function execute()
+                {
+                    echo "Hello World !";
+                }
+            }
+        </php>
+        <p>Maintenant visitez votre site à l'url suivante :</p>
+        <blockquote>
+            http://example.com/test
+        </blockquote>
+        <p>Si vous ne vous êtes pas trompé vous devriez voir le message "Hello World !" à l'écran.</p>
+        <h3>Nommage de la classe</h3>
+        <p>Le nom de la classe est composé de m_ pour dire que nous sommes dans le dossier module puis du chemin du contrôleur à la différence que nous utilisons les underscores ( _ ) à la place des séparateurs de dossier classiques (slashes / ).</p>
+        <p>Exemple : modules/blog/action/show.class.php &rarr; m_blog_action_Show</p>
+        <blockquote class="warning">
+            Attention le dernier terme après le dernier underscore doit commencer par une majuscule.
+        </blockquote>
+       
+        <h3>Héritage</h3>
+        <p>Afin de bénéficier de toutes les fonctionnalités, les contrôleurs doivent étendre la class <strong>Action</strong>. Cependant il est également possible d'étendre avec une autre classe qui étendra à son tour la classe Action.</p>
+        
+        <h2>Passer des segments d'uri à votre action</h2>
+        <p>Si votre uri contient plus que deux segments il est possible de les récupérer comme paramètres de votre action.</p>
+        <p>Si vous prenez l'exemple suivant :</p>
+        <blockquote>
+            http://example.com/<span style="color:brown">product</span>/<span style="color:green">hifi</span>/<strong>radio</strong>/<strong>123</strong>
+        </blockquote>
+        <p>Vous pouvez récupérer les deux dernières valeurs en les déclarant comme arguments de la fonction execute comme ceci :</p>
+        <php>
+            class m_product_action_Hifi extends Action
+            {
+                public function execute($type = null, $id = null)
+                {
+                    echo $type; // affichera "radio"
+                    echo $id;   // affichera "123"
+                }
+            }
+        </php>
+        <blockquote class="warning">
+            Si vous utilisez les fonctionnalités de routing les segments seront ceux de la route correspondante.
+        </blockquote>
+        
+        <h2>Effectuer le rendu</h2>
+        <p>Avec PHP Oxygen, il y a plusieurs façons de faire pour afficher un résultat dans le navigateur.</p>
+        <h3>Rendu direct</h3>
+        <p>Le rendu direct consiste à utiliser echo ou print dans la classe de l'action, comme dans l'exemple "Hello World !". Il s'agit la de la méthode la plus légère mais également la moins élégante.</p>
+        <h3>Rendu avec un gabarit (template)</h3>
+        <p>Le rendu avec un gabarit peut s'effectuer de deux manières, la première consiste à définir une classe de vue qui s'occupera d'assigner les variables et d'effectuer le rendu, la seconde est de créer directement le fichier de gabarit à utiliser en sachant que les variables seront automatiquement assignées.</p>
+        <p>Une fois que votre action à été développée et que les données ont été récupérées vous pouvez les assigner à la vue. Pour cela il faut utiliser les méthodes setModel() et setView() de la classe Action.</p>
+        <p>Dans l'exemple suivant nous allons récupérer un objet de type Hifi et l'assigner à la vue. L'url de l'exemple peut être http://example.com/product/hifi/123</p>
+        <php>
+            class m_product_action_Hifi extends Action
+            {
+                public function execute($id = null)
+                {
+                    // Si l'id à été défini dans l'uri
+                    if(!is_null($id))
+                    {
+                        // On instancie l'objet Hifi
+                        $hifi = Hifi::load($id);
+                        
+                        // On assigne le modèle hifi à la vue
+                        $this->setModel('hifi', $hifi);
+                        
+                        // On défini la vue Success
+                        $this->setView('success');
+                    }
+                    else
+                    {
+                        // Pas d'id, on charge l'ensemble des Hifi
+                        $list = Hifi::loadAll();
+                        
+                        // On assigne le tableau à la vue
+                        $this->setModel('list', $list);
+                        
+                        // On défini la vue list
+                        $this->setView('list');
+                    }
+                }
+            }
+        </php>        
+        <p>Vous avez maintenant le choix entre utiliser une classe pour la vue soit utiliser le gabarit directement.</p>        
+        <h4>Définir une classe vue</h4>
+        <p>Pour créer une classe vue vous devez vous baser sur le nom de la classe d'action et rajouter le nom de la vue comme suffixe. Vous devez également placer le script dans le dossier view du même module.</p>
+        <p>Si vous prenez le script de l'exemple précédent vous aurez comme classe de vue <strong>m_product_view_HifiSuccess</strong> et/ou <strong>m_product_view_HifiList</strong>, exemple :</p>
+        <php>
+            class m_product_view_HifiSuccess
+            {
+                public function execute()
+                {
+                    // On récupère l'objet Hifi instancié dans l'action
+                    $hifi = $this->getModel('hifi');
+                    
+                    // On instancie le gabarit hifiproduct.html du module product
+                    $tpl = Template::getInstance('hifiproduct.html', 'product');
+                    
+                    // On assigne l'objet au gabarit html
+                    $tpl->assign('hifi', $hifi);
+                    
+                    // On effectue le rendu (sans cache)
+                    $tpl->render();
+                }
+            }
+        </php>
+        <p>En exécutant le script le gabarit hifiproduct.html s'affichera dans le navigateur avec les données de l'objet hifi.</p>
+        
+        <h4>Afficher le résultat directement sans classe vue</h4>
+        <p>Il est possible d'effectuer le rendu du gabarit html sans passer par la classe vue en nommant le gabarit selon le nom de l'action et le nom de la vue en suffixe, exemple :</p>
+        <p>
+            m_product_action_Hifi (success) &rarr; hifiSuccess.html<br />
+            m_product_action_Hifi (list) &rarr; hifiList.html<br />
+            ...
+        </p>
+        <blockquote class="warning">
+            Les gabarits doivent obligatoirement se trouver dans le dossier template du même module que l'action.
+        </blockquote>
+        <blockquote class="info">
+            En utilisant le rendu sans passer par une classe vue les variables de rendu (Smarty) ont le même nom que le nom du modèle à son assignation, exemple :
+        </blockquote>
+        <p>Dans l'action vous aurez :</p>
+        <php>
+            $this->setModel('hifi', $hifi);
+        </php>
+        <p>
+            Dans le gabarit html vous aurez par exemple :            
+        </p>
+        <xml>
+            &lt;div&gt;
+                &lt;p&gt;Nom du produit : {$hifi->getName()}&lt;/p&gt;
+                &lt;p&gt;Prix: {$hifi->getPrice()}&lt;/p&gt;
+            &lt;/div&gt;
+        </xml>
+        
+    </body>            
+</html>
