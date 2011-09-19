@@ -250,7 +250,7 @@ class File
      */    
     private function _minifyCss($content)
     {
-        require_once(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."cssmin-v3.0.0.php");        
+        require_once(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."cssmin.php");        
         return CssMin::minify($content, array('ConvertLevel3Properties' => true));
     }
     
