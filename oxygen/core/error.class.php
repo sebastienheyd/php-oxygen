@@ -283,6 +283,7 @@ class Error
         $tpl->addTemplateDir(FW_DIR.DS.'errors');
         
         $tpl->assign('uri', $uri);
+        $tpl->assign('routeFilePath', trim(CACHE_DIR.DS.'routes.xml'));
 
         try
         {
