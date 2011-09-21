@@ -97,9 +97,7 @@ pre {
                     <h1>Welcome to PHP Oxygen</h1>
                     <p>This page is displayed because you have to configure PHP Oxygen to redirect to a default action in a module.</p>
                     <p>You must define a default action to launch. For that you must have a default route configured in routes.xml. The file must be located here :</p>
-                    <blockquote>
-                    {php}echo trim(CACHE_DIR.DS.'routes.xml');{/php}
-                    </blockquote>
+                    <blockquote>{$routeFilePath}</blockquote>
                     <p>If not, you have two possibilities :</p>
                     <ul>
                         <li>Create routes.xml in the webapp/config folder.</li>

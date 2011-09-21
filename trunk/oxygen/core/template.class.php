@@ -29,10 +29,9 @@ class Template extends Smarty
     {
         parent::__construct();
         
-        $this->cache_dir = WEBAPP_DIR.DS.'cache'.DS.'html';
-        $this->compile_dir = WEBAPP_DIR.DS.'cache'.DS.'templates_c';
-        $this->allow_php_tag = true;
-
+        $this->cache_dir = WEBAPP_DIR.DS.'cache'.DS.'html'.DS;
+        $this->compile_dir = WEBAPP_DIR.DS.'cache'.DS.'templates_c'.DS;
+        
         $this->addPluginsDir(HOOKS_DIR.DS.'lib'.DS.'smartyplugins');
         $this->addPluginsDir(FW_DIR.DS.'lib'.DS.'smartyplugins'); 
         
