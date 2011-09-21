@@ -53,11 +53,11 @@ class Error
             case E_USER_WARNING:
             case E_CORE_WARNING:
             case E_COMPILE_WARNING:
-                echo '<code><span style="font-size:14px;"><strong style="color:#900;">'.$label.'</strong> : <strong>"'.$errstr.'"</strong> in <i>'.str_replace(PROJECT_DIR.DS, '', $errfile).'</i> (ln.'.$errline.')<br /></span></code>';
+                echo '<code><span style="font-size:14px;"><strong style="color:#900;">'.$label.'</strong> : <strong>"'.str_replace(PROJECT_DIR.DS, '', $errstr).'"</strong> in <i>'.str_replace(PROJECT_DIR.DS, '', $errfile).'</i> (ln.'.$errline.')<br /></span></code>';
 		    break;
         
             default:          
-                $message = '"'.$errstr.'" in <i>'.str_replace(PROJECT_DIR.DS, '', $errfile).'</i> (ln.'.$errline.')';
+                $message = '"'.str_replace(PROJECT_DIR.DS, '', $errstr).'" in <i>'.str_replace(PROJECT_DIR.DS, '', $errfile).'</i> (ln.'.$errline.')';
                 $this->_showError($label, $message, debug_backtrace());
                 exit;
             break;                           
