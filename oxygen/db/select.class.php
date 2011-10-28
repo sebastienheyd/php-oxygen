@@ -282,9 +282,15 @@ class f_db_Select
      */
     public function orderBy($key, $type = 'ASC')
     {
-        if(!in_array(strtoupper($type), array('ASC', 'DESC'))) trigger_error('SQL Select order accepts only ASC or DESC', E_USER_ERROR);
-        
-        $this->_order[] = array('field' => $key, 'type' => $type);
+        if(preg_match('/\((.*)\)|([^a-zA-Z0-9\.`\'\\s"])/i', $key))
+        {
+            $this->_order[] = array('field' => $key, 'type' => '');
+        }
+        else
+        {
+            if(!in_array(strtoupper($type), array('ASC', 'DESC'))) trigger_error('SQL Select order accepts only ASC or DESC', E_USER_ERROR);
+            $this->_order[] = array('field' => $key, 'type' => $type);            
+        }
         
         return $this;
     }
@@ -351,27 +357,18 @@ class f_db_Select
                 else
                 {
                     $condition = '';                    
-                    if(isset($cond['cond'])) $condition = $cond['cond'];
-                    
+                    if(isset($cond['cond'])) $condition = $cond['cond'];                    
                     $sql .= $condition.$cond['var'].' ';
-
                 }
                 
-                if($c > 1 && $c-1 != $k) $sql .= $cond['type'].' ';                    
+                if($c > 1 && $k+1 < $c) $sql .= $cond['type'].' ';                   
             }
-        }    
+        }            
         
-        $c = count($this->_group);
-        
-        if($c > 0)
+        if(!empty($this->_group))
         {
-            $sql .= 'GROUP BY ';
-            
-            foreach($this->_group as $k => $c)
-            {
-                $sql .= DB::quoteIdentifier($c).' ';
-                if($k+1 < $c) $sql .= ', ';
-            }            
+            $sql .= 'GROUP BY ';            
+            $sql .= join(', ', array_map(array('DB', 'quoteIdentifier'), $this->_group));           
         }
         
         $c = count($this->_order);
@@ -382,8 +379,8 @@ class f_db_Select
             
             foreach($this->_order as $k => $v)
             {
-                $sql .= DB::quoteIdentifier($v['field']).' '.$v['type'];
-                if($k+1 < $c) $sql .= ', ';
+                $sql .= DB::quoteIdentifier($v['field']).' '.$v['type'].' ';
+                if($c > 1 && $k+1 < $c) $sql .= ', ';
             }
         }
         
@@ -407,7 +404,7 @@ class f_db_Select
 
                 }
                 
-                if($c > 1 && $c-1 != $k) $sql .= $cond['type'].' ';                    
+                if($c > 1 && $k+1 < $c) $sql .= $cond['type'].' ';                    
             }
         }         
         
