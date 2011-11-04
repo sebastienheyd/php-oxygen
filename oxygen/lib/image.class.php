@@ -17,6 +17,12 @@ class Image extends WideImage
 {
     public $source;
     
+    /**
+     * Load an image an instanciate a new Image class
+     * 
+     * @param string $source    Path to the image to load
+     * @return Image 
+     */
     public static function load($source)
     {
         $instance = parent::load($source);        
@@ -25,5 +31,5 @@ class Image extends WideImage
         $instance->name = substr($instance->basename, 0, strrpos($instance->basename, '.'));
         $instance->extension = substr($instance->basename, strrpos($instance->basename, '.'));
         return $instance;
-    }
+    }    
 }
