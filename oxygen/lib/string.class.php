@@ -183,11 +183,14 @@ class String
         if ($uppercase)     $chars .= 'ABCDEFGHJKLMNPQRSTUVWXYZ';
         if ($specialChars)  $chars .= '@_-&%*$#';
 
-        $result = '';
+        // additionnal randomness
+        $chars = str_shuffle($chars);
+        
+        $l = strlen($chars) - 1;
 
         for ($p = 0; $p < $length; $p++)
         {
-            $result .= $chars[mt_rand(0, strlen($chars) - 1)];
+            $result .= $chars[mt_rand(0, $l)];
         }
 
         return $result;
