@@ -35,7 +35,7 @@ class f_form_Captcha
         $spinner = Security::aesEncrypt(serialize(array(time(), $_SERVER['REMOTE_ADDR'])));
  
         // put a random invisible style, to fool spambots a little bit ;-)
-        $styles = array('position:absolute;left:-'.rand(10000, 20000).'px;', 'display: none');        
+        $styles = array('position:absolute;left:-'.mt_rand(10000, 20000).'px;', 'display: none');        
         $style = $styles[array_rand($styles)];
         
         // build tags

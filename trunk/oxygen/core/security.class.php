@@ -23,7 +23,7 @@ class Security
         $keyFile = WEBAPP_DIR.DS.'config'.DS.'.key';
         if(!is_file($keyFile))
         {
-            file_put_contents($keyFile, String::random(32, true, true, true));
+            file_put_contents($keyFile, String::random(array('length' => 32, 'special' => true)));
         }
         
         if(!is_file($keyFile)) trigger_error('Cannot write the security key in '.WEBAPP_DIR.DS.'config', E_USER_ERROR);

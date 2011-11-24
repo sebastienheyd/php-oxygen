@@ -167,37 +167,78 @@ class String
     }
 
     /**
+     * Generate a human readable random string
+     * 
+     * @param integer $length           [optionnal] Length of the generated string (default = 8)
+     * @param boolean $onlyLowerCase    [optionnal] Get string only in lowercase (defaut = true)
+     * @return type 
+     */
+    function hrRandom($length = 8, $onlyLowerCase = true)
+    {      
+        $chars = 'BCDFGHJKLMNPRSTVWXZbcdfghjklmnprstvwxzaeiouAEIOU';
+
+        for ($p = 0; $p < $length; $p++)
+        {
+            $result .= ($p%2) ? $chars[mt_rand(38, 47)] : $chars[mt_rand(0, 37)];
+        }
+
+        return $onlyLowerCase ? strtolower($result) : $result;
+    }       
+    
+    /**
      * Generate a random string (for password per example)
      * 
-     * @param integer $length           [optional] Length of the randow string to generate, default is 8
-     * @param boolean $numbers          [optional] Can use numbers if true, default is true
-     * @param boolean $uppercase        [optional] Can use uppercase chars if true, default is true
-     * @param boolean $specialChars     [optional] Can use special chars if true, default is false
+     * @param array $options            [optional] Array of options for generation, overrides the defaut options<br />
+     *                                  - length : length of the generated string (default = 8)
+     *                                  - alpha : use alphabetical characters (default = true)
+     *                                  - numbers : use numbers (default = true)
+     *                                  - lowercase : use lowercase characters (default = true)
+     *                                  - uppercase : use uppercase characters (default = true)
+     *                                  - special : use special characters (default = false)
+     *                                  - repetition : check for characters repetitions like aa, ee, etc... (default is false)
+     *                                  
      * @return string                   The random string with the given length
-     */
-    public static function random($length = 8, $numbers = true, $uppercase = true, $specialChars = false)
-    {
-        $chars = 'abcdefghijkmnopqrstuvwyxz';
+     */    
+    public static function random(array $options = array())
+    {      
+        // default options
+        $default = array('length'       => 8, 
+                         'alpha'        => true, 
+                         'numbers'      => true, 
+                         'lowercase'    => true, 
+                         'uppercase'    => true, 
+                         'special'      => false,
+                         'repetition'   => false);
 
-        if ($numbers)       $chars .= '123456789';
-        if ($uppercase)     $chars .= 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-        if ($specialChars)  $chars .= '@_-&%*$#';
+        // override with the given options
+        $options = array_merge($default, $options);
+
+        // get all chars
+        if ($options['numbers'])                         $chars .= '0123456789';
+        if ($options['alpha'] && $options['lowercase'])  $chars .= 'abcdefghijklmnopqrstuvwxyz';
+        if ($options['alpha'] && $options['uppercase'])  $chars .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        if ($options['special'])                         $chars .= '@_-&%*$#';
 
         // additionnal randomness
         $chars = str_shuffle($chars);
-        
-        $l = strlen($chars) - 1;
 
-        for ($p = 0; $p < $length; $p++)
+        // get the random string
+        $l = strlen($chars) - 1;
+        for ($p = 0; $p < $options['length']; $p++)
         {
             $result .= $chars[mt_rand(0, $l)];
         }
 
-        return $result;
-    }
+        // check for chars repetitions
+        if(!$options['repetition'] && preg_match('/([a-zA-Z0-9]{1,1})(?=\1+)/', $result)) return random($options);
 
+        return $result;
+    }      
+    
     /**
      * Camelize (or Pascalize) a string
+     * 
+     * @example camelize('my_database_field', true) => MyDatabaseField
      * 
      * @param string $string    The string to camelize
      * @param boolea $lcfirst   [optional] First char must be lowercase ? Default is false
