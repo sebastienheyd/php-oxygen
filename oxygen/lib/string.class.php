@@ -230,7 +230,7 @@ class String
         }
 
         // check for chars repetitions
-        if(!$options['repetition'] && preg_match('/([a-zA-Z0-9]{1,1})(?=\1+)/', $result)) return random($options);
+        if(!$options['repetition'] && preg_match('/([a-zA-Z0-9]{1,1})(?=\1+)/', $result)) return self::random($options);
 
         return $result;
     }      
