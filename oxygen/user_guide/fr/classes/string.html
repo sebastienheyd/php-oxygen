@@ -98,16 +98,25 @@
         <h3>escapeWordChars()</h3>
         <p>Echappe et/ou convertit les caractères non reconnus en html en provenance de Microsoft&reg; Word&reg;</p>
         
+        <h3>hrRandom()</h3>
+        <p>Génère une chaine de caractères aléatoires facilement lisible par un humain. La chaine générée est une succession de consonne et de voyelles. La méthode prends deux paramètres, le premier pour indiquer la longueur de la chaine à générer, le second pour indiquer si la méthode doit mélanger majuscules et minuscules.</p>
+        <php>
+            String::hrRandom(7, false); // Retourne par exemple "lOxuLAs"
+        </php>
+        
         <h3>random()</h3>
-        <p>Génère une chaine de caractères aléatoires, paramétrable grâce aux variables de la fonction définissable dans l'ordre:</p>
+        <p>Génère une chaine de caractères aléatoires paramétrable grâce à un tableau d'options surchargeable :</p>
         <ul>
-            <li>La longueur de la chaine à générer</li>
-            <li>L'utilisation de chiffres, activé par défaut (true)</li>
-            <li>L'utilisation de caractères majuscules, activé par défaut </li>
-            <li>L'utilisation de caractères spéciaux, non activé par défaut </li>
+            <li>length : la longueur de la chaine à générer (défaut = 8)</li>
+            <li>alpha : autoriser l'utilisation des caractères alphabétiques (défaut = true)</li>
+            <li>numbers : autoriser l'utilisation des chiffres (défaut = true)</li>
+            <li>lowercase : autoriser l'utilisation des lettres miniscules (défaut = true)</li>
+            <li>uppercase : autoriser l'utilisation des lettres majuscules (défaut = true)</li>
+            <li>special : autoriser l'utilisation des caractères spéciaux (défaut = false)</li>
+            <li>repetition : autoriser les répétitions de caractères, ex : ee, aa, bb, etc... (défaut = false)</li>
         </ul>
         <php>
-            String::random(8, true, true, true); // Retourne par exemple "a4Tk#rIp"
+            String::random(array('length' => 7, 'special' => true, 'repetition' => false)); // Retourne par exemple "a4Tk#rI"
         </php>
         <blockquote class="info">
             Les caractères pouvant être confondus ont été volontairement retirés des caractères pouvant être compris dans la chaine générée. Exemple : l (la lettre L) et 1 (le chiffre 1) ou O (la lettre O) et 0 (le chiffre zéro)
