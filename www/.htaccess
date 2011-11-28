@@ -1,7 +1,37 @@
+############################################
+## Define the application environment. This will set the config file to use for the application.
+## Ex : "development" => webapp/config/config.development.xml
+##
+## If commented, the application will use the default environment.
+## You can already set the variable into your apache vhost configuration.
+##
+## See oxygen/core/config.class.php
+
+#SetEnv APP_ENV "development"
+
+
+############################################
+## enable rewrites
+
 RewriteEngine on
+
+
+############################################
+## path relative to web root
+
+RewriteBase /
+
+
+############################################
+## never rewrite for existing files, directories and links
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+
+
+############################################
+## rewrite everything else to index.php
 
 RewriteCond $1 !^(index\.php|images|robots\.txt)
 RewriteRule ^(.*)$ /index.php/$1 [L]
