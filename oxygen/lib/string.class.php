@@ -177,10 +177,7 @@ class String
     {      
         $chars = 'BCDFGHJKLMNPRSTVWXZbcdfghjklmnprstvwxzaeiouAEIOU';
 
-        for ($p = 0; $p < $length; $p++)
-        {
-            $result .= ($p%2) ? $chars[mt_rand(38, 47)] : $chars[mt_rand(0, 37)];
-        }
+        while($p++ < $length) $result .= ($p%2) ? $chars[mt_rand(38, 47)] : $chars[mt_rand(0, 37)];
 
         return $onlyLowerCase ? strtolower($result) : $result;
     }       
@@ -224,12 +221,9 @@ class String
 
         // get the random string
         $l = strlen($chars) - 1;
-        for ($p = 0; $p < $options['length']; $p++)
-        {
-            $result .= $chars[mt_rand(0, $l)];
-        }
+        while($p++ < $options['length']) $result .= $chars[mt_rand(0, $l)];
 
-        // check for chars repetitions
+        // check for chars repetitions in the same string
         if(!$options['repetition'] && preg_match('/([a-zA-Z0-9]{1,1})(?=\1+)/', $result)) return self::random($options);
 
         return $result;
