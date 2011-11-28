@@ -24,9 +24,10 @@ class Config extends SimpleXMLElement
     {
 		if(is_null(self::$_instance))
 		{
-            $file = CONFIG_DIR.DS.'config.'.self::getConfigSuffix().'.xml';
+            $file = CONFIG_DIR.DS.'config.'.self::getEnvironment().'.xml';
 
-            if(!is_file($file)) trigger_error($file.' does not exist', E_USER_ERROR);
+            // die if no config file is found !
+            if(!is_file($file)) die(str_replace(PROJECT_DIR, '', $file).' does not exist');
 
             self::$_instance = simplexml_load_file($file, 'Config');
 		}
@@ -44,33 +45,16 @@ class Config extends SimpleXMLElement
     {
         return isset($this->$name) ? (string) $this->$name : $default;
     }
-
+    
     /**
-     * Get current developper suffix, put it in a file named "user" one level under the project directory (PROJECT_DIR)
-     *
-     * @return string   The developper suffix to use (ex : config.sheyd.xml)
+     * Get the current environment name. To set an environment, define the environment var APP_ENV in your apache config or into the .htaccess file.<br />
+     * ex : SetEnv APP_ENV "development"
+     * 
+     * @return string   The environment name or "default" (default value) if not set.
      */
-    public static function getConfigSuffix()
+    public static function getEnvironment()
     {
-        try
-		{
-            $file = realpath(PROJECT_DIR.DS.'..'.DS.'user');
-
-            $bd = explode(':', ini_get('open_basedir'));
-
-            if(empty($bd) || (!in_array(PROJECT_DIR, $bd) && file_exists($file)))
-            {
-                $suffix = trim(file_get_contents($file));
-                return $suffix != '' ? $suffix : 'default';
-            }
-            else
-            {
-                return 'default';
-            }
-        }
-		catch(Exception $e)
-		{
-			return 'default';
-		}
+        defined('APP_ENV') || define('APP_ENV', (getenv('APP_ENV') ? strtolower(getenv('APP_ENV')) : 'default'));
+        return APP_ENV;
     }
 }
