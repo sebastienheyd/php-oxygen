@@ -11,27 +11,32 @@
 
 
 ############################################
-## enable rewrites
+## Some PHP stuff
 
+# default encoding to utf-8
+php_value default_charset utf-8
+
+# no globals
+php_value register_globals off
+
+# no session id in the URL
+php_flag session.use_trans_sid off
+
+
+############################################
+## Rewrite rules
+
+# enable rewrites
 RewriteEngine on
 
-
-############################################
-## path relative to web root
-
+# path relative to web root
 RewriteBase /
 
-
-############################################
-## never rewrite for existing files, directories and links
-
+# never rewrite for existing files, directories and links
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-l
 
-
-############################################
-## rewrite everything else to index.php
-
+# rewrite everything else to index.php
 RewriteCond $1 !^(index\.php|images|robots\.txt)
 RewriteRule ^(.*)$ /index.php/$1 [L]

@@ -175,10 +175,16 @@ class String
      */
     function hrRandom($length = 8, $onlyLowerCase = true)
     {      
+        // variables initialization
+        $p = 0; $result = '';
+        
+        // characters to build the random string with
         $chars = 'BCDFGHJKLMNPRSTVWXZbcdfghjklmnprstvwxzaeiouAEIOU';
 
+        // building the random result
         while($p++ < $length) $result .= ($p%2) ? $chars[mt_rand(38, 47)] : $chars[mt_rand(0, 37)];
 
+        // return in lower or uppercase
         return $onlyLowerCase ? strtolower($result) : $result;
     }       
     
@@ -198,6 +204,9 @@ class String
      */    
     public static function random(array $options = array())
     {      
+        // variables initialization
+        $chars = ''; $p = 0; $result = '';
+        
         // default options
         $default = array('length'       => 8, 
                          'alpha'        => true, 
@@ -210,6 +219,7 @@ class String
         // override with the given options
         $options = array_merge($default, $options);
 
+        
         // get all chars
         if ($options['numbers'])                         $chars .= '0123456789';
         if ($options['alpha'] && $options['lowercase'])  $chars .= 'abcdefghijklmnopqrstuvwxyz';
