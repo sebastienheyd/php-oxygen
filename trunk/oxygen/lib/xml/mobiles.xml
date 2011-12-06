@@ -12,14 +12,14 @@
 -->
 
 <mobiles>
-        <device type="phone" rule="(iphone|ipod)">iphone</device>           
-        <device type="phone" rule="android.*mobile">android</device>   
-        <device type="phone" rule="blackberry">blackberry</device>           
-        <device type="phone" rule="(avantgo|blazer|elaine|hiptop|palm|plucker|xiino)">palm</device>
-        <device type="phone" rule="windows ce; (iemobile|ppc|smartphone)">windows</device>
-        <device type="phone" rule="windows phone os">windowsphone</device>
-        <device type="phone" rule="(kindle|mobile|mmp|midp|pocket|psp|symbian|smartphone|treo|up.browser|up.link|vodafone|wap|opera mini)">generic</device>
-        <device type="tablet" rule="(ipad)">ipad</device>
-        <device type="tablet" rule="android(?!.*mobile)">androidtablet</device>
-        <device type="tablet" rule="rim tablet os">blackberrytablet</device>
+    <device type="phone" rule="(iphone|ipod)">iphone</device>           
+    <device type="phone" rule="android.*mobile">android</device>   
+    <device type="phone" rule="blackberry">blackberry</device>           
+    <device type="phone" rule="(avantgo|blazer|elaine|hiptop|palm|plucker|xiino)">palm</device>
+    <device type="phone" rule="windows ce; (iemobile|ppc|smartphone)">windows</device>
+    <device type="phone" rule="windows phone os">windowsphone</device>
+    <device type="phone" rule="(kindle|mobile|mmp|midp|pocket|psp|symbian|smartphone|treo|up.browser|up.link|vodafone|wap|opera mini)">generic</device>
+    <device type="tablet" rule="(ipad)">ipad</device>
+    <device type="tablet" rule="android(?!.*mobile)">androidtablet</device>
+    <device type="tablet" rule="rim tablet os">blackberrytablet</device>
 </mobiles>
