@@ -142,6 +142,46 @@ class UserAgent
         return (!isset($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER'] == '') ? false : true;
     }
     
+    // -------------------------------------------- ROBOTS    
+    
+    /**
+     * Get the robot name if current user agent is a robot
+     * 
+     * @return string       The robot full name or an empty string
+     */
+    public function getRobot()
+    {
+        return $this->isRobot() ? $this->robot : '';
+    }
+    
+    /**
+     * Is current user agent a robot ?
+     * 
+     * @see    oxygen/lib/xml/robots.xml
+     * @return boolean
+     */
+    public function isRobot()
+    {
+        if(!isset($this->isRobot))
+        {
+            $this->isRobot = false;
+            
+            $xml = simplexml_load_file(FW_DIR.DS.'lib'.DS.'xml'.DS.'robots.xml');
+
+            foreach($xml->robot as $robot)
+            {
+                /* @var $robot SimpleXMLElement */ 
+                if (preg_match("|".preg_quote(end($robot->attributes()->rule))."|i", $this->agent))
+                {
+                    $this->isRobot = true;
+                    $this->robot = end($robot);
+                    return true;
+                }
+            }            
+        }
+        return $this->isRobot;
+    }
+    
     // -------------------------------------------- PRIVATE METHODS
     
     /**
