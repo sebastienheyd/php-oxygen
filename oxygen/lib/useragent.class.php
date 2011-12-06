@@ -145,6 +145,48 @@ class UserAgent
         return (!isset($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER'] == '') ? false : true;
     }
     
+    // -------------------------------------------- BROWSER
+    
+    /**
+     * Get the current browser
+     * 
+     * @return string 
+     */
+    public function getBrowser()
+    {
+        if(!isset($this->browser))
+        {
+            $this->browser = 'undefined';
+            $this->isBrowser = false;
+            
+            $xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'browsers.xml');
+
+            foreach($xml->browser as $browser)
+            {
+                if(preg_match("|".preg_quote(end($browser->attributes()->rule)).".*?([0-9\.]+)|i", $this->_agent, $match))
+                {
+                    $this->isBrowser = true;
+                    $this->browser = end($browser);
+                    $this->version = $match[1];
+                    break;
+                }
+            }            
+        }
+        
+        return $this->browser;
+    }
+    
+    /**
+     * Get the current browser version
+     * 
+     * @return string 
+     */
+    public function getBrowserVersion()
+    {
+        if(!isset($this->isBrowser)) $this->getBrowser();
+        return isset($this->version) ? $this->version : null;
+    }
+    
     // -------------------------------------------- ROBOTS    
     
     /**
@@ -152,7 +194,7 @@ class UserAgent
      * 
      * @return string       The robot full name or an empty string
      */
-    public function getRobot()
+    public function getRobotName()
     {
         return $this->isRobot() ? $this->robot : '';
     }
@@ -188,6 +230,35 @@ class UserAgent
     // -------------------------------------------- MOBILE    
     
     /**
+     * Is current device a tablet ?
+     * 
+     * @return boolean
+     */
+    public function isTablet()
+    {
+        if($this->isMobile())
+        {
+            return isset($this->deviceType) ? $this->deviceType == 'tablet' : false;
+        }
+        return false;
+    }
+    
+    /**
+     * Check if the current user agent is a mobile from the given type
+     * 
+     * @param string $deviceName    Name of the device to check (iPad, iPhone, Android, etc...)
+     * @return boolean 
+     */
+    public function isDevice($deviceName)
+    {
+        if($this->isMobile())
+        {
+            return isset($this->device) ? $this->device == strtolower($deviceName) : false;
+        }
+        return false;
+    }
+    
+    /**
      * Is current device a mobile device ?
      * 
      * @return boolean 
@@ -215,7 +286,7 @@ class UserAgent
                     if(preg_match('/'.end($device->attributes()->rule).'/i', $this->_agent))
                     {
                         $this->device = end($device);
-                        $this->devicetype = end($device->attributes()->type);
+                        $this->deviceType = end($device->attributes()->type);
                         $this->isMobile = true;
                     }
                 }
@@ -223,8 +294,8 @@ class UserAgent
         }
         
         return $this->isMobile;
-
     }
+    
     // -------------------------------------------- PRIVATE METHODS
     
     /**
