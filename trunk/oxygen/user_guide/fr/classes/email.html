@@ -62,7 +62,7 @@
             
             // Avec le nom
             Email::to('someone@example.com')->from('me@example.com', 'John Bob');
-        </php>
+        </php>                
         
         <h3>subject()</h3>
         <p>Définit le sujet du mail.</p>
@@ -77,6 +77,15 @@
             Certains moteurs anti-spams peuvent filtrer les messages ne contenant pas les deux.<br />
             Il est également préférable de bien définir votre contenu html en l'englobant dans &lt;html /&gt;&lt;body /&gt;
         </blockquote>
+        
+        <h3>cc()</h3>
+        <p>Permet d'ajouter des destinataires en copie carbone. Cela peut être une seule adresse, une liste d'adresse séparée par des virgules ou un tableau d'adresses.</p>
+        
+        <h3>bcc()</h3>
+        <p>Permet d'ajouter des destinataires en copie carbone cachée. Cela peut être une seule adresse, une liste d'adresse séparée par des virgules ou un tableau d'adresses.</p>
+        
+        <h3>cci()</h3>
+        <p>Alias de bcc().</p>
         
         <h3>addAttachment()</h3>
         <p>Permet d'ajouter un fichier joint. Le premier paramètre doit être un fichier présent sur le serveur. Pour plusieurs fichiers vous devez définir la fonction plusieurs fois</p>

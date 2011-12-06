@@ -17,6 +17,8 @@ class Email
     private $_from;
     private $_returnPath;
     private $_to = array();
+    private $_cc = array();
+    private $_bcc = array();
     private $_subject;
     private $_bodyText;
     private $_bodyHtml;
@@ -33,13 +35,15 @@ class Email
     }
  
     /**
-     * Sets the email address(s) of the recipient(s).<br />Can be a single email, a comma-delimited list or an array.
+     * Sets the email address(es) of the recipient(s).<br />Can be a single email, a comma-delimited list or an array.
      *
      * @return Email    Return current instance of Email
      */
     public static function to()
     {
-        $inst = new self();
+        if(func_num_args() == 0) throw new Exception ('No recipient defined');
+        
+        $inst = new self();        
         
         $args = func_get_args();
  
@@ -69,6 +73,61 @@ class Email
         $this->_from = $value;
         $this->_returnPath = $emailAddress;
         return $this;
+    }
+    
+    /**
+     * Sets the email address(es) of the carbon copy recipient(s).<br />Can be a single email, a comma-delimited list or an array.
+     * 
+     * @return Email                Return current instance of Email
+     */
+    public function cc()
+    {
+        if(func_num_args() > 0)
+        {
+            $args = func_get_args();
+
+            foreach ($args as $arg)
+            {
+                if(is_array($arg)) $arg = join(',', $arg);
+                $cc = explode(',', $arg);
+                $this->_cc = array_unique(array_merge($this->_cc, array_map('trim', $cc)));
+            }
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * Sets the email address(es) of the blind carbon copy recipient(s).<br />Can be a single email, a comma-delimited list or an array.
+     * 
+     * @return Email                Return current instance of Email
+     */
+    public function bcc()
+    {
+        if(func_num_args() > 0)
+        {
+            $args = func_get_args();
+
+            foreach ($args as $arg)
+            {
+                if(is_array($arg)) $arg = join(',', $arg);
+                $bcc = explode(',', $arg);
+                $this->_bcc = array_unique(array_merge($this->_bcc, array_map('trim', $bcc)));
+            }          
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * Alias of bcc
+     * 
+     * @return Email                Return current instance of Email
+     */
+    public function cci()
+    {
+        $args = func_get_args();
+        return call_user_func_array(array($this, 'bcc'), $args);
     }
  
     /**
@@ -188,6 +247,9 @@ class Email
         $header .= 'Reply-To: ' . $this->_from . self::$_line;
         $header .= 'X-Sender: ' . $this->_from . self::$_line;
         $header .= 'X-Mailer:PHP/' . phpversion() . self::$_line;
+                
+        if(!empty($this->_cc))  $header .= 'Cc: '.join(',', $this->_cc).self::$line;
+        if(!empty($this->_bcc)) $header .= 'Bcc: '.join(',', $this->_bcc).self::$line;        
  
         if ($this->_isMultiPart() || $this->_hasAttachment())
         {
@@ -227,26 +289,29 @@ class Email
     private function _buildMessage()
     {
         $message = '';
- 
-        if ($this->_isMultiPart())
+        
+        if($this->_isMultiPart()) // mail is in plain text and html
         {
+            // mail has an attachment, we must declare
             if ($this->_hasAttachment())
             {
                 $message .= '--multi-' . $this->_frontier . self::$_line;
                 $message .= 'Content-Type: multipart/alternative; boundary="alt-' . $this->_frontier . '"' . self::$_line . self::$_line;
             }
  
+            // plain text message
             $message .= '--alt-' . $this->_frontier . self::$_line;
             $message .= 'Content-Type: text/plain; charset="utf-8"' . self::$_line;
             $message .= 'Content-Transfer-Encoding: base64' . self::$_line . self::$_line;
             $message .= chunk_split(base64_encode($this->_bodyText)) . self::$_line . self::$_line;
  
+            // html message
             $message .= '--alt-' . $this->_frontier . self::$_line;
             $message .= 'Content-Type: text/html; charset="utf-8"' . self::$_line;
             $message .= 'Content-Transfer-Encoding: base64' . self::$_line . self::$_line;
             $message .= chunk_split(base64_encode($this->_bodyHtml)) . self::$_line . self::$_line;
         }
-        else if (isset($this->_bodyText) && !is_null($this->_bodyText))
+        else if (isset($this->_bodyText)) // mail is only in plain text
         {
             if ($this->_hasAttachment())
             {
@@ -257,7 +322,7 @@ class Email
  
             $message .= chunk_split(base64_encode($this->_bodyText));
         }
-        else
+        else  // mail is only in html
         {
             if ($this->_hasAttachment())
             {
@@ -268,8 +333,8 @@ class Email
  
             $message .= chunk_split(base64_encode($this->_bodyHtml));
         }
- 
-        if ($this->_hasAttachment())
+        
+        if ($this->_hasAttachment()) // we have a file attached to the mail
         {
             foreach ($this->_attachment as $attachment)
             {
