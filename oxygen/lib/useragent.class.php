@@ -15,9 +15,10 @@ class UserAgent
 {    
     private static $instance;
     
-    private $agent;
-    private $languages = array();
-    private $charsets = array();
+    private $_agent;                 // user agent full string
+    private $_accept;                // accepted types
+    private $_languages = array();   // array of accepted languages
+    private $_charsets = array();    // array of accepted charsets
     
     /**
      * Return singleton instance
@@ -38,17 +39,19 @@ class UserAgent
      */
     protected function __construct()
 	{
-		if(isset($_SERVER['HTTP_USER_AGENT']))
-		{
-			$this->agent = trim($_SERVER['HTTP_USER_AGENT']);
-		}
+		if(isset($_SERVER['HTTP_USER_AGENT'])) $this->_agent = trim($_SERVER['HTTP_USER_AGENT']);
+        
+        if(isset($_SERVER['HTTP_ACCEPT'])) $this->_accept = trim($_SERVER['HTTP_ACCEPT']);
+        
+        $this->_setLanguages();
+        $this->_setCharsets();
 	}
     
     // -------------------------------------------- GENERAL / DETECTION
     
     public function getAgentString()
     {
-        return $this->agent;
+        return $this->_agent;
     }
     
     // -------------------------------------------- LANGUAGES
@@ -60,7 +63,7 @@ class UserAgent
      */
     public function getLanguages()
     {
-        return empty($this->languages) ? $this->_setLanguages() : $this->languages;
+        return empty($this->_languages) ? $this->_setLanguages() : $this->_languages;
     }
     
     /**
@@ -70,8 +73,8 @@ class UserAgent
      */
     public function getLanguage()
     {
-        if(empty($this->languages)) $this->_setLanguages();        
-        return preg_replace('/-(.*)$/i', '', first($this->languages));
+        if(empty($this->_languages)) $this->_setLanguages();        
+        return preg_replace('/-(.*)$/i', '', first($this->_languages));
     }
     
     /**
@@ -83,8 +86,8 @@ class UserAgent
     public function acceptLanguage($language)
     {
         $language = strtolower(str_replace('_', '-', $language));
-        if(empty($this->languages)) $this->_setLanguages();
-        return in_array($language, $this->languages);
+        if(empty($this->_languages)) $this->_setLanguages();
+        return in_array($language, $this->_languages);
     }
     
     // -------------------------------------------- CHARSETS
@@ -96,7 +99,7 @@ class UserAgent
      */
     public function getCharsets()
     {
-        return empty($this->charsets) ? $this->_setCharsets() : $this->charsets;
+        return empty($this->_charsets) ? $this->_setCharsets() : $this->_charsets;
     }
     
     /**
@@ -106,7 +109,7 @@ class UserAgent
      */
     public function getCharset()
     {
-        return first(empty($this->charsets) ? $this->_setCharsets() : $this->charsets);
+        return first(empty($this->_charsets) ? $this->_setCharsets() : $this->_charsets);
     }
     
     /**
@@ -116,8 +119,8 @@ class UserAgent
      */
     public function acceptCharset($charset)
     {
-        if(empty($this->charsets)) $this->_setCharsets();
-        return in_array($charset, $this->charsets);
+        if(empty($this->_charsets)) $this->_setCharsets();
+        return in_array($charset, $this->_charsets);
     }        
     
     // -------------------------------------------- REFERRER
@@ -166,12 +169,12 @@ class UserAgent
         {
             $this->isRobot = false;
             
-            $xml = simplexml_load_file(FW_DIR.DS.'lib'.DS.'xml'.DS.'robots.xml');
+            $xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'robots.xml');
 
             foreach($xml->robot as $robot)
             {
                 /* @var $robot SimpleXMLElement */ 
-                if (preg_match("|".preg_quote(end($robot->attributes()->rule))."|i", $this->agent))
+                if (preg_match("|".preg_quote(end($robot->attributes()->rule))."|i", $this->_agent))
                 {
                     $this->isRobot = true;
                     $this->robot = end($robot);
@@ -182,6 +185,46 @@ class UserAgent
         return $this->isRobot;
     }
     
+    // -------------------------------------------- MOBILE    
+    
+    /**
+     * Is current device a mobile device ?
+     * 
+     * @return boolean 
+     */
+    public function isMobile()
+    {
+        if(!isset($this->isMobile))
+        {
+            $this->isMobile = false;
+            
+            if (isset($_SERVER['HTTP_X_WAP_PROFILE']) || isset($_SERVER['HTTP_PROFILE']))
+            {
+                $this->isMobile = true;
+            }
+            elseif (strpos($this->_accept, 'text/vnd.wap.wml') > 0 || strpos($this->_accept, 'application/vnd.wap.xhtml+xml') > 0)
+            {
+                $this->isMobile = true;
+            }
+            else
+            {
+                $xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'mobiles.xml');
+
+                foreach($xml->device as $device)
+                {                
+                    if(preg_match('/'.end($device->attributes()->rule).'/i', $this->_agent))
+                    {
+                        $this->device = end($device);
+                        $this->devicetype = end($device->attributes()->type);
+                        $this->isMobile = true;
+                    }
+                }
+            }            
+        }
+        
+        return $this->isMobile;
+
+    }
     // -------------------------------------------- PRIVATE METHODS
     
     /**
@@ -191,18 +234,18 @@ class UserAgent
      */
     private function _setLanguages()
     {
-        if((empty($this->languages)) && isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && $_SERVER['HTTP_ACCEPT_LANGUAGE'] != '')
+        if((empty($this->_languages)) && isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && $_SERVER['HTTP_ACCEPT_LANGUAGE'] != '')
 		{
 			$languages = preg_replace('/(;q=[0-9\.]+)/i', '', strtolower(trim($_SERVER['HTTP_ACCEPT_LANGUAGE'])));
-			$this->languages = explode(',', $languages);            
+			$this->_languages = explode(',', $languages);            
 		}
 
-		if(empty($this->languages))
+		if(empty($this->_languages))
 		{
-			$this->languages = array('undefined');
+			$this->_languages = array('undefined');
 		}
         
-        return $this->languages;
+        return $this->_languages;
     }
     
     /**
@@ -212,17 +255,17 @@ class UserAgent
      */
     private function _setCharsets()
     {
-        if (empty($this->charsets) && isset($_SERVER['HTTP_ACCEPT_CHARSET']) && $_SERVER['HTTP_ACCEPT_CHARSET'] != '')
+        if (empty($this->_charsets) && isset($_SERVER['HTTP_ACCEPT_CHARSET']) && $_SERVER['HTTP_ACCEPT_CHARSET'] != '')
 		{
 			$charsets = preg_replace('/(;q=.+)/i', '', strtolower(trim($_SERVER['HTTP_ACCEPT_CHARSET'])));
-			$this->charsets = explode(',', $charsets);
+			$this->_charsets = explode(',', $charsets);
 		}
 
-		if(empty($this->charsets))
+		if(empty($this->_charsets))
 		{
-			$this->charsets = array('undefined');
+			$this->_charsets = array('undefined');
 		}
         
-        return $this->charsets;
+        return $this->_charsets;
     }
 }
