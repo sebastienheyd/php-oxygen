@@ -63,10 +63,7 @@
             // En autorisant les slashes
             String::toUrl("article/C'est intérressant", '-', true, false); // Retournera "article/c-est-interressant"
         </php> 
-        
-        <h3>substru()</h3>
-        <p>Fonctionne comme la fonction substr() de php  mais pour les chaines encodées en utf-8, équivalent à mb_substr().</p>
-        
+               
         <h3>truncateAtLength()</h3>
         <p>Coupe une chaine à une longueur précise.</p>
         <php>
@@ -152,7 +149,7 @@
             La fonction sera essentiellement utilisée pour vérifier la présence d'un mot dans une phrase.
         </p>
         <php>
-            if(String::strpos("john bob russel brian", array('mac', 'russel'))
+            if(String::strpos("john bob russel brian", array('mac', 'russel')))
             {
                 echo "trouvé"; // "russel" à été trouvé
             }
