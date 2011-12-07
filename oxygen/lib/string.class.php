@@ -44,10 +44,8 @@ class String
      */
     public static function stripAccents($string)
     {
-        $a = "ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ";
-        $b = "AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn";
-
-        return strtr(utf8_decode(trim($string)), utf8_decode($a), $b);
+        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not valid UTF-8');
+        return preg_replace('~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', htmlentities($string, ENT_QUOTES, 'UTF-8'));
     }
 
     /**
@@ -65,7 +63,7 @@ class String
 
         $string = strip_tags($string);
 
-        $regexp = $convertSlashes ? '/([^.a-zA-Z0-9_]+)/i' : '/([^.a-zA-Z0-9_\/]+)/i';
+        $regexp = $convertSlashes ? '/([^a-zA-Z0-9_]+)/i' : '/([^a-zA-Z0-9_\/]+)/i';
 
         $string = preg_replace($regexp, $separator, $string);
 
@@ -87,7 +85,7 @@ class String
      */
     public static function truncateAtLength($string, $length, $pad = '...')
     {
-        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not a valid UTF-8');
+        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not valid UTF-8');
         if (mb_strlen($string, 'UTF-8') <= $length) return $string;
         return mb_substr($string, 0, $length, 'UTF-8') . $pad;
     }
@@ -102,7 +100,7 @@ class String
      */
     public static function truncateAtWord($string, $length, $pad = '...')
     {
-        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not a valid UTF-8');
+        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not valid UTF-8');
         
         if (mb_strlen($string, 'UTF-8') <= $length) return $string;
 
@@ -128,7 +126,7 @@ class String
      */
     public static function truncateAtSentence($string, $length, $pad = '.')
     {
-        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not a valid UTF-8');
+        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not valid UTF-8');
         
         if (mb_strlen($string, 'UTF-8') <= $length) return $string;
 
