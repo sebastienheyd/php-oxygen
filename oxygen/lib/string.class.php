@@ -83,13 +83,13 @@ class String
      * @param string $string    The input string
      * @param integer $length   Length of the part of string to return
      * @param string $pad       [optional] String to add at the end of the result, default is "..."
-     * @param string $encoding  [optional] The encoding to use, default is "utf-8"
      * @return string           The extracted part of the string
      */
-    public static function truncateAtLength($string, $length, $pad = '...', $encoding = 'utf-8')
+    public static function truncateAtLength($string, $length, $pad = '...')
     {
-        if (mb_strlen($string, $encoding) <= $length) return $string;
-        return mb_substr($string, 0, $length, $encoding) . $pad;
+        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not a valid UTF-8');
+        if (mb_strlen($string, 'UTF-8') <= $length) return $string;
+        return mb_substr($string, 0, $length, 'UTF-8') . $pad;
     }
 
     /**
@@ -98,18 +98,21 @@ class String
      * @param string $string    The input string
      * @param integer $length   Length of the part of string to return
      * @param string $pad       [optional] String to add at the end of the result, default is "..."
-     * @param string $encoding  [optional] The encoding to use, default is "utf-8"
      * @return string           The extracted part of the string   
      */
-    public static function truncateAtWord($string, $length, $pad = '...', $encoding = 'utf-8')
+    public static function truncateAtWord($string, $length, $pad = '...')
     {
-        if (mb_strlen($string, $encoding) <= $length) return $string;
+        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not a valid UTF-8');
+        
+        if (mb_strlen($string, 'UTF-8') <= $length) return $string;
 
-        if (false !== ($breakpoint = mb_strpos($string, ' ', $length, $encoding)))
+        if (false !== ($breakpoint = mb_strpos($string, ' ', $length, 'UTF-8')))
         {
-            if ($breakpoint < mb_strlen($string, $encoding) - 1)
+            if ($breakpoint < mb_strlen($string, 'UTF-8') - 1)
             {
-                return mb_substr($string, 0, $breakpoint, $encoding) . $pad;
+                while(!preg_match('/[a-zA-Z1-9]/', $string[$breakpoint-1]))  $breakpoint--;
+                
+                return mb_substr($string, 0, $breakpoint, 'UTF-8') . $pad;
             }
         }
         return $string;
@@ -121,18 +124,19 @@ class String
      * @param string $string    The input string
      * @param integer $length   Length of the part of string to return
      * @param string $pad       [optional] String to add at the end of the result, default is "."
-     * @param string $encoding  [optional] The encoding to use, default is "utf-8"
      * @return string           The extracted part of the string
      */
-    public static function truncateAtSentence($string, $length, $pad = '.', $encoding = 'utf-8')
+    public static function truncateAtSentence($string, $length, $pad = '.')
     {
-        if (mb_strlen($string, $encoding) <= $length) return $string;
+        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not a valid UTF-8');
+        
+        if (mb_strlen($string, 'UTF-8') <= $length) return $string;
 
-        if (false !== ($breakpoint = mb_strpos($string, '.', $length, $encoding)))
+        if (false !== ($breakpoint = mb_strpos($string, '.', $length, 'UTF-8')))
         {
-            if ($breakpoint < mb_strlen($string, $encoding) - 1)
+            if ($breakpoint < mb_strlen($string, 'UTF-8') - 1)
             {
-                return mb_substr($string, 0, $breakpoint, $encoding) . $pad;
+                return mb_substr($string, 0, $breakpoint, 'UTF-8') . $pad;
             }
         }
         return $string;
@@ -257,7 +261,7 @@ class String
     }    
 
     /**
-     * Advanced ucwords
+     * Advanced ucwords, add uppercase to the first character of each word.
      * 
      * @param string $string    The input string
      * @return string           The string with upper cased first char of words
@@ -268,7 +272,7 @@ class String
     }
 
     /**
-     * Advanced strpos
+     * Advanced strpos, find the first occurence of an needle string or array in haystack
      * 
      * @param string $haystack  The input string
      * @param mixed $needle     Needle to search (string or array).<br />Search will stop on first founded string/char
@@ -276,12 +280,13 @@ class String
      */
     public static function strpos($haystack, $needle)
     {
-        if (!is_array($needle)) $needle = array($needle);
-        
+        if (is_string($needle)) $needle = array($needle);
+              
         foreach ($needle as $what)
         {
             if (($pos = strpos($haystack, $what)) !== false) return $pos;
         }
+        
         return false;
     }
 
