@@ -50,7 +50,7 @@ abstract class Action
             break;
         
             default:
-                trigger_error('Method '.$method.' does not exist', E_USER_ERROR);
+                throw new BadMethodCallException('Method '.$method.' does not exist');
             break;
         }
     }

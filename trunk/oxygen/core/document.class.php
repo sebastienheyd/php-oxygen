@@ -306,6 +306,10 @@ abstract class Document
                 $varName = String::snakeCase($suffix);
                 $this->$varName = $args;
             break;
+        
+            default:
+                throw new BadMethodCallException('Method '.$method.' does not exist');
+            break;        
         }
     }
     
