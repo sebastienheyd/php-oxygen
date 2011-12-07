@@ -35,7 +35,7 @@ class f_date_Date
 
         if(count($dateTokens) != count($formatTokens))
         {
-            throw new Exception('Given date and format has not the same number of tokens.');
+            throw new UnexpectedValueException('Given date and format has not the same number of tokens.');
         }    
         
 		$y = date('Y');
@@ -88,7 +88,7 @@ class f_date_Date
     {
         if (!preg_match('#^(\\d{4})\-(\\d{1,2})\-(\\d{1,2})(\s+(\\d{1,2}):(\\d{1,2}):(\\d{1,2}))?$#', $date))
         {
-            throw new Exception("Invalid date format : $date format must be Y-m-d h:i:s");
+            throw new InvalidArgumentException("Invalid date format : $date format must be Y-m-d h:i:s");
         }
 
         $this->_date = $date;
@@ -100,7 +100,7 @@ class f_date_Date
 
         if(!checkdate($this->_month, $this->_day, $this->_year))
         {
-            throw new Exception("Invalid date : ".$date." date does not exist");
+            throw new RangeException("Invalid date : ".$date." date does not exist");
         }
     }
     

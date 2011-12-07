@@ -60,7 +60,7 @@ class Cron
 
         if (!preg_match('/^([0-9\/\*\-,]+)? ([0-9\/\*\-,]+)? ([0-9\/\*\-,]+)? ([0-9\/\*\-,]+)? ([0-7\/\*\-,]+)?$/', $time))
         {
-            throw new exception('Cron job is not well formatted (' . $time . ')');
+            throw new InvalidArgumentException('Job is not well formatted (' . $time . ')');
         }
 
         list($this->_exeMinute, $this->_exeHour, $this->_exeDayOfMonth, $this->_exeMonth, $this->_exeDayOfWeek) = explode(' ', $time);
@@ -140,7 +140,7 @@ class Cron
 
                 if ($between != '*' && !preg_match('/^([0-9]+)\-([0-9]+)$/', $between))
                 {
-                    throw new exception('Range is not good');
+                    throw new UnexpectedValueException('Job interval is not correctly formatted');
                 }
 
                 $every = $tmp[1];
@@ -152,7 +152,7 @@ class Cron
             // checks for outranged values
             if (isset($val[1]) && ($val[1] < $min || $val[1] > $max))
             {
-                throw new exception('Value is not in range (' . $min . ' < ' . $val[1] . ' < ' . $max . ')');
+                throw new RangeException('Value is not in range (' . $min . ' < ' . $val[1] . ' < ' . $max . ')');
             }
             else
             {
@@ -160,14 +160,14 @@ class Cron
                 {
                     if ($every < $min || $every > $max)
                     {
-                        throw new exception('Value is not in range (' . $min . ' < ' . $every . ' < ' . $max . ')');
+                        throw new RangeException('Value is not in range (' . $min . ' < ' . $every . ' < ' . $max . ')');
                     }
                 }
                 else
                 {
                     if ($val[0] < $min || $val[0] > $max)
                     {
-                        throw new exception('Value is not in range (' . $min . ' < ' . $val[0] . ' < ' . $max . ')');
+                        throw new RangeException('Value is not in range (' . $min . ' < ' . $val[0] . ' < ' . $max . ')');
                     }
                 }
             }

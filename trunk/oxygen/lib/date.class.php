@@ -44,7 +44,7 @@ class Date
         {
             return self::fromTimeStamp($date);
         }
-        throw new Exception('Sql date is not well formatted');
+        throw new InvalidArgumentException('Sql date is not well formatted');
     }
     
     /**
