@@ -171,9 +171,9 @@ class Search
             // filter paths list with $this->_regexFilter()
             $result = array_filter($result, array($this, '_regexFilter'));
         }
-        catch (UnexpectedValueException $e)
+        catch (Exception $e)
         {
-            throw new Exception('The directory contained a directory we can not recurse into');
+            throw new UnexpectedValueException('The directory contained a directory we can not recurse into');
         }
 
         return $result;
