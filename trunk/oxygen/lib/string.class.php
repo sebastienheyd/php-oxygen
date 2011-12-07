@@ -78,30 +78,18 @@ class String
     }
 
     /**
-     * UTF-8 compliant substr
-     *
-     * @param string $str       The input string
-     * @param integer $from     Offset where to start
-     * @param integer $len      Length of the part of string to return
-     * @return string           The extracted part of the string
-     */
-    public static function substru($str, $from, $len)
-    {
-        return preg_replace('#^(?:[\x00-\x7F]|[\xC0-\xFF][\x80-\xBF]+){0,' . $from . '}' . '((?:[\x00-\x7F]|[\xC0-\xFF][\x80-\xBF]+){0,' . $len . '}).*#s', '$1', $str);
-    }
-
-    /**
      * Truncate a string at a precise length
      *
      * @param string $string    The input string
      * @param integer $length   Length of the part of string to return
      * @param string $pad       [optional] String to add at the end of the result, default is "..."
+     * @param string $encoding  [optional] The encoding to use, default is "utf-8"
      * @return string           The extracted part of the string
      */
-    public static function truncateAtLength($string, $length, $pad = '...')
+    public static function truncateAtLength($string, $length, $pad = '...', $encoding = 'utf-8')
     {
-        if (strlen($string) <= $length) return $string;
-        return self::substru($string, 0, $length) . $pad;
+        if (mb_strlen($string, $encoding) <= $length) return $string;
+        return mb_substr($string, 0, $length, $encoding) . $pad;
     }
 
     /**
@@ -110,17 +98,18 @@ class String
      * @param string $string    The input string
      * @param integer $length   Length of the part of string to return
      * @param string $pad       [optional] String to add at the end of the result, default is "..."
+     * @param string $encoding  [optional] The encoding to use, default is "utf-8"
      * @return string           The extracted part of the string   
      */
-    public static function truncateAtWord($string, $length, $pad = '...')
+    public static function truncateAtWord($string, $length, $pad = '...', $encoding = 'utf-8')
     {
-        if (strlen($string) <= $length) return $string;
+        if (mb_strlen($string, $encoding) <= $length) return $string;
 
-        if (false !== ($breakpoint = strpos(utf8_decode($string), ' ', $length)))
+        if (false !== ($breakpoint = mb_strpos($string, ' ', $length, $encoding)))
         {
-            if ($breakpoint < strlen(utf8_decode($string)) - 1)
+            if ($breakpoint < mb_strlen($string, $encoding) - 1)
             {
-                return self::substru($string, 0, $breakpoint) . $pad;
+                return mb_substr($string, 0, $breakpoint, $encoding) . $pad;
             }
         }
         return $string;
@@ -132,17 +121,18 @@ class String
      * @param string $string    The input string
      * @param integer $length   Length of the part of string to return
      * @param string $pad       [optional] String to add at the end of the result, default is "."
+     * @param string $encoding  [optional] The encoding to use, default is "utf-8"
      * @return string           The extracted part of the string
      */
-    public static function truncateAtSentence($string, $length, $pad = '.')
+    public static function truncateAtSentence($string, $length, $pad = '.', $encoding = 'utf-8')
     {
-        if (strlen($string) <= $length) return $string;
+        if (mb_strlen($string, $encoding) <= $length) return $string;
 
-        if (false !== ($breakpoint = strpos(utf8_decode($string), '.', $length)))
+        if (false !== ($breakpoint = mb_strpos($string, '.', $length, $encoding)))
         {
-            if ($breakpoint < strlen(utf8_decode($string)) - 1)
+            if ($breakpoint < mb_strlen($string, $encoding) - 1)
             {
-                return self::substru($string, 0, $breakpoint) . $pad;
+                return mb_substr($string, 0, $breakpoint, $encoding) . $pad;
             }
         }
         return $string;
