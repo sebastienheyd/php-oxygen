@@ -222,6 +222,10 @@ class Session
                     $this->$name = null;
                     return $this;
                 break;
+            
+                default:
+                    throw new BadMethodCallException('Method '.$method.' does not exist');
+                break;
             }
         }
 

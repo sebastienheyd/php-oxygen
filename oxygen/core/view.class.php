@@ -43,9 +43,14 @@ abstract class View
             case 'setModel':
                 $this->_model = $args[0];
             break;
+        
             case 'setModule':
                 $this->_module = $args[0];
             break;
+        
+            default:
+                throw new BadMethodCallException('Method '.$method.' does not exist');
+            break;        
         }
     }
 
