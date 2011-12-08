@@ -108,7 +108,7 @@ class String
         {
             if ($breakpoint < mb_strlen($string, 'UTF-8') - 1)
             {
-                while(!preg_match('/[a-zA-Z1-9]/', $string[$breakpoint-1]))  $breakpoint--;
+                while(!preg_match('/[a-zA-Z1-9]/', $string[$breakpoint])) $breakpoint--;
                 
                 return mb_substr($string, 0, $breakpoint, 'UTF-8') . $pad;
             }
