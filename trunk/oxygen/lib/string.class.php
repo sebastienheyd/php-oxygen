@@ -45,7 +45,15 @@ class String
     public static function stripAccents($string)
     {
         if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not valid UTF-8');
-        return preg_replace('~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', htmlentities($string, ENT_QUOTES, 'UTF-8'));
+        
+        $xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'accents.xml');        
+        
+        foreach($xml->unit as $u)
+        {
+            $units['/'.$u->attributes()->src.'/'] = $u;
+        }
+        
+        return preg_replace(array_keys($units), array_values($units), $string);        
     }
 
     /**
@@ -80,10 +88,10 @@ class String
      *
      * @param string $string    The input string
      * @param integer $length   Length of the part of string to return
-     * @param string $pad       [optional] String to add at the end of the result, default is "..."
+     * @param string $pad       [optional] String to add at the end of the result, default is "&hellip;"
      * @return string           The extracted part of the string
      */
-    public static function truncateAtLength($string, $length, $pad = '...')
+    public static function truncateAtLength($string, $length, $pad = '&hellip;')
     {
         if (mb_strlen($string, '8bit') <= $length) return $string;
         return mb_substr($string, 0, $length, '8bit') . $pad;
@@ -94,10 +102,10 @@ class String
      *
      * @param string $string    The input string
      * @param integer $length   Length of the part of string to return
-     * @param string $pad       [optional] String to add at the end of the result, default is "..."
+     * @param string $pad       [optional] String to add at the end of the result, default is "&hellip;"
      * @return string           The extracted part of the string   
      */
-    public static function truncateAtWord($string, $length, $pad = '...')
+    public static function truncateAtWord($string, $length, $pad = '&hellip;')
     {       
         if (mb_strlen($string, '8bit') <= $length) return $string;
 
