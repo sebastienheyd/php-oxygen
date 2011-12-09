@@ -85,9 +85,8 @@ class String
      */
     public static function truncateAtLength($string, $length, $pad = '...')
     {
-        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not valid UTF-8');
-        if (mb_strlen($string, 'UTF-8') <= $length) return $string;
-        return mb_substr($string, 0, $length, 'UTF-8') . $pad;
+        if (mb_strlen($string, '8bit') <= $length) return $string;
+        return mb_substr($string, 0, $length, '8bit') . $pad;
     }
 
     /**
@@ -99,18 +98,16 @@ class String
      * @return string           The extracted part of the string   
      */
     public static function truncateAtWord($string, $length, $pad = '...')
-    {
-        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not valid UTF-8');
-        
-        if (mb_strlen($string, 'UTF-8') <= $length) return $string;
+    {       
+        if (mb_strlen($string, '8bit') <= $length) return $string;
 
-        if (false !== ($breakpoint = mb_strpos($string, ' ', $length, 'UTF-8')))
+        if (false !== ($breakpoint = mb_strpos($string, ' ', $length, '8bit')))
         {
-            if ($breakpoint < mb_strlen($string, 'UTF-8') - 1)
+            if ($breakpoint < mb_strlen($string, '8bit') - 1)
             {
                 while(!preg_match('/[a-zA-Z1-9]/', $string[$breakpoint])) $breakpoint--;
                 
-                return mb_substr($string, 0, $breakpoint, 'UTF-8') . $pad;
+                return mb_substr($string, 0, $breakpoint, '8bit') . $pad;
             }
         }
         return $string;
@@ -125,16 +122,14 @@ class String
      * @return string           The extracted part of the string
      */
     public static function truncateAtSentence($string, $length, $pad = '.')
-    {
-        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not valid UTF-8');
-        
-        if (mb_strlen($string, 'UTF-8') <= $length) return $string;
+    {        
+        if (mb_strlen($string, '8bit') <= $length) return $string;
 
-        if (false !== ($breakpoint = mb_strpos($string, '.', $length, 'UTF-8')))
+        if (false !== ($breakpoint = mb_strpos($string, '.', $length, '8bit')))
         {
-            if ($breakpoint < mb_strlen($string, 'UTF-8') - 1)
+            if ($breakpoint < mb_strlen($string, '8bit') - 1)
             {
-                return mb_substr($string, 0, $breakpoint, 'UTF-8') . $pad;
+                return mb_substr($string, 0, $breakpoint, '8bit') . $pad;
             }
         }
         return $string;
