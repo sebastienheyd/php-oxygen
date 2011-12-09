@@ -47,6 +47,11 @@ class UserAgent
         $this->_setCharsets();
 	}
     
+    public function __toString()
+    {
+        return $this->_agent;
+    }
+    
     // -------------------------------------------- GENERAL / DETECTION
     
     public function getAgentString()
@@ -144,6 +149,34 @@ class UserAgent
     {
         return (!isset($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER'] == '') ? false : true;
     }
+    
+// -------------------------------------------- PLATFORM
+    
+    /**
+     * Get the current platform
+     * 
+     * @return string 
+     */
+    public function getPlatform()
+    {
+        if(!isset($this->platform))
+        {
+            $this->platform = 'undefined';
+            
+            $xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'platforms.xml');
+
+            foreach($xml->platform as $platform)
+            {
+                if(preg_match("|".preg_quote(end($platform->attributes()->rule))."|i", $this->_agent, $match))
+                {
+                    $this->platform = end($platform);
+                    break;
+                }
+            }            
+        }
+        
+        return $this->platform;
+    }    
     
     // -------------------------------------------- BROWSER
     
