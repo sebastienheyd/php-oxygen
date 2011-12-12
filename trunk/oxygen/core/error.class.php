@@ -44,6 +44,8 @@ class Error
         if(error_reporting() == 0) return false;                
         
         $label = isset($this->_levels[$errno]) ? $this->_levels[$errno] : $errno;
+        $msg = str_replace(PROJECT_DIR.DS, '', $errstr);
+        $file = str_replace(PROJECT_DIR.DS, '', $errfile);
 
         switch ($errno)
 		{
@@ -53,12 +55,29 @@ class Error
             case E_USER_WARNING:
             case E_CORE_WARNING:
             case E_COMPILE_WARNING:
-                echo '<code><span style="font-size:14px;"><strong style="color:#900;">'.$label.'</strong> : <strong>"'.str_replace(PROJECT_DIR.DS, '', $errstr).'"</strong> in <i>'.str_replace(PROJECT_DIR.DS, '', $errfile).'</i> (ln.'.$errline.')<br /></span></code>';
+                if(!CLI_MODE)
+                {
+                    echo '<code><span style="font-size:14px;"><strong style="color:#900;">'.$label.'</strong> : <strong>"'.$msg.'"</strong> in <i>'.$file.'</i> (ln.'.$errline.')<br /></span></code>';                    
+                }
+                else
+                {
+                    $cli = Cli::getInstance();
+                    $cli->printf('['.$label.']', 'yellow');
+                    $cli->printf(' -> '.$msg.' in '.$file.' (ln.'.$errline.')'.PHP_EOL);
+                }
 		    break;
         
-            default:          
-                $message = '"'.str_replace(PROJECT_DIR.DS, '', $errstr).'" in <i>'.str_replace(PROJECT_DIR.DS, '', $errfile).'</i> (ln.'.$errline.')';
-                $this->_showError($label, $message, debug_backtrace());
+            default: 
+                if(!CLI_MODE)
+                {
+                    $message = '"'.$msg.'" in <i>'.$file.'</i> (ln.'.$errline.')';
+                    $this->_showError($label, $message, debug_backtrace());
+                }
+                else
+                {
+                    $message = '"'.$msg.'" in '.$file.' (ln.'.$errline.')';
+                    $this->_showCliError($label, $message, debug_backtrace());
+                }
                 exit;
             break;                           
         }
@@ -72,13 +91,11 @@ class Error
      */
     public function exceptionHandler(Exception $exception)
     {
-        /* @var $exception Exception */
-        $message = '"'.$exception->getMessage().'" in <i>'.str_replace(PROJECT_DIR.DS, '', $exception->getFile()).'</i> (ln.'.$exception->getLine().')';       
-        
+        /* @var $exception Exception */        
         $trace = $exception->getTrace();
         
         $t = array();
-        $t['args'] = $trace[0]['args'];
+        $t['args'] = isset($trace[0]['args']) ? $trace[0]['args'] : '';
         $t['line'] = $exception->getLine();
         $t['file'] = $exception->getFile();
         
@@ -89,10 +106,56 @@ class Error
         
         array_unshift($trace, $t);     
         
-        $this->_showError(get_class($exception), $message, $trace);        
+        if(CLI_MODE)
+        {            
+            $message = '"'.$exception->getMessage().'" in '.str_replace(PROJECT_DIR.DS, '', $exception->getFile()).' (ln.'.$exception->getLine().')';         
+            $this->_showCliError(get_class($exception), $message, $trace);  
+        }
+        
+        $message = '"'.$exception->getMessage().'" in <i>'.str_replace(PROJECT_DIR.DS, '', $exception->getFile()).'</i> (ln.'.$exception->getLine().')'; 
+        $this->_showError(get_class($exception), $message, $trace);                    
     }
     
 // ======================================================================== ERROR DISPLAY
+    
+    /**
+     * Stop script and outputs an error page in CLI mode
+     * 
+     * @param string    $type       Type of error (the error page title)
+     * @param string    $message    Error message
+     * @param array     $backtrace  Array of parsed backtrace
+     * @return void
+     */    
+    private function _showCliError($type, $message, $backtrace)
+    {
+        $cli = Cli::getInstance();
+        
+        $cli->printf('['.$type.']', 'red');
+        $cli->printf(' -> '.$message.PHP_EOL);
+        
+        $bt = $this->_parseBacktrace($backtrace);
+        
+        $nb = count($bt);
+        foreach($bt as $k => $line)
+        {            
+            $cli->printf('[debug'.$nb--.']', 'cyan');
+            $cli->printf(' -> ');
+            
+            if(isset($line['exception']))
+            {
+                $cli->printf($line['exception']);
+            }
+            else
+            {
+                $cli->printf($line['function'].'('.$line['args'].')');
+            }
+            
+            if(isset($line['line']) && isset($line['file'])) $cli->printf (' / '.$line['file'].' ln.'.$line['line']);
+                
+            $cli->printf(PHP_EOL);
+        }
+        die();
+    }
     
     /**
      * Stop script and outputs an error page

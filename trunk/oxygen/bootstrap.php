@@ -53,9 +53,6 @@ require_once(FW_DIR.DS.'autoload.php');
 // Get default timezone
 if(ini_get('date.timezone') == '') date_default_timezone_set('Europe/Paris');
 
-// Init security
-Security::getKey();
-
 // Init the session
 Session::getInstance();
 
