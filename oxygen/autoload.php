@@ -12,7 +12,7 @@
  */
 
 define(SMARTY_SPL_AUTOLOAD, 1);
-define(PS, PATH_SEPARATOR);
+define('PS', PATH_SEPARATOR);
 
 // include paths
 set_include_path(get_include_path().PS.
