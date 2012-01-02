@@ -59,11 +59,6 @@ div#stack div {
     margin-bottom:          10px;
 }
 
-div.stackItem
-{
-    cursor: pointer;
-}
-
 a
 {
     text-decoration: none;
