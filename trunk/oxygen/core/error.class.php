@@ -55,29 +55,28 @@ class Error
             case E_USER_WARNING:
             case E_CORE_WARNING:
             case E_COMPILE_WARNING:
-                if(!CLI_MODE)
-                {
-                    echo '<code><span style="font-size:14px;"><strong style="color:#900;">'.$label.'</strong> : <strong>"'.$msg.'"</strong> in <i>'.$file.'</i> (ln.'.$errline.')<br /></span></code>';                    
-                }
-                else
+                if(CLI_MODE)
                 {
                     $cli = Cli::getInstance();
                     $cli->printf('['.$label.']', 'yellow');
                     $cli->printf(' -> '.$msg.' in '.$file.' (ln.'.$errline.')'.PHP_EOL);
                 }
+                else
+                {
+                    echo '<code><span style="font-size:14px;"><strong style="color:#900;">'.$label.'</strong> : <strong>"'.$msg.'"</strong> in <i>'.$file.'</i> (ln.'.$errline.')<br /></span></code>';                    
+                }
 		    break;
         
             default: 
-                if(!CLI_MODE)
-                {
-                    $message = '"'.$msg.'" in <i>'.$file.'</i> (ln.'.$errline.')';
-                    $this->_showError($label, $message, debug_backtrace());
-                }
-                else
+                if(CLI_MODE)
                 {
                     $message = '"'.$msg.'" in '.$file.' (ln.'.$errline.')';
                     $this->_showCliError($label, $message, debug_backtrace());
                 }
+
+                $message = '"'.$msg.'" in <i>'.$file.'</i> (ln.'.$errline.')';
+                $this->_showError($label, $message, debug_backtrace());
+                
                 exit;
             break;                           
         }

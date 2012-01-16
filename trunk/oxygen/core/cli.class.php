@@ -20,13 +20,23 @@ class Cli
      */
     public static function getInstance()
     {
-        if(CLI_MODE === false) return false;
+        if((defined('CLI_MODE') && CLI_MODE == false) || !self::isCurrentMode()) return false;       
         
         if(!isset(self::$_instance))
         {
             self::$_instance = new self();
         }
         return self::$_instance;
+    }
+
+    /**
+     * Check if current mode is cli
+     * 
+     * @return boolean
+     */
+    public static function isCurrentMode()
+    {
+        return php_sapi_name() == 'cli';
     }
 
     /**
