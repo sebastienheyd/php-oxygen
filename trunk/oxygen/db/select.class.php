@@ -147,7 +147,7 @@ class f_db_Select
                 if($this->_hasOperator($k))
                 {
                     list($n, $o) = preg_split('/\s/i', trim($k), 0);
-                    $cond['cond'] = Db::quoteIdentifier($n).$o.' ';
+                    $cond['cond'] = Db::quoteIdentifier($n).' '.$o.' ';
                 }
                 else
                 {
@@ -211,7 +211,7 @@ class f_db_Select
                 if($this->_hasOperator($k))
                 {
                     list($n, $o) = preg_split('/\s/i', trim($k), 0);
-                    $cond['cond'] = Db::quoteIdentifier($n).$o.' ';
+                    $cond['cond'] = Db::quoteIdentifier($n).' '.$o.' ';
                 }
                 else
                 {
