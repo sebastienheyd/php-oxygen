@@ -131,6 +131,14 @@
         
         <h2>Alias</h2>
         
+        <h3>fetchCol()</h3>
+        <p>
+            Alias de fetch(PDO::FETCH_COLUMN). Retourne la valeur d'une colonne récupérée par la requête.
+        </p>
+        <php>
+            $q = DB::query('SELECT name FROM customers LIMIT 1')->fetchCol(); // Retourne par exemple "Atelier graphique"
+        </php>
+        
         <h3>fetchAllColumn()</h3>
         <p>
             Alias de fetchAll(PDO::FETCH_COLUMN). Retourne un tableau contenant une seule colonne des résultats récupérés par la requête. 

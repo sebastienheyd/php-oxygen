@@ -483,10 +483,20 @@ class DB
     // ================================================= ALIASES   
     
     /**
+     * Alias of fetch(PDO::FETCH_COLUMN).
+     * 
+     * @return string            Return the column value 
+     */
+    public function fetchCol()
+    {
+        return $this->fetch(PDO::FETCH_COLUMN);
+    }    
+    
+    /**
      * Alias of fetchAll(PDO::FETCH_COLUMN, $colNum). Will fetch result by a column number
      * 
      * @param integer $colNum   [optional] The column number to fetch. Default is null (0)
-     * @return mixed            Return the column value 
+     * @return string           Return the column value 
      */
     public function fetchAllColumn($colNum = null)
     {
