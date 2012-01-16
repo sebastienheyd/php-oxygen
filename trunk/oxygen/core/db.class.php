@@ -574,6 +574,17 @@ class DB
     // ================================================= STRING MANIPULATION
 
     /**
+     * Checks if given string has an operator into
+     *
+     * @param string $sql   String to get operator from
+     * @return boolean      true if string has an operator
+     */
+    public static function hasOperator($sql)
+    {
+        return preg_match("/(\s|<|>|!|=|is null|is not null|like|not like)/i", trim($sql)) > 0;
+    }
+    
+    /**
      * Quote column identifier
      * 
      * @param string $var   Query string to autoquote identifiers

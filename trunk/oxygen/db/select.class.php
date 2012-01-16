@@ -144,9 +144,9 @@ class f_db_Select
             }
             else
             {
-                if($this->_hasOperator($k))
+                if(Db::hasOperator($k))
                 {
-                    list($n, $o) = preg_split('/\s/i', trim($k), 0);
+                    list($n, $o) = preg_split('/\s/i', trim($k), 2);
                     $cond['cond'] = Db::quoteIdentifier($n).' '.$o.' ';
                 }
                 else
@@ -208,9 +208,9 @@ class f_db_Select
             }
             else
             {
-                if($this->_hasOperator($k))
+                if(Db::hasOperator($k))
                 {
-                    list($n, $o) = preg_split('/\s/i', trim($k), 0);
+                    list($n, $o) = preg_split('/\s/i', trim($k), 2);
                     $cond['cond'] = Db::quoteIdentifier($n).' '.$o.' ';
                 }
                 else
@@ -306,18 +306,7 @@ class f_db_Select
     {
         $this->_limit = "$offset, $nbResult";
         return $this;
-    }
-
-    /**
-     * Checks if given string has an operator into
-     *
-     * @param string $str   Request string
-     * @return boolean      true if string has an operator
-     */
-    private function _hasOperator($str)
-	{
-		return preg_match("/(\s|<|>|!|=|is null|is not null|like)/i", trim($str)) > 0;
-	}       
+    } 
 
     /**
      * Build the select request to execute
