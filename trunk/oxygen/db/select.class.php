@@ -467,6 +467,17 @@ class f_db_Select
     }
     
     /**
+     * Alias of fetch(PDO::FETCH_COLUMN).
+     * 
+     * @param string $config    [optional] Config to use from the current config file. Default is "default"
+     * @return string            Return the column value 
+     */
+    public function fetchCol($config = 'default')
+    {
+        return $this->execute($config)->fetch(PDO::FETCH_COLUMN);
+    }   
+    
+    /**
      * Alias of fetchAll(PDO::FETCH_COLUMN, $colNum). Will fetch result by a column number
      * 
      * @param integer $colNum   [optional] The column number to fetch. Default is null (0)
