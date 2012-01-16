@@ -32,7 +32,7 @@ class f_form_Captcha
     public static function getFormTags($formId = 'hcptch')
     {        
         // build the spinner key with current time and remote address, encrypt it
-        $spinner = Security::aesEncrypt(serialize(array(time(), $_SERVER['REMOTE_ADDR'])));
+        $spinner = Security::encode(serialize(array(time(), $_SERVER['REMOTE_ADDR'])));
  
         // put a random invisible style, to fool spambots a little bit ;-)
         $styles = array('position:absolute;left:-'.mt_rand(10000, 20000).'px;', 'display: none');        
@@ -74,7 +74,7 @@ class f_form_Captcha
         }        
         
         // get datas from the encrypted spinner key
-        list($timestamp, $remoteAddr) = @unserialize(Security::aesDecrypt($values->spinner));
+        list($timestamp, $remoteAddr) = @unserialize(Security::decode($values->spinner));
         
         // check if form is posted at the right time and from the right remote address
         if(time() - $timestamp > $timeLimit || $_SERVER['REMOTE_ADDR'] != $remoteAddr)
