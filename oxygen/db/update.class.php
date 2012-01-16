@@ -83,10 +83,10 @@ class f_db_Update
             }
             else
             {
-                if($this->_hasOperator($k))
+                if(Db::hasOperator($k))
                 {
-                    list($n, $o) = preg_split('/\s/i', trim($k), 0);
-                    $cond['cond'] = Db::quoteIdentifier($n).$o.' ';
+                    list($n, $o) = preg_split('/\s/i', trim($k), 2);
+                    $cond['cond'] = Db::quoteIdentifier($n).' '.$o.' ';
                 }
                 else
                 {
@@ -153,16 +153,5 @@ class f_db_Update
         $q = Db::query($sql, $config)->execute($this->_vars);
         
         return is_object($q) ? $q->count() : 0;
-    }    
-    
-    /**
-     * Checks if given string has an operator into
-     *
-     * @param string $str   String to get operator from
-     * @return boolean      true if string has an operator
-     */
-    private function _hasOperator($str)
-	{
-		return preg_match("/(\s|<|>|!|=|is null|is not null|like)/i", trim($str)) > 0;
-	}      
+    }             
 }
