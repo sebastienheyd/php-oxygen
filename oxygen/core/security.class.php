@@ -50,7 +50,7 @@ class Security
         $iv    = mcrypt_create_iv($size, MCRYPT_RAND);
         $crypt = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $text, MCRYPT_MODE_ECB, $iv);
         
-        return trim(base64_encode($crypt));
+        return rtrim(strtr(base64_encode($crypt), '+/', '-_'), '=');
     }
     
     /**
@@ -69,7 +69,9 @@ class Security
         
         $size  = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
         $iv    = mcrypt_create_iv($size, MCRYPT_RAND);
-        return rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, base64_decode($text), MCRYPT_MODE_ECB, $iv), "\0");
+        $text  = base64_decode(str_pad(strtr($text, '-_', '+/'), strlen($text) % 4, '=', STR_PAD_RIGHT));
+        
+        return rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $text, MCRYPT_MODE_ECB, $iv), "\0");
     }   
     
     /**
