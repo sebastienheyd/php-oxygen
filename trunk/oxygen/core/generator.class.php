@@ -17,7 +17,7 @@ class Generator
      * Generate classes files for the given table name
      * 
      * @param string $tableName     Input table name
-     * @param string $prefix        [optional] Table prefix, will be added to table name. Default is ''
+     * @param string $prefix        [optional] Table prefix, will be remove to model name
      * @param string $config        [optional] Database configuration to use from the current config file. Default is "default"
      * @return boolean              Return true if generation is successful
      */

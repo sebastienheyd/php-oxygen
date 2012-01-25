@@ -109,12 +109,13 @@ class Cli
      * @param string $question
      * @return boolean
      */
-    public function confirm($question)
+    public function confirm($question, $values = array())
 	{
-        $test = strtolower($this->input($question.' (y/n) : '));
-        if($test == 'y') return true;
-        if($test == 'n') return false;
-        $this->confirm($question);
+        if(empty($values)) $values = array('y' => true, 'n' => false);
+        if(count($values) <= 4) $opts = ' ('.join('/', array_keys ($values)).')';
+        $test = strtolower($this->input($question.$opts.' : '));
+        if(array_key_exists($test, $values)) return $values[$test];
+        return $this->confirm($question);
 	}
     
     /**
