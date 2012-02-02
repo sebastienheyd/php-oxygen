@@ -11,18 +11,9 @@
  * @package     PHP Oxygen
  */
 
-class f_db_Delete
+class f_db_Delete extends f_db_Where
 {
-    private $_cols = array();
-    private $_distinct = false;
     private $_from = array();
-    private $_where = array();
-    private $_order = array();
-    private $_group = array();
-    private $_vars = array();
-    private $_join;
-    private $_executed = false;
-    private $_limit;
 
     /**
      * @return f_db_Delete
@@ -42,73 +33,47 @@ class f_db_Delete
     {
         $this->_from = $table;
         return $this;
-    }
-
-
+    }  
+    
     /**
      * Add a where condition
      *
      * @param string $key       Column to filter on
      * @param mixed $value      [optional] Value to search, set it to null if values are directly setted in $key. Default is null
      * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
-     * @return f_db_Delete      Return current instance of f_db_Delete
-     */
+     * @return f_db_Delete      Current instance of f_db_Delete
+     */    
     public function where($key, $value = null, $type = 'AND')
     {
-        $cond = array();
-
-        if (!is_array($key))
-		{
-			$key = array($key => $value);
-		}
-
-        foreach($key as $k => $v)
-        {
-            $varName = 'var'.count($this->_where);
-            
-            // case of no escape
-            if(preg_match('/\((.*)\)/i', $k))
-            {
-                if(!is_null($value))
-                {
-                    $k = str_replace('?', ':'.$varName, $k);
-                    $this->_vars[$varName] = $v;
-                }
-                
-                $this->_where[] = array('noescape' => $k);
-                
-                return $this;                    
-            }
-
-            if(is_null($v))
-            {
-                $cond['cond'] = DB::quoteIdentifier($k).' IS NULL ';
-                $cond['var'] = '';
-            }
-            else
-            {
-                if(Db::hasOperator($k))
-                {
-                    list($n, $o) = preg_split('/\s/i', trim($k), 2);
-                    $cond['cond'] = Db::quoteIdentifier($n).' '.$o.' ';
-                }
-                else
-                {
-                    $cond['cond'] = DB::quoteIdentifier($k).'= ';
-                }
-
-                $cond['var'] = ':'.$varName;
-                $this->_vars[$varName] = $v;
-            }
-           
-            $cond['type'] = $type;
-
-            $this->_where[] = $cond ;
-        }
-
-        return $this;
+        return parent::where($key, $value, $type);
+    }   
+    
+    /**
+     * Add a IN condition
+     * 
+     * @param string $field     Field name to filter
+     * @param array $values     Array or comma separated list of values to check if present in field
+     * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
+     * @return f_db_Delete      Current instance of f_db_Delete
+     */
+    public function whereIn($field, $values, $type = 'AND')
+    {
+        return parent::whereIn($field, $values, $type);
+    }  
+    
+    /**
+     * Add a NOT IN condition
+     * 
+     * @param string $field     Field name to filter
+     * @param array $values     Array or comma separated list of values to check if present in field
+     * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
+     * @return f_db_Delete      Current instance of f_db_Delete
+     */
+    public function whereNotIn($field, $values, $type = 'AND')
+    {
+        return parent::whereNotIn($field, $values, $type);
     }
-        
+
     /**
      * Build the select request to execute
      *
@@ -119,18 +84,7 @@ class f_db_Delete
     {        
         $sql  = 'DELETE FROM '.$this->_from.' ';     
 
-        $c = count($this->_where);
-        if($c > 0)
-        {
-            $sql .= 'WHERE ';
-
-            foreach($this->_where as $k => $cond)
-            {
-                $sql .= $cond['cond'].$cond['var'].' ';
-
-                if($c > 1 && $c-1 != $k) $sql .= $cond['type'].' ';
-            }
-        }    
+        $sql .= $this->_buildWhere();
         
         $sql = trim($sql);
 
