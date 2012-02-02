@@ -11,12 +11,10 @@
  * @package     PHP Oxygen
  */
 
-class f_db_Update
+class f_db_Update extends f_db_Where
 {
     private $_table;
     private $_values;
-    private $_where;
-    private $_vars;
    
     /**
      *
@@ -39,7 +37,7 @@ class f_db_Update
     {
         $this->_table = $table;
         $this->_values = $values;
-    }  
+    }     
     
     /**
      * Add a where condition
@@ -47,63 +45,38 @@ class f_db_Update
      * @param string $key       Column to filter on
      * @param mixed $value      [optional] Value to search, set it to null if values are directly setted in $key. Default is null
      * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
-     * @return f_db_Update      Return current instance of f_db_Update
-     */
+     * @return f_db_Update      Current instance of f_db_Update
+     */    
     public function where($key, $value = null, $type = 'AND')
     {
-        $cond = array();
-
-        if (!is_array($key))
-		{
-			$key = array($key => $value);
-		}
-
-        foreach($key as $k => $v)
-        {
-            $varName = 'var'.count($this->_where);
-            
-            // case of no escape
-            if(preg_match('/\((.*)\)/i', $k))
-            {
-                if(!is_null($value))
-                {
-                    $k = str_replace('?', ':'.$varName, $k);
-                    $this->_vars[$varName] = $v;
-                }
-                
-                $this->_where[] = array('noescape' => $k);
-                
-                return $this;                    
-            }
-
-            if(is_null($v))
-            {
-                $cond['cond'] = DB::quoteIdentifier($k).' IS NULL ';
-                $cond['var'] = '';
-            }
-            else
-            {
-                if(Db::hasOperator($k))
-                {
-                    list($n, $o) = preg_split('/\s/i', trim($k), 2);
-                    $cond['cond'] = Db::quoteIdentifier($n).' '.$o.' ';
-                }
-                else
-                {
-                    $cond['cond'] = DB::quoteIdentifier($k).'= ';
-                }
-
-                $cond['var'] = ':'.$varName;
-                $this->_vars[$varName] = $v;
-            }
-           
-            $cond['type'] = $type;
-
-            $this->_where[] = $cond ;
-        }
-
-        return $this;
-    }
+        return parent::where($key, $value, $type);
+    }   
+    
+    /**
+     * Add a IN condition
+     * 
+     * @param string $field     Field name to filter
+     * @param array $values     Array or comma separated list of values to check if present in field
+     * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
+     * @return f_db_Update      Current instance of f_db_Update
+     */
+    public function whereIn($field, $values, $type = 'AND')
+    {
+        return parent::whereIn($field, $values, $type);
+    }  
+    
+    /**
+     * Add a NOT IN condition
+     * 
+     * @param string $field     Field name to filter
+     * @param array $values     Array or comma separated list of values to check if present in field
+     * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
+     * @return f_db_Update      Current instance of f_db_Update
+     */
+    public function whereNotIn($field, $values, $type = 'AND')
+    {
+        return parent::whereNotIn($field, $values, $type);
+    }     
         
     /**
      * Execute the current update builded query
@@ -126,32 +99,10 @@ class f_db_Update
         
         $sql .= join(',', $fields).' ';
         
-        $c = count($this->_where);
-        if($c > 0)
-        {
-            $sql .= 'WHERE ';
-
-            foreach($this->_where as $k => $cond)
-            {
-                if(isset($cond['noescape']))
-                {
-                    $sql .= $cond['noescape'].' ';
-                }
-                else
-                {
-                    $condition = '';                    
-                    if(isset($cond['cond'])) $condition = $cond['cond'];
-                    
-                    $sql .= $condition.$cond['var'].' ';
-
-                }
-                
-                if($c > 1 && $c-1 != $k) $sql .= $cond['type'].' ';                    
-            }
-        } 
+        $sql .= $this->_buildWhere();
 
         $q = Db::query($sql, $config)->execute($this->_vars);
         
         return is_object($q) ? $q->count() : 0;
-    }             
+    }        
 }

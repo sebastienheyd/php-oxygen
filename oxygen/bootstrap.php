@@ -38,6 +38,9 @@ define('WEBAPP_MODULES_DIR', WEBAPP_DIR.DS.'module');
 define('CONFIG_DIR', WEBAPP_DIR.DS.'config');
 define('LOGS_DIR', WEBAPP_DIR.DS.'logs');
 define('CLI_MODE', php_sapi_name() == 'cli');
+define('DATETIME_SQL', 'Y-m-d H:i:s');
+define('DATE_SQL', 'Y-m-d');
+define('TIME_SQL', 'H:i:s');
 if(isset($_SERVER['HTTP_HOST'])) define('HTTP_HOST', $_SERVER['HTTP_HOST']);
 
 // Load additional procedural functions

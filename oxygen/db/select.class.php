@@ -11,16 +11,13 @@
  * @package     PHP Oxygen
  */
 
-class f_db_Select
+class f_db_Select extends f_db_Where
 {
     private $_cols = array();
     private $_distinct = false;
-    private $_from = array();
-    private $_where = array();
-    private $_order = array();
-    private $_having = array();
+    private $_from = array();    
+    private $_order = array();    
     private $_group = array();
-    private $_vars = array();
     private $_join;
     private $_executed = false;
     private $_limit;
@@ -41,7 +38,7 @@ class f_db_Select
      */
     public function select(array $cols = array())
     {
-        $this->_cols = array_merge($this->_cols, $cols);        
+        $this->_cols = array_merge($this->_cols, $cols); 
         return $this;
     }
 
@@ -69,7 +66,59 @@ class f_db_Select
         $this->_from = array_merge($this->_from, $tables);
         return $this;
     }
-
+    
+    /**
+     * Add a where condition
+     *
+     * @param string $key       Column to filter on
+     * @param mixed $value      [optional] Value to search, set it to null if values are directly setted in $key. Default is null
+     * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
+     * @return f_db_Select      Current instance of f_db_Select
+     */    
+    public function where($key, $value = null, $type = 'AND')
+    {
+        return parent::where($key, $value, $type);
+    }   
+    
+    /**
+     * Add a IN condition
+     * 
+     * @param string $field     Field name to filter
+     * @param array $values     Array or comma separated list of values to check if present in field
+     * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
+     * @return f_db_Select      Current instance of f_db_Select
+     */
+    public function whereIn($field, $values, $type = 'AND')
+    {
+        return parent::whereIn($field, $values, $type);
+    }  
+    
+    /**
+     * Add a NOT IN condition
+     * 
+     * @param string $field     Field name to filter
+     * @param array $values     Array or comma separated list of values to check if present in field
+     * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
+     * @return f_db_Select      Current instance of f_db_Select
+     */
+    public function whereNotIn($field, $values, $type = 'AND')
+    {
+        return parent::whereNotIn($field, $values, $type);
+    } 
+    
+    /**
+     * Add a having condition
+     *
+     * @param string $key       Column to filter on
+     * @param mixed $value      [optional] Value to search, set it to null if values are directly setted in $key. Default is null
+     * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
+     * @return f_db_Select      Current instance of f_db_Select
+     */    
+    protected function having($key, $value = null, $type = 'AND')
+    { 
+        return parent::having($key, $value, $type);
+    }    
+    
     /**
      * Add a table to join
      *
@@ -100,165 +149,7 @@ class f_db_Select
 
         $this->_join[] = array('table' => Db::quoteTable($table), 'condition' => $condition, 'type' => $type);
         return $this;
-    }
-
-    /**
-     * Add a where condition
-     *
-     * @param string $key       Column to filter on
-     * @param mixed $value      [optional] Value to search, set it to null if values are directly setted in $key. Default is null
-     * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
-     * @return f_db_Select      Current instance of f_db_Select
-     */
-    public function where($key, $value = null, $type = 'AND')
-    {
-        $cond = array();
-
-        if (!is_array($key))
-		{
-			$key = array($key => $value);
-		}
-
-        foreach($key as $k => $v)
-        {
-            $varName = 'var'.count($this->_where);
-            
-            // case of no escape
-            if(preg_match('/\((.*)\)/i', $k))
-            {
-                if(!is_null($value))
-                {
-                    $k = str_replace('?', ':'.$varName, $k);
-                    $this->_vars[$varName] = $v;
-                }
-                
-                $this->_where[] = array('noescape' => $k);
-                
-                return $this;                    
-            }
-
-            if(is_null($v))
-            {
-                $cond['cond'] = DB::quoteIdentifier($k).' IS NULL ';
-                $cond['var'] = '';
-            }
-            else
-            {
-                if(Db::hasOperator($k))
-                {
-                    list($n, $o) = preg_split('/\s/i', trim($k), 2);
-                    $cond['cond'] = Db::quoteIdentifier($n).' '.$o.' ';
-                }
-                else
-                {
-                    $cond['cond'] = DB::quoteIdentifier($k).'= ';
-                }
-
-                $cond['var'] = ':'.$varName;
-                $this->_vars[$varName] = $v;
-            }
-           
-            $cond['type'] = $type;
-
-            $this->_where[] = $cond ;
-        }
-
-        return $this;
-    }
-    
-    /**
-     * Add a having condition
-     *
-     * @param string $key       Column to filter on
-     * @param mixed $value      [optional] Value to search, set it to null if values are directly setted in $key. Default is null
-     * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
-     * @return f_db_Select      Current instance of f_db_Select
-     */    
-    public function having($key, $value = null, $type = 'AND')
-    {
-        $cond = array();
-
-        if (!is_array($key))
-		{
-			$key = array($key => $value);
-		}
-
-        foreach($key as $k => $v)
-        {
-            $varName = 'hvar'.count($this->_having);
-            
-            // case of no escape
-            if(preg_match('/\((.*)\)/i', $k))
-            {
-                if(!is_null($value))
-                {
-                    $k = str_replace('?', ':'.$varName, $k);
-                    $this->_vars[$varName] = $v;
-                }
-                
-                $this->_having[] = array('noescape' => $k);
-                
-                return $this;                    
-            }
-
-            if(is_null($v))
-            {
-                $cond['cond'] = DB::quoteIdentifier($k).' IS NULL ';
-                $cond['var'] = '';
-            }
-            else
-            {
-                if(Db::hasOperator($k))
-                {
-                    list($n, $o) = preg_split('/\s/i', trim($k), 2);
-                    $cond['cond'] = Db::quoteIdentifier($n).' '.$o.' ';
-                }
-                else
-                {
-                    $cond['cond'] = DB::quoteIdentifier($k).'= ';
-                }
-
-                $cond['var'] = ':'.$varName;
-                $this->_vars[$varName] = $v;
-            }
-           
-            $cond['type'] = $type;
-
-            $this->_having[] = $cond ;
-        }
-
-        return $this;
-    }    
-    
-    /**
-     * Add a IN condition
-     * 
-     * @param string $field     Field name to filter
-     * @param array $values     Array of values to check if present in field
-     * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
-     * @return f_db_Select      Current instance of f_db_Select
-     */
-    public function whereIn($field, array $values, $type = 'AND')
-    {
-        $values = join(',', array_map(array('Db', 'escape'), $values));
-        $this->_where[] = array('noescape' => Db::quoteIdentifier($field).' IN ('.$values.')', 'type' => $type);
-        return $this;
-    }
-    
-    /**
-     * Add a NOT IN condition
-     * 
-     * @param string $field     Field name to filter
-     * @param array $values     Array of values to check if present in field
-     * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
-     * @return f_db_Select      Current instance of f_db_Select
-     */
-    public function whereNotIn($field, array $values, $type = 'AND')
-    {
-        $values = join(',', array_map(array('Db', 'escape'), $values));
-        $this->_where[] = array('noescape' => Db::quoteIdentifier($field).' NOT IN ('.$values.')', 'type' => $type);
-        return $this;
-    }
+    }   
     
     /**
      * Add a group by condition
@@ -282,7 +173,7 @@ class f_db_Select
      */
     public function orderBy($key, $type = 'ASC')
     {
-        if(preg_match('/\((.*)\)|([^a-zA-Z0-9\.`\'\\s"])/i', $key))
+        if(preg_match('/\((.*)\)/i', $key))
         {
             $this->_order[] = array('field' => $key, 'type' => '');
         }
@@ -306,7 +197,7 @@ class f_db_Select
     {
         $this->_limit = "$offset, $nbResult";
         return $this;
-    } 
+    }    
 
     /**
      * Build the select request to execute
@@ -332,36 +223,16 @@ class f_db_Select
             }
         }
 
-        $c = count($this->_where);
-        if($c > 0)
-        {
-            $sql .= 'WHERE ';
-
-            foreach($this->_where as $k => $cond)
-            {
-                if(isset($cond['noescape']))
-                {
-                    $sql .= $cond['noescape'].' ';
-                }
-                else
-                {
-                    $condition = '';                    
-                    if(isset($cond['cond'])) $condition = $cond['cond'];                    
-                    $sql .= $condition.$cond['var'].' ';
-                }
-                
-                if($c > 1 && $k+1 < $c) $sql .= $cond['type'].' ';                   
-            }
-        }            
+        $sql .= $this->_buildWhere();
         
         if(!empty($this->_group))
         {
             $sql .= 'GROUP BY ';            
-            $sql .= join(', ', array_map(array('DB', 'quoteIdentifier'), $this->_group));           
+            $sql .= join(', ', array_map(array('DB', 'quoteIdentifier'), $this->_group)).' ';           
         }
         
         $c = count($this->_order);
-        
+
         if($c > 0)
         {
             $sql .= 'ORDER BY ';
@@ -373,29 +244,7 @@ class f_db_Select
             }
         }
         
-        $c = count($this->_having);
-        if($c > 0)
-        {
-            $sql .= 'HAVING ';
-
-            foreach($this->_having as $k => $cond)
-            {
-                if(isset($cond['noescape']))
-                {
-                    $sql .= $cond['noescape'].' ';
-                }
-                else
-                {
-                    $condition = '';                    
-                    if(isset($cond['cond'])) $condition = $cond['cond'];
-                    
-                    $sql .= $condition.$cond['var'].' ';
-
-                }
-                
-                if($c > 1 && $k+1 < $c) $sql .= $cond['type'].' ';                    
-            }
-        }         
+        $sql .= $this->_buildHaving();
         
         if(isset($this->_limit))
         {
@@ -403,7 +252,7 @@ class f_db_Select
         }        
 
         return trim($sql);
-    }
+    }        
 
     /**
      * Execute the builded query
@@ -423,11 +272,22 @@ class f_db_Select
      * @param integer $fetchStyle   [optional] Fetching type, use PDO static vars. Default is PDO::FETCH_ASSOC
      * @param string $args          [optional] Additionnal args used by some fetch style. Default is null
      * @param string $config        [optional] Config to use from the current config file. Default is "default"
-     * @return array                Return the first row results as an array
+     * @return array|false          Return the first row results as an array or false if no result
      */
     public function fetch($fetchStyle = PDO::FETCH_ASSOC, $args = null, $config = 'default')
     {        
         return $this->execute($config)->fetch($fetchStyle, $args);
+    }
+    
+    /**
+     * Alias of fetch(PDO::FETCH_COLUMN)
+     * 
+     * @param string $config        [optional] Config to use from the current config file. Default is "default"
+     * @return string|false          Return the first row results as an array or false if no result
+     */
+    public function fetchCol($config = 'default')
+    {
+        return $this->fetch(PDO::FETCH_COLUMN, null, $config);
     }
     
     /**
@@ -436,7 +296,7 @@ class f_db_Select
      * @param integer $fetchStyle   [optional] Fetching type, use PDO static vars. Default is PDO::FETCH_ASSOC
      * @param string $args          [optional] Additionnal args used by some fetch style. Default is null
      * @param string $config        [optional] Config to use from the current config file. Default is "default" 
-     * @return array                Return an array of results
+     * @return array                Return an array of results or an empty array if none
      */    
     public function fetchAll($fetchStyle = PDO::FETCH_ASSOC, $args = null, $config = 'default')
     {
@@ -454,17 +314,6 @@ class f_db_Select
     {
         return $this->execute($config)->fetchObject($className);
     }
-    
-    /**
-     * Alias of fetch(PDO::FETCH_COLUMN).
-     * 
-     * @param string $config    [optional] Config to use from the current config file. Default is "default"
-     * @return string            Return the column value 
-     */
-    public function fetchCol($config = 'default')
-    {
-        return $this->execute($config)->fetch(PDO::FETCH_COLUMN);
-    }   
     
     /**
      * Alias of fetchAll(PDO::FETCH_COLUMN, $colNum). Will fetch result by a column number
