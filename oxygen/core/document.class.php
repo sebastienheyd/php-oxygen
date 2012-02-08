@@ -14,46 +14,32 @@
 abstract class Document
 {
     // Add extra parameters to the instancied document
-    private static $extraParams = array();
-        
-    /**
-     * Create a new document
-     * 
-     * @return object   Return a new instance of the current document
-     */
-    public static function create()
-    {
-        // Get the class name by the get_called_class method
-        $class = get_called_class();
-        $c = new $class();
-        $c->__new = true;
-        return $c;
-    }  
-    
+    private static $extraParams = array();        
+       
     /**
      * Load a document with this class from the database
      * 
      * @param string $args      Argument(s) to use for loading, can be multiple (multiple method arguments comma separated)
      * @return object           Return a new instance of the current document
      */
-    public static function load($args)
+    protected static function _load($args)
     {
         $args = func_get_args();
         
-        if(empty($args)) trigger_error('load : empty arg', E_USER_ERROR);
+        if(count($args) <= 1) trigger_error('load : empty arg', E_USER_ERROR);
                 
-        list($className, $table, $primary) = self::getVars(get_called_class());        
+        $className = array_pop($args);  
+                        
+        list($className, $tableName, $primary) = self::getVars($className);
 
-        if(count($primary) > count($args)) trigger_error('load : args number not corresponding to primary keys number', E_USER_ERROR);
-
-        $class = new $className;
+        if(count($primary) > count($args)) trigger_error('load : args number not corresponding to primary keys number', E_USER_ERROR);        
                         
         if(count($primary) == 1 && !empty($args))
         {
-            return DB::select()->from($class->getTableName())->where($primary[0], $args[0])->fetchObject($className);
+            return DB::select()->from($tableName)->where($primary[0], $args[0])->fetchObject($className);
         }
         
-        $q = DB::select()->from($class->getTableName());
+        $q = DB::select()->from($tableName);
         
         foreach($primary as $k => $v)
         {
@@ -66,13 +52,15 @@ abstract class Document
     /**
      * Load all documents with this class from the database
      * 
+     * @param string $className         Class name of the documents to get
      * @param string $order             [optional] Order by this field. Default is null.
      * @param string $orderDirection    [optional] Order direction. Default is 'ASC'
      * @return type 
      */
-    public static function loadAll($order = null, $orderDirection = 'ASC')
+    protected static function _loadAll($className, $order = null, $orderDirection = 'ASC')
     {
-        list($className, $table) = self::getVars(get_called_class());
+        list($className, $table) = self::getVars($className);
+        
         $sel = DB::select()->from($table);
         
         if(!is_null($order))
@@ -184,6 +172,8 @@ abstract class Document
         $vars[] = $class->getTableName();
         $vars[] = $class->getPrimary();
 
+        $class = null;
+        
         return $vars;
     }
     
@@ -308,7 +298,7 @@ abstract class Document
             break;
         
             default:
-                throw new BadMethodCallException('Method '.$method.' does not exist');
+                throw new BadMethodCallException('Method '.$name.' does not exist');
             break;        
         }
     }

@@ -36,7 +36,7 @@ class {$className} extends Document
 {/if}
         return $txt;
     }
-
+    
     /**
      * @return string
      */
@@ -142,6 +142,7 @@ class {$className} extends Document
     }
 {/if}
 
+{if $field.Extra != 'auto_increment'}
    /**
     * @return {$className}
     */
@@ -150,6 +151,33 @@ class {$className} extends Document
         $this->{$field.Field} = $value;
         return $this;
     }
-
+{/if}
+    
 {/foreach}
+
+    ################## GENERAL METHODS ####################
+
+    /**
+     * @return {$className}
+     */
+    public static function create()
+    {
+        return new self();
+    }    
+    
+    /**
+     * @return {$className}
+     */
+    public static function load($args)
+    {
+        return parent::_load($args, '{$className}');
+    }
+        
+    /**
+     * @return {$className}[]
+     */
+    public static function loadAll($order = null, $orderDirection = 'ASC')
+    {
+        return parent::_loadAll('{$className}', $order, $orderDirection);
+    }     
 }
