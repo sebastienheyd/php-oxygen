@@ -159,11 +159,14 @@ class File
         while (ob_get_level()) { ob_end_clean(); }               
 
         $lastModified = filemtime($this->_file);
-        $gmDate = gmdate(DATE_RFC822, $lastModified).' GMT';
+        $gmDate = gmdate(DATE_RFC1123, $lastModified).' GMT';
+        $expires = 60*60*24*365; // one year
         
         // Set the file header and read the file
+        header("Pragma: public");
+        header("Cache-Control: maxage=".$expires);
         header("content-type: ".$this->getMimeType());              
-        header("Expires: " . gmdate(DATE_RFC822, strtotime("1 year")).' GMT');           
+        header("Expires: " . gmdate(DATE_RFC1123, time()+$expires).' GMT');           
         
         if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $lastModified)
         {

@@ -10,9 +10,9 @@
 html { font-size:100.01%; }
 body {
   font-size: 75%;
-  color: #222;
+  color: #444;
   background: #fff;
-  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font-family: "Gill Sans","Gill Sans MT",Calibri,sans-serif;
 }
 
 
@@ -51,7 +51,7 @@ a:focus,
 a:hover     { color: #09f; }
 a           { color: #06c; text-decoration: underline; }
 
-blockquote  { margin: 1.5em; color: #666; font-style: italic; }
+blockquote  { margin: 1.5em 0; color: #666; font-style: italic; }
 strong,dfn  { font-weight: bold; }
 em,dfn      { font-style: italic; }
 sup, sub    { line-height: 0; }

@@ -41,11 +41,11 @@ h2
 
 h3
 {
-    font-family: monospace;
+    font-family: 'andale mono', 'lucida console', monospace;
     font-size: 1.25em;
-    font-weight: bold;
+    /* font-weight: bold; */
     line-height: 1.75em;
-    border-bottom: 1px dashed #DDD;
+    border-bottom: 1px dashed #999;
     color: #7f007f;
 }
 
