@@ -48,7 +48,7 @@ class Upload
         }
         else
         {
-            if(is_uploaded_file($_FILES[$name]) && $_FILES[$name]['tmp_name'] == '')
+            if(is_uploaded_file($_FILES[$name]['tmp_name']))
             {
                 foreach($_FILES[$name] as $k => $v)
                 {

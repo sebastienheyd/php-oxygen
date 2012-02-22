@@ -58,7 +58,7 @@ class f_db_Insert
         
         foreach($this->_values as $k => $v)
         {
-            is_string($k) ? $cols[] = $k : $k = ':var_'.$k;
+            is_string($k) ? $cols[] = $k : $k = 'var_'.$k;
             $vals[':'.$k] = $v;
         }
         

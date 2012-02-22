@@ -315,7 +315,7 @@ if (!function_exists('redirect'))
      * This function will redirect to the given url by using the header function.
      *
      * @param string $uri       [optional] The url where to redirect, you can use canonical urls (will take current host automaticaly). Default is home
-     * @param string $method    [optional] The method to use, can be "location" or "refresh"
+     * @param string $method    [optional] The method to use, can be "location", "refresh" or "javascript"
      * @param integer $code     [optional] The http header code to use. Default is 302 (Moved Temporarily)
      */
 	function redirect($uri = '', $method = 'location', $code = 302)
@@ -329,6 +329,11 @@ if (!function_exists('redirect'))
         if($method == 'refresh')
         {
             header("Refresh:0;url=".$uri);
+        }
+        else if($method == 'javascript')
+        {
+            while (ob_get_level()) { ob_end_clean(); }
+            echo '<script language="javascript">location.href="'.$uri.'";</script>';            
         }
         else
         {
