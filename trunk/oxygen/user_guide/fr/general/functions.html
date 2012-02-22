@@ -61,7 +61,7 @@
         </php>
         
         <h3>redirect()</h3>
-        <p>Cette fonction permet d'effectuer une redirection vers une url. Pour cela elle va utiliser la fonction header de php avec la possibilité d'utiliser une redirection par location ou refresh.</p>
+        <p>Cette fonction permet d'effectuer une redirection vers une url. Pour cela elle va utiliser la fonction header de php avec la possibilité d'utiliser une redirection par location, refresh ou javascript (par affichage d'une balise dans la page).</p>
         <p>Un troisième argument permet de définir le code http à renvoyer, par défaut 302 (Déplacé temporairement)</p>
         <blockquote class="info">
             Si l'url donnée ne débute pas par http:// ou https://, l'hôte courant est automatiquement ajouté. Exemple: "/admin" donnera "http://localhost/admin"
@@ -70,6 +70,7 @@
             redirect('http://www.google.com');                  // Redirection vers l'url par location, header 302
             redirect('http://www.google.com', 'refresh');       // Redirection vers l'url par refresh
             redirect('http://www.google.com', 'location', 303); // Redirection vers l'url par location, header 303
+            redirect('http://www.google.com', 'javascript');    // Redirection vers l'url par affichage d'un javascript
             redirect('/admin');                                 // Redirection vers http://localhost/admin (par exemple)
         </php>
         
