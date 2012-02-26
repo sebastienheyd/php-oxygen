@@ -40,6 +40,12 @@ class Router
         $search = Search::file('config/routes.xml')->setDepth(2,2);
         $files = array_merge($search->in(MODULES_DIR)->fetch(), $search->in(WEBAPP_MODULES_DIR)->fetch());
         
+        // Retrieve from webapp/config folder
+        if(is_file(WEBAPP_DIR.DS.'config'.DS.'routes.xml'))
+        {
+            $files[] = WEBAPP_DIR.DS.'config'.DS.'routes.xml';
+        }
+        
         // Get new instance of Uri
         $uriInst = Uri::getInstance();
 
@@ -105,7 +111,7 @@ class Router
                 $uriInst->setUri($defaultRedirect);
             }
         }        
-        
+
         return $uriInst;
     }
     
