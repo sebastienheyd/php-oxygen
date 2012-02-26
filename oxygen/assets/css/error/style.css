@@ -24,13 +24,12 @@ h1 {
 
 h2 {
     font-size:              14px;
-    /*border:                 1px solid #CCC;
-    background-color:       #FDFB9F;*/
     background:             #FFDDDD;
     padding:                10px;    
+    margin-bottom:          20px;   
     border-radius:          5px;
-    margin-bottom:          20px;
-    border-radius:          5px;    
+    -moz-border-radius:     5px;
+	-webkit-border-radius:  5px;    
 }
 
 a#showStack

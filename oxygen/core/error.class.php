@@ -33,19 +33,20 @@ class Error
     /**
      * Main error handler, called by init.php
      * 
-     * @param integer   $errno      Type of error as integer
+     * @param integer   $errno      Level of the error raised
      * @param string    $errstr     Error message
-     * @param string    $errfile    Error file
-     * @param integer   $errline    Error line
+     * @param string    $errfile    Filename that the error was raised in
+     * @param integer   $errline    Line number the error was raised at
+     * @param array     $errcontext   Array of every variable that existed in the scope the error was triggered in
      * @return void 
      */
-    public function errorHandler($errno, $errstr, $errfile, $errline)
+    public function errorHandler($errno, $errstr, $errfile, $errline, $errcontext)
     {
         if(error_reporting() == 0) return false;                
         
         $label = isset($this->_levels[$errno]) ? $this->_levels[$errno] : $errno;
         $msg = str_replace(PROJECT_DIR.DS, '', $errstr);
-        $file = str_replace(PROJECT_DIR.DS, '', $errfile);
+        $file = str_replace(PROJECT_DIR.DS, '', $errfile);        
 
         switch ($errno)
 		{
