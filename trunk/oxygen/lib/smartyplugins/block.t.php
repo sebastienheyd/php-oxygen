@@ -25,10 +25,10 @@ function smarty_block_t($params, $content, &$smarty, &$repeat)
     if($repeat == false)
     {
         $srcLang = isset($smarty->tpl_vars['TPL_LANG']) ? $smarty->tpl_vars['TPL_LANG']->value : 'en';        
-        
-        $path = explode(DS, str_replace(PROJECT_DIR.DS, '', $smarty->template_filepath));
+
+        $path = explode(DS, str_replace(PROJECT_DIR.DS, '', $smarty->template_resource));
         $isModule = array_search('module', $path);
-        
+
         if($isModule !== false)
         {
             $module = $path[$isModule+1];

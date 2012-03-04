@@ -287,19 +287,17 @@ class Controller
 
         $className = $this->_getViewClassName($model, $viewName);
 		$methodName = self::DEFAULT_ACTION_METHOD;
-        try
+        
+        if(class_exists($className))
         {
-            if(class_exists($className))
-            {
-                $class = new $className();            
-            }
+            $class = new $className();            
         }
-        catch(Exception $e)
+        else
         {
-            // View class does not exist, try to find an html template
             if($this->_renderView($className, $model)) return '';
             trigger_error('Cannot load file for class '.$className, E_USER_ERROR);
         }
+        
         if(!$class instanceof View) trigger_error ('Class '.$className.' does not extends View', E_USER_ERROR);
         $class->setModel($model->getModel());
         $class->setModule($this->_module);
