@@ -68,7 +68,7 @@ class f_i18n_Xliff
     public function translate($string, $args = array(), $srcLang = 'en', $origin = 'default', $addToFile = true)
     {        
         if(is_null($this->_xml)) $this->_createFile($string, $srcLang, $origin);
-
+        
         $t = $this->_xml->xpath('//ns:file[@source-language="'.$srcLang.'"][@original="'.$origin.'"]//ns:trans-unit/ns:source[.="'.$string.'"]/../ns:target');                   
             
         if(empty($t))
@@ -126,18 +126,22 @@ class f_i18n_Xliff
         $xpath = new DOMXpath($doc);
         $xpath->registerNamespace('ns', 'urn:oasis:names:tc:xliff:document:1.2');
         
-        // first query, get body for the given language and origin
+        // first query, check if there is already a source item for the given string
+        $check = $xpath->query('//ns:file[@source-language="'.$srcLang.'"][@original="'.$origin.'"]//ns:trans-unit/ns:source[.="'.$string.'"]');      
+        if($check->length > 0) return;
+        
+        // second query, get body for the given language and origin
         $bodies = $xpath->query('//ns:file[@source-language="'.$srcLang.'"][@original="'.$origin.'"]/ns:body');                
         $body = $bodies->length > 0 ? $bodies->item(0) : null;  
 
-        // second query, get all trans-units for the given language and origin
+        // third query, get all trans-units for the given language and origin
         $elements = $xpath->query('//ns:file[@source-language="'.$srcLang.'"][@original="'.$origin.'"]//ns:trans-unit');                 
-        $nextId = $elements->length + 1;
+        $nextId = $elements->length + 1;       
 
         // create source node
         $source = $doc->createElement('source');  
         
-        if(preg_match('/[<>]/i', $string))
+        if(preg_match('/[<&]/i', $string))
         {
             $sourceText = $doc->createCDATASection($string);
         }
