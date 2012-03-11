@@ -26,6 +26,6 @@ class f_form_check_Email extends f_form_check_Abstract
     
     public function getError()
     {
-        return $this->translate('%name% is not a correct e-mail');
+        return $this->translate('The e-mail address is not valid');
     }
 }

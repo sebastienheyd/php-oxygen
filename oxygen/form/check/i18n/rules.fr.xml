@@ -3,12 +3,12 @@
   <file source-language="en" datatype="plaintext" original="rules">
     <body>
       <trans-unit id="1">
-        <source>%name% field is required</source>
-        <target>%name% est requis</target>
+        <source>The field is required</source>
+        <target>Le champ est requis</target>
       </trans-unit>
       <trans-unit id="2">
-        <source>%name% is not a correct e-mail</source>
-        <target>%name% n'est pas une adresse e-mail correcte</target>
+        <source>The e-mail address is not valid</source>
+        <target>L'adresse e-mail n'est pas valide</target>
       </trans-unit>
       <trans-unit id="3">
         <source>%name% must have at least %nb% characters</source>

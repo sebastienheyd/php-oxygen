@@ -103,10 +103,9 @@ class Controller
             //... process handleError()
             $mv = $this->_handleError();
         }
-
 		$view = '';
 		if(is_string($mv)) $view = $mv;
-		if(is_object($mv)) $view = $this->_processView($mv);        
+		if(is_object($mv)) $view = $this->_processView($mv);
 
         $this->_removeFromChain();
         if(empty($this->_chain['classNames'])) ob_end_flush ();
@@ -282,7 +281,10 @@ class Controller
 	 */
 	private function _processView($model)
 	{
-        $viewName = ucfirst($model->getView());
+        $viewName = '';
+
+        if(method_exists($model, 'setView')) $viewName = ucfirst($model->getView());
+
         if(!is_string($viewName) || $viewName == '')  return '';
 
         $className = $this->_getViewClassName($model, $viewName);
