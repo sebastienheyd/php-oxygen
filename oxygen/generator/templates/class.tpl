@@ -133,7 +133,26 @@ class {$className} extends Document
     {
         try
         {
-            return Date::fromMySql($this->{$field.Field})->toSmartFormat($format);
+            $dateObj = $this->{$field.getMethodName}();
+            if(is_null($dateObj)) return '';
+            return $this->{$field.getMethodName}()->toSmartFormat($format);
+        }
+        catch(Exception $e)
+        {
+            return '';
+        }        
+    }
+    
+    /**
+     * @return string
+     */
+    public function {$field.getMethodName}Diff()
+    {
+        try
+        {
+            $dateObj = $this->{$field.getMethodName}();
+            if(is_null($dateObj)) return '';
+            return $this->{$field.getMethodName}()->toDiff();
         }
         catch(Exception $e)
         {

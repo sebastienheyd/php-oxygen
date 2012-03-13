@@ -28,7 +28,7 @@
       </trans-unit>
       <trans-unit id="7">
         <source>%name% does not match</source>
-        <target>%name% n'est pas concordant</target>
+        <target>%name% n'est pas concordante</target>
       </trans-unit>
       <trans-unit id="8">
         <source>%name% must contain only alphabetic characters</source>
