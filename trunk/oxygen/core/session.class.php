@@ -19,6 +19,7 @@ class Session
     private $_db;
     private $_tableName;
     private $_sessionActive = false;
+    private $_dbConfig;
 
 	/**
 	 * @return Session
@@ -26,15 +27,15 @@ class Session
 	private function __construct()
 	{
         // check if session datas must be stored in database
-        $config = Config::getInstance();
+        $config = Config::get('session');
 
-        if($config->session->type == 'database' && isset($config->session->table))
+        if(isset($config->type) && $config->type == 'database' && isset($config->table))
         {
-            $this->_db = DB::getInstance();
-            $this->_tableName = (string) $config->session->table;
+            $this->_db = DB::getInstance($config->db_config);
+            $this->_tableName = (string) $config->table;
 
             // create table if necessary
-            if(!$this->_db->tableExists($this->_tableName) && $config->session->autocreate == 'true') $this->_initSessionTable();
+            if(!$this->_db->tableExists($this->_tableName, $config->db_config)) $this->_initSessionTable();
 
             $this->_lifeTime = get_cfg_var("session.gc_maxlifetime");
         }
@@ -105,8 +106,8 @@ class Session
     {
         if(!$this->_sessionActive)
         {
-            $config = Config::getInstance();
-            if($config->session->type == 'database' && isset($config->session->table))
+            $config = Config::get('session');
+            if($config->type == 'database' && isset($config->table))
             {
                 // register this object as the session handler
                 $this->setDbHandler();
@@ -276,7 +277,7 @@ class Session
            `session_data` text NOT NULL,
            `expires` int(11) NOT NULL default "0",
             PRIMARY KEY  (`session_id`)
-            ) ENGINE = InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_general_ci;';
+            ) ENGINE = MyIsam DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci;';
 
         return $this->_db->queryExec($sql) == 1;
     }
@@ -287,6 +288,8 @@ class Session
      */
     public function setDbHandler()
     {
+        $this->_dbConfig = Config::get('session', 'db_config');
+        
         session_set_save_handler(
                 array(&$this, "dbOpen"),
                 array(&$this, "dbClose"),
@@ -331,7 +334,7 @@ class Session
     public function dbRead($id)
     {
         $sql = 'SELECT `session_data` FROM `'.$this->_tableName.'` WHERE `session_id` = ? AND `expires` > ?';
-        return DB::query($sql)->execute($id, time())->fetchColumn();
+        return $this->_db->prepare($sql)->execute($id, time())->fetchCol();
     }
 
     /**
@@ -344,7 +347,7 @@ class Session
     public function dbWrite($id, $data)
     {
         $sql = 'REPLACE `'.$this->_tableName.'` (`session_id`,`session_data`,`expires`) VALUES(?, ?, ?)';
-        DB::query($sql)->execute($id, $data, time() + $this->_lifeTime);
+        $this->_db->prepare($sql)->execute($id, $data, time() + $this->_lifeTime);
         return true;
     }
 
@@ -357,7 +360,7 @@ class Session
     public function dbDestroy($id = null)
     {
         if(is_null($id)) $id = $this->getId();
-        $res = DB::query('DELETE FROM `'.$this->_tableName.'` WHERE `session_id`=?')->execute($id);
+        $res = $this->_db->prepare('DELETE FROM `'.$this->_tableName.'` WHERE `session_id`=?')->execute($id);
         return true;
     }
 
@@ -368,7 +371,7 @@ class Session
      */
     public function dbGc()
     {
-        DB::query('DELETE FROM `'.$this->_tableName.'` WHERE `expires` < UNIX_TIMESTAMP();')->execute();
+        $this->_db->prepare('DELETE FROM `'.$this->_tableName.'` WHERE `expires` < UNIX_TIMESTAMP();')->execute();
         return true;
     }
 }

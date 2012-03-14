@@ -25,7 +25,7 @@ class f_generator_Model
      * 
      * @param string $tableName     The table name to use for class generation
      * @param string $prefix        Table prefix, will be removed from table name
-     * @param string $config        [optional] Database configuration to use from the current config file. Default is "default"
+     * @param string $config        [optional] Database configuration to use from the current config file.
      */
     private function __construct($tableName, $prefix, $config)
     {
@@ -44,10 +44,10 @@ class f_generator_Model
      * 
      * @param type $tableName       The table name to use for class generation
      * @param string $prefix        [optional] Prefix of table name. Default is ""
-     * @param string $config        [optional] Config to use from the current config file. Default is "default"
+     * @param string $config        [optional] Config to use from the current config file. Default is "db1"
      * @return f_generator_Model    Instance of f_generator_Model
      */
-    public static function fromTable($tableName, $prefix = '', $config = 'default')
+    public static function fromTable($tableName, $prefix = '', $config = 'db1')
     {
         return new self($tableName, $prefix, $config);
     }
@@ -57,7 +57,7 @@ class f_generator_Model
      */
     private function _getDescription()
     {
-        $fields = DB::getInstance()->query('DESCRIBE `'.$this->_tableName.'`')->fetchAll();
+        $fields = DB::query('DESCRIBE `'.$this->_tableName.'`', $this->_config)->fetchAll();
 
         foreach($fields as $field)
         {
@@ -80,9 +80,6 @@ class f_generator_Model
      */    
     private function _getReferenceKeys()
     {
-        $config = Config::getInstance();
-        $confName = $this->_config;
-
         $sql = <<<SQL
         SELECT u.column_name, u.referenced_table_name, u.referenced_column_name FROM information_schema.table_constraints AS c
         INNER JOIN information_schema.key_column_usage AS u
@@ -92,7 +89,7 @@ class f_generator_Model
         AND c.table_name = ?
 SQL;
         
-        $referenceKeys = DB::query($sql)->execute($config->database->$confName->base, $this->_tableName)->fetchAll();
+        $referenceKeys = DB::query($sql, $this->_config)->execute(Config::get($this->_config, 'base'), $this->_tableName)->fetchAll();
 
         if(!empty($referenceKeys))
         {
@@ -113,9 +110,6 @@ SQL;
      */     
     private function _getReferencedByKeys()
     {
-        $config = Config::getInstance();
-        $confName = $this->_config;
-
         $sql = <<<SQL
         SELECT u.table_name, u.column_name, u.referenced_column_name FROM information_schema.table_constraints AS c
         INNER JOIN information_schema.key_column_usage AS u
@@ -125,7 +119,7 @@ SQL;
         AND u.referenced_table_name = ?
 SQL;
 
-        $referencedKeys = DB::query($sql)->execute(array($config->database->$confName->base, $this->_tableName))->fetchAll();
+        $referencedKeys = DB::query($sql, $this->_config)->execute(array(Config::get($this->_config, 'base'), $this->_tableName))->fetchAll();
 
         if(!empty($referencedKeys))
         {
@@ -219,7 +213,7 @@ SQL;
      */
     public function toSql()
     {
-        $fields = DB::getInstance()->query('SHOW CREATE TABLE `'.$this->_tableName.'`')->fetchAll();
+        $fields = DB::query('SHOW CREATE TABLE `'.$this->_tableName.'`', $this->_config)->fetchAll();
         return $fields[0]['Create Table'];
     }
 }

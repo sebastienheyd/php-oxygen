@@ -95,7 +95,7 @@ class Uri
         $uri = strtolower($uri);
         
         // get suffix from config
-        $this->_suffix = Config::getInstance()->url->get('suffix');
+        $this->_suffix = HTTP_PREFIX;
         if(!is_null($this->_suffix)) 
         {
             $uri = str_replace($this->_suffix, '', $uri);

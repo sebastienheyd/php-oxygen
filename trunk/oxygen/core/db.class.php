@@ -11,7 +11,7 @@
  * @package     PHP Oxygen
  */
 
-class DB
+class Db
 {
     private $_query;
     private $_sql = '';
@@ -30,20 +30,22 @@ class DB
     /**
      * Main constructor
      * 
-     * @param string $config        Config to use from the current xml config file
+     * @param string $config        Config to use from the current ini config file
      * @param type $throwException  Must the connexion return a exception or just false (for testing per example)
      * @return DB
      */
     protected function __construct($config, $throwException)
 	{
-        $config = Config::getInstance()->database->$config;
+        $config = Config::get($config);
 
+        if(is_null($config)) trigger_error('Database config '.$config.' does not exists in config file');
+        
         try
 		{
 			$this->_connexion = new PDO($config->driver.':host='.$config->host.';dbname='.$config->base,
 			$config->login,
 			$config->password,
-			array(PDO::ATTR_PERSISTENT => $config->persist));
+			array(PDO::ATTR_PERSISTENT => (int) $config->persist));
 
 			$this->_connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -71,11 +73,11 @@ class DB
     /**
      * Get an instance of DB
      * 
-     * @param string $config            [optional] Config to use from the current config file. Default is "default"
+     * @param string $config            [optional] Config to use from the current config file. Default is "db1"
      * @param string $throwException    [optional] Send an exception when connexion fail. Default is true. Set to false will return false on connexion error
      * @return DB|Exception|false       Return instance of DB when connexion succeed. Return an exception or false when connexion failed.
      */
-    public static function getInstance($config = 'default', $throwException = true)
+    public static function getInstance($config = 'db1', $throwException = true)
     {   
         if(!isset(self::$_instances[$config]))
         {
@@ -89,10 +91,10 @@ class DB
      * Prepare a SQL query to execute
      * 
      * @param string $sql       The SQL query to execute
-     * @param string $config    [optional] Database configuration to use from the current config file. Default is "default"
+     * @param string $config    [optional] Database configuration to use from the current config file. Default is "db1"
      * @return DB               Instance of DB
      */
-    public static function query($sql, $config = 'default')
+    public static function query($sql, $config = 'db1')
     {
         return self::getInstance($config)->prepare($sql);
     }
@@ -101,10 +103,10 @@ class DB
      * Execute an SQL query and return the number of affected rows
      * 
      * @param string $sql       The SQL query to execute
-     * @param string $config    [optional] Database configuration to use from the current config file. Default is "default"
+     * @param string $config    [optional] Database configuration to use from the current config file. Default is "db1"
      * @return integer          The number of affected rows
      */
-    public static function exec($sql, $config = 'default')
+    public static function exec($sql, $config = 'db1')
     {
         return self::getInstance($config)->queryExec($sql);
     }
@@ -114,10 +116,10 @@ class DB
      * 
      * @param string $table     Table name to insert datas into
      * @param array $values     Associative array of column names / values
-     * @param string $config    [optional] Database configuration to use from the current config file. Default is "default"
+     * @param string $config    [optional] Database configuration to use from the current config file. Default is "db1"
      * @return boolean          Return true if datas are correctly inserted                        
      */
-    public static function insert($table, array $values, $config = 'default')
+    public static function insert($table, array $values, $config = 'db1')
     {
         return f_db_Insert::getInstance($table, $values, $config)->execute();
     }    
@@ -171,10 +173,10 @@ class DB
     /**
      * Begin a new transaction
      * 
-     * @param string $config    [optional] Database configuration to use from the current config file. Default is "default"
+     * @param string $config    [optional] Database configuration to use from the current config file. Default is "db1"
      * @return boolean          Return true if transaction has correctly started 
      */
-    public static function beginTransaction($config = 'default')
+    public static function beginTransaction($config = 'db1')
     {
         return self::getInstance($config)->addTransaction();
     }
@@ -182,10 +184,10 @@ class DB
     /**
      * End a transaction. Will return true if committed and throw an exception with rollback if not
      * 
-     * @param string $config            [optional] Database configuration to use from the current config file. Default is "default"
+     * @param string $config            [optional] Database configuration to use from the current config file. Default is "db1"
      * @return boolean|PDOException     Return true if transaction has correctly ended else the thrown PDOException
      */
-    public static function endTransaction($config = 'default')
+    public static function endTransaction($config = 'db1')
     {
         if(!self::commit($config))
         {
@@ -197,10 +199,10 @@ class DB
     /**
      * Return the status of the current transaction
      * 
-     * @param string $config    [optional] Database configuration to use from the current config file. Default is "default"
+     * @param string $config    [optional] Database configuration to use from the current config file. Default is "db1"
      * @return boolean          Return true if transaction is active
      */
-    public static function transactionStatus($config = 'default')
+    public static function transactionStatus($config = 'db1')
     {
         return self::getInstance($config)->getTransactionStatus();
     } 
@@ -208,9 +210,9 @@ class DB
     /**
      * Throw the last transaction exeption if exists
      * 
-     * @param string $config    [optional] Database configuration to use from the current config file. Default is "default"
+     * @param string $config    [optional] Database configuration to use from the current config file. Default is "db1"
      */
-    public static function throwTransactionException($config = 'default')
+    public static function throwTransactionException($config = 'db1')
     {
         $exc = self::getInstance($config)->getTransactionException();
         
@@ -220,10 +222,10 @@ class DB
     /**
      * Commit the current transaction operations
      * 
-     * @param type $config      [optional] Database configuration to use from the current config file. Default is "default"
+     * @param type $config      [optional] Database configuration to use from the current config file. Default is "db1"
      * @return boolean          Return true when commit success
      */
-    public static function commit($config = 'default')
+    public static function commit($config = 'db1')
     {
         return self::getInstance($config)->removeTransaction();
     }    
@@ -231,10 +233,10 @@ class DB
     /**
      * Rollback the current transaction operations
      * 
-     * @param string $config    [optional] Database configuration to use from the current config file. Default is "default"
+     * @param string $config    [optional] Database configuration to use from the current config file. Default is "db1"
      * @return boolean          Return true when rollback success
      */
-    public static function rollBack($config = 'default')
+    public static function rollBack($config = 'db1')
     {
         return self::getInstance($config)->revert();
     }    
@@ -545,22 +547,22 @@ class DB
      * Check if given table exists in database
      * 
      * @param string $tableName     Table name
-     * @param string $config        [optional] Config to use from the current config file. Default is "default"
+     * @param string $config        [optional] Config to use from the current config file. Default is "db1"
      * @return boolean              Return true if exists
      */
-    public static function tableExists($tableName, $config = 'default')
+    public static function tableExists($tableName, $config = 'db1')
 	{
-		return DB::query("SHOW TABLES LIKE '$tableName'", $config)->fetchColumn() !== false;
+		return DB::query("SHOW TABLES LIKE '$tableName'", $config)->fetchCol() !== false;
 	}
     
     /**
      * Return tables list
      * 
      * @param string $prefix    [optional] Prefix of table name. Default is ""
-     * @param string $config    [optional] Config to use from the current config file. Default is "default"
+     * @param string $config    [optional] Config to use from the current config file. Default is "db1"
      * @return array            Array of table names
      */
-    public static function getTablesList($prefix = '', $config = 'default')
+    public static function getTablesList($prefix = '', $config = 'db1')
     {
         $q = $prefix == '' ? 'SHOW TABLES' : 'SHOW TABLES LIKE "'.$prefix.'%"';
         return DB::query($q, $config)->fetchAllColumn();
