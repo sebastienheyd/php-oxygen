@@ -33,7 +33,7 @@ class Generator
      * @param string $config        [optional] Database configuration to use from the current config file. Default is "default"
      * @return boolean              Return number of successful generations
      */
-    public static function models($prefix = '', $config = 'default')
+    public static function models($prefix = '', $config = 'db1')
     {
         $tables = DB::getTablesList($prefix, $config);
         

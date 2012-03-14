@@ -81,10 +81,10 @@ class f_db_Update extends f_db_Where
     /**
      * Execute the current update builded query
      * 
-     * @param string $config    [optional] Config to use from the current config file. Default is "default"
+     * @param string $config    [optional] Config to use from the current config file. Default is "db1"
      * @return integer          Return the number of affected rows
      */
-    public function execute($config = 'default')
+    public function execute($config = 'db1')
     {
         $sql = 'UPDATE '.DB::quoteTable($this->_table).' SET ';
         

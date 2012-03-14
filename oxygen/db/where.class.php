@@ -249,8 +249,8 @@ abstract class f_db_Where
     /**
      * Execute the builded query
      *
-     * @param string $config    [optional] Config to use from the current config file. Default is "default"
+     * @param string $config    [optional] Config to use from the current config file. Default is "db1"
      * @return DB               Return instance of DB
      */    
-    abstract public function execute($config = 'default');
+    abstract public function execute($config = 'db1');
 }

@@ -77,10 +77,10 @@ class f_db_Delete extends f_db_Where
     /**
      * Build the select request to execute
      *
-     * @param string $config    [optional] Config to use from the current config file. Default is "default"
+     * @param string $config    [optional] Config to use from the current config file. Default is "db1"
      * @return integer          Return the number of affected rows
      */
-    public function execute($config = 'default')
+    public function execute($config = 'db1')
     {        
         $sql  = 'DELETE FROM '.$this->_from.' ';     
 

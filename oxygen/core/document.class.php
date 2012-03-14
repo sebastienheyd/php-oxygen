@@ -183,7 +183,7 @@ abstract class Document
      * @param string $config    [optional] Config to use from the current config file. Default is "default"
      * @return boolean          Return true if success 
      */
-    public function save($config = 'default')
+    public function save($config = 'db1')
     {
         if(method_exists($this, 'preSave')) 
         {

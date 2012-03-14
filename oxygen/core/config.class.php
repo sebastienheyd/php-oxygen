@@ -11,7 +11,7 @@
  * @package     PHP Oxygen
  */
 
-class Config extends SimpleXMLElement
+class Config
 {
     private static $_instance;
 
@@ -22,28 +22,67 @@ class Config extends SimpleXMLElement
      */
     public static function getInstance()
     {
-		if(is_null(self::$_instance))
-		{
-            $file = CONFIG_DIR.DS.'config.'.self::getEnvironment().'.xml';
-
-            // die if no config file is found !
-            if(!is_file($file)) die(str_replace(PROJECT_DIR, '', $file).' does not exist');
-
-            self::$_instance = simplexml_load_file($file, 'Config');
-		}
+		if(is_null(self::$_instance)) self::$_instance = new self();
 		return self::$_instance;
     }
-
+    
     /**
-     * Get a config value, return default value if not found
-     * 
-     * @param string $name       Name of the config parameter to get
-     * @param string $default    [optional] Default value if requested config parameter is not found. Defaut is null.
-     * @return mixed
+     * Constructor 
      */
-    public function get($name, $default = null)
+    private function __construct()
     {
-        return isset($this->$name) ? (string) $this->$name : $default;
+        $file = CONFIG_DIR.DS.self::getEnvironment().'.ini';
+
+        // die if no config file is found !
+        if(!is_file($file)) die(str_replace(PROJECT_DIR, '', $file).' does not exist');
+        
+        $this->_fetch(parse_ini_file($file, true));
+    }
+    
+    /**
+     * Fetch all config ini vars into current object
+     * 
+     * @param array $array 
+     */
+    private function _fetch(array $array)
+    {
+        foreach($array as $section => $values)
+        {
+            if(is_array($values))
+            {
+                $this->$section = new stdClass();
+                foreach($values as $k => $v)
+                {
+                    $this->$section->$k = $v;
+                }
+            }
+        }
+    }        
+    
+    /**
+     * Get a configuration value
+     * 
+     * @param string $section       Name of the configuration section to get
+     * @param string $name          Name of the parameter to get into the section. If null get section object
+     * @param mixed $defaultValue   Default value if parameter is not found
+     * @return defaultValue
+     */
+    public static function get($section, $name = null, $defaultValue = false)
+    {
+        $inst = self::getInstance();
+        
+        if(is_null($name))
+        {
+            if(isset($inst->$section)) $value = $inst->$section;               
+        }
+        else
+        {
+            if(isset($inst->$section->$name)) $value = $inst->$section->$name;     
+        }
+        
+        if(empty($value) || $value == '') return $defaultValue;
+        
+        return $value;
     }
     
     /**

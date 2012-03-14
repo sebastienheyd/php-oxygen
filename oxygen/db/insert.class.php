@@ -22,10 +22,10 @@ class f_db_Insert
      * 
      * @param string $table     Table name
      * @param array $values     Associative array of values to insert
-     * @param string $config    [optional] Config to use from the current config file. Default is "default"
+     * @param string $config    [optional] Config to use from the current config file. Default is "db1"
      * @return f_db_Insert 
      */
-    public static function getInstance($table , array $values, $config = 'default')
+    public static function getInstance($table , array $values, $config = 'db1')
     {
         return new self($table, $values, $config);
     }
@@ -35,9 +35,9 @@ class f_db_Insert
      * 
      * @param string $table     Table name
      * @param array $values     Associative array of values to insert
-     * @param string $config    [optional] Config to use from the current config file. Default is "default"
+     * @param string $config    [optional] Config to use from the current config file. Default is "db1"
      */
-    private function __construct($table, array $values, $config = 'default')
+    private function __construct($table, array $values, $config = 'db1')
     {
         $this->_db = DB::getInstance($config);
         $this->_table = $table;

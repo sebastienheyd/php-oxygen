@@ -257,10 +257,10 @@ class f_db_Select extends f_db_Where
     /**
      * Execute the builded query
      *
-     * @param string $config    [optional] Config to use from the current config file. Default is "default"
+     * @param string $config    [optional] Config to use from the current config file. Default is "db1"
      * @return DB               Return instance of DB
      */
-    public function execute($config = 'default')
+    public function execute($config = 'db1')
     {
         $this->_executed = true;
         return DB::query($this->build(), $config)->execute($this->_vars);
@@ -271,10 +271,10 @@ class f_db_Select extends f_db_Where
      *
      * @param integer $fetchStyle   [optional] Fetching type, use PDO static vars. Default is PDO::FETCH_ASSOC
      * @param string $args          [optional] Additionnal args used by some fetch style. Default is null
-     * @param string $config        [optional] Config to use from the current config file. Default is "default"
+     * @param string $config        [optional] Config to use from the current config file. Default is "db1"
      * @return array|false          Return the first row results as an array or false if no result
      */
-    public function fetch($fetchStyle = PDO::FETCH_ASSOC, $args = null, $config = 'default')
+    public function fetch($fetchStyle = PDO::FETCH_ASSOC, $args = null, $config = 'db1')
     {        
         return $this->execute($config)->fetch($fetchStyle, $args);
     }
@@ -282,10 +282,10 @@ class f_db_Select extends f_db_Where
     /**
      * Alias of fetch(PDO::FETCH_COLUMN)
      * 
-     * @param string $config        [optional] Config to use from the current config file. Default is "default"
+     * @param string $config        [optional] Config to use from the current config file. Default is "db1"
      * @return string|false          Return the first row results as an array or false if no result
      */
-    public function fetchCol($config = 'default')
+    public function fetchCol($config = 'db1')
     {
         return $this->fetch(PDO::FETCH_COLUMN, null, $config);
     }
@@ -295,10 +295,10 @@ class f_db_Select extends f_db_Where
      *
      * @param integer $fetchStyle   [optional] Fetching type, use PDO static vars. Default is PDO::FETCH_ASSOC
      * @param string $args          [optional] Additionnal args used by some fetch style. Default is null
-     * @param string $config        [optional] Config to use from the current config file. Default is "default" 
+     * @param string $config        [optional] Config to use from the current config file. Default is "db1" 
      * @return array                Return an array of results or an empty array if none
      */    
-    public function fetchAll($fetchStyle = PDO::FETCH_ASSOC, $args = null, $config = 'default')
+    public function fetchAll($fetchStyle = PDO::FETCH_ASSOC, $args = null, $config = 'db1')
     {
         return $this->execute($config)->fetchAll($fetchStyle, $args);
     }
@@ -307,10 +307,10 @@ class f_db_Select extends f_db_Where
      * Fetch first row in an object with the given class name
      * 
      * @param string $className         [optional] The class to fetch result into. Default is 'stdClass'
-     * @param string $config            [optional] Config to use from the current config file. Default is "default"
+     * @param string $config            [optional] Config to use from the current config file. Default is "db1"
      * @return stdClass|object|false    Return an object containing the current query results
      */    
-    public function fetchObject($className = 'stdClass', $config = 'default')
+    public function fetchObject($className = 'stdClass', $config = 'db1')
     {
         return $this->execute($config)->fetchObject($className);
     }
@@ -319,10 +319,10 @@ class f_db_Select extends f_db_Where
      * Alias of fetchAll(PDO::FETCH_COLUMN, $colNum). Will fetch result by a column number
      * 
      * @param integer $colNum   [optional] The column number to fetch. Default is null (0)
-     * @param string $config    [optional] Config to use from the current config file. Default is "default"
+     * @param string $config    [optional] Config to use from the current config file. Default is "db1"
      * @return mixed            Return the column value 
      */
-    public function fetchAllColumn($colNum = null, $config = 'default')
+    public function fetchAllColumn($colNum = null, $config = 'db1')
     {
         return $this->execute($config)->fetchAll(PDO::FETCH_COLUMN, $colNum);
     }    
@@ -332,10 +332,10 @@ class f_db_Select extends f_db_Where
      * 
      * @param strinf $className         [optional] The class name to instantiate with fetched values. Default is 'stdClass'
      * @param type $preloadConstructor  [optional] Must we preload the constructor before insert fetched datas into the class. Default is false.
-     * @param string $config            [optional] Config to use from the current config file. Default is "default"
+     * @param string $config            [optional] Config to use from the current config file. Default is "db1"
      * @return array                    Return an array of objects of the given class name
      */    
-    public function fetchAllObject($className = 'stdClass', $preloadConstructor = true, $config = 'default')
+    public function fetchAllObject($className = 'stdClass', $preloadConstructor = true, $config = 'db1')
     {
         return $this->execute($config)->fetchAllObject($className, $preloadConstructor);
     }
@@ -343,10 +343,10 @@ class f_db_Select extends f_db_Where
     /**
      * Count current query result(s)
      * 
-     * @param string $config     [optional] Config to use from the current config file. Default is "default"
+     * @param string $config     [optional] Config to use from the current config file. Default is "db1"
      * @return integer           The number of rows (results)
      */    
-    public function count($config = 'default')
+    public function count($config = 'db1')
     {
         return $this->execute($config)->count();
     }
