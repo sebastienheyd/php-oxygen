@@ -11,7 +11,7 @@
  * @package     PHP Oxygen
  */
 
-define(SMARTY_SPL_AUTOLOAD, 1);
+define('SMARTY_SPL_AUTOLOAD', 1);
 define('PS', PATH_SEPARATOR);
 
 // include paths

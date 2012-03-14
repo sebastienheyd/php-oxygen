@@ -13,14 +13,24 @@
 ############################################
 ## Some PHP stuff
 
+# Disable folders display
+    Options -indexes
+
+# error_reporting
+    php_value error_reporting "-1"
+
+# default gpc_magic_quotes
+    php_value magic_quotes_gpc 0
+
 # default encoding to utf-8
-php_value default_charset utf-8
+    AddDefaultCharset "utf-8"
+    php_value default_charset "utf-8"
 
 # no globals
-php_value register_globals off
+    php_value register_globals off
 
 # no session id in the URL
-php_flag session.use_trans_sid off
+    php_flag session.use_trans_sid off
 
 
 ############################################
