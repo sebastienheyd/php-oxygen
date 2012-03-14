@@ -42,7 +42,7 @@ class Error
      */
     public function errorHandler($errno, $errstr, $errfile, $errline, $errcontext)
     {
-        if(error_reporting() == 0) return false;                
+        if(Config::get('debug', 'error_display') != '1') return;                
         
         $label = isset($this->_levels[$errno]) ? $this->_levels[$errno] : $errno;
         $msg = str_replace(PROJECT_DIR.DS, '', $errstr);
