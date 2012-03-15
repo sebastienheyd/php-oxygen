@@ -16,7 +16,7 @@
             On pourra par exemple utiliser le code suivant :
         </p>      
         <php>
-            Db::getInstance('default')->prepare('SELECT * FROM user WHERE login=?')->execute('John')->fetch(PDO::FETCH_ASSOC);
+            Db::getInstance('db1')->prepare('SELECT * FROM user WHERE login=?')->execute('John')->fetch(PDO::FETCH_ASSOC);
         </php>
         <p>
             Ceci permet de préparer la requête, de l'exécuter et de récupérer ses résultats. Avec PHP Oxygen il sera plus court d'écrire :
@@ -65,11 +65,11 @@
         </p>
         <php>
             Db::query('SELECT * FROM users');                           // Prépare la requête pour la configuration par défaut
-            Db::query('SELECT * FROM users', 'config2');                // Prépare la requête pour la configuration "config2"
+            Db::query('SELECT * FROM users', 'db2');                    // Prépare la requête pour la configuration "db2"
             
             // Equivalent à
             Db::getInstance()->prepare('SELECT * FROM users');          // Prépare la requête pour la configuration par défaut
-            Db::getInstance('config2')->prepare('SELECT * FROM users'); // Prépare la requête pour la configuration "config2"
+            Db::getInstance('db2')->prepare('SELECT * FROM users');     // Prépare la requête pour la configuration "db2"
         </php>
         
         <h3>execute()</h3>

@@ -43,6 +43,7 @@ var menu = '\
     <ul class="menuList">\n\
         <li class="menuLabel"><span class="menuTitle">Les classes</span>\n\
             <ul>\n\
+                <li><a href="#">Cache</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/cron.html">Cron</a></li>\n\
                 <li><a href="#">Controller</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/date.html">Date</a></li>\n\
