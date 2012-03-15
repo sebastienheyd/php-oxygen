@@ -10,8 +10,7 @@
     <body>     
         <h1>Configuration</h1>
         <p>
-            Pour configurer les accès à votre ou vos bases de données vous devez éditer votre fichier de configuration dans le dossier webapp/config.
-            Les paramètres des bases se trouvent dans la balise &lt;database />. 
+            Pour configurer les accès à votre ou vos bases de données vous devez éditer votre fichier de configuration dans le dossier webapp/config.. 
         </p>      
         <p>
             La configuration de base prend au moins quatre valeurs :
@@ -21,56 +20,48 @@
             <li><strong>host</strong>: l'hôte sur lequel se connecter</li>
             <li><strong>login</strong>: l'identifiant de connexion à la base de données</li>
             <li><strong>password</strong>: le mot de passe de connexion</li>
+            <li><strong>persist</strong>: true si la connexion doit être persistante</li>
         </ul>
-        <pre class="brush:xml;">
-            &lt;?xml version="1.0" encoding="UTF-8"?>
-            <config>
-                <database>
-                    <default>
-                        <driver>mysql</driver>
-                        <host>localhost</host>
-                        <login>mylogin</login>
-                        <password>mypassword</password>
-                        &lt;base>mydbname&lt;/base>
-                    </default>
-                </database>
-            </config>
+        <pre>
+        [db1]
+            driver      = "mysql"
+            host        = "localhost"
+            login       = "myLogin"
+            password    = "myPassword"
+            base        = "myDbName"
+            persist     = false
         </pre>
         <blockquote class="warning">
-            Pour que la classe Db fonctionne vous devez obligatoirement définir une configuration par défaut. Pour cela définissez vos paramètres dans la balise &lt;default />
+            Pour que la classe Db fonctionne vous devez obligatoirement définir une configuration par défaut nommée db1.
         </blockquote>
         
         <h2>Configurer et utiliser des bases de données supplémentaires</h2>
         <p>
             La configuration d'une autre base se fait de la même manière que pour la base par défaut, vous êtes libre alors de donner le nom que vous voulez pour cette/ces autre(s) configuration(s).
         </p>
-        <pre class="brush:xml;">
-            &lt;?xml version="1.0" encoding="UTF-8"?>
-            <config>
-                <database>
-                    <default>
-                        <driver>mysql</driver>
-                        <host>localhost</host>
-                        <login>mylogin</login>
-                        <password>mypassword</password>
-                        &lt;base>mydbname&lt;/base>
-                    </default>
-                    <otherbase>
-                        <driver>mysql</driver>
-                        <host>localhost</host>
-                        <login>myotherlogin</login>
-                        <password>myotherpassword</password>
-                        &lt;base>myotherdbname&lt;/base>
-                    </otherbase>                    
-                </database>
-            </config>
+        <pre>
+        [db1]
+            driver      = "mysql"
+            host        = "localhost"
+            login       = "myLogin"
+            password    = "myPassword"
+            base        = "myDbName"
+            persist     = false
+
+        [db2]
+            driver      = "mysql"
+            host        = "localhost"
+            login       = "myOtherLogin"
+            password    = "myOtherPassword"
+            base        = "myOtherDbName"
+            persist     = false
         </pre> 
         <p>
             Pour utiliser cette/ces configuration(s) vous aurez juste à indiquer quelle configuration vous voulez utiliser lors de vos traitements. Par exemple :
         </p>
         <php>
-            Db::query('SHOW TABLES')->fetchAllColumn();                 // Exécutera "SHOW TABLES" sur la configuration "default"
-            Db::query('SHOW TABLES', 'otherbase')->fetchAllColumn();    // Exécutera "SHOW TABLES" sur la configuration "otherbase"
+            Db::query('SHOW TABLES')->fetchAllColumn();           // Exécutera "SHOW TABLES" sur la configuration "db1"
+            Db::query('SHOW TABLES', 'db2')->fetchAllColumn();    // Exécutera "SHOW TABLES" sur la configuration "db2"
         </php>
         <blockquote class="info">
             La classe Db est de type multiton, c'est à dire qu'elle instancie la connexion seulement la première fois qu'elle est appelée pour une configuration donnée.

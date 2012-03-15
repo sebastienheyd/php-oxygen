@@ -148,6 +148,17 @@ class Db
     }
     
     /**
+     * Prepare a select * from query to execute
+     * 
+     * @param string $table     Table to get results from
+     * @return f_db_Select      Return an instance of f_db_Select
+     */
+    public static function selectFrom($table)
+    {
+        return f_db_Select::getInstance()->select()->from($table);
+    }
+    
+    /**
      * Prepare a delete query to execute
      * 
      * @param string $table     Name of the table to query on

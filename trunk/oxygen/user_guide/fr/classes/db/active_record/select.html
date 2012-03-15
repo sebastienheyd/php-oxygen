@@ -33,6 +33,15 @@
             Consultez la page "<a href="resultats.html">Récupérer les résultats</a>" pour la liste complète des options de récupération des résultats.
         </blockquote>
         
+        <h3>selectFrom()</h3>
+        <p>
+            La méthode statique selectFrom() permet de récupérer les valeurs de tous les champs d'une table. Il s'agit d'un alias de SELECT * FROM.
+        </p>
+        <php>
+            // SELECT * FROM `customers`
+            Db::selectFrom('customers');
+        </php>
+        
         <h3>distinct()</h3>
         <p>Ajoute la condition DISTINCT à la requête</p>
         <php>
