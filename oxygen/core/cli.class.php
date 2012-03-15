@@ -119,6 +119,25 @@ class Cli
 	}
     
     /**
+     * Display a meter with percentage like "34/100 (34%)"
+     * 
+     * @param integer $current      The current iterator
+     * @param integer $max          The max iterator number
+     * @param string $prefix        [optional] Prefix the meter with this string
+     */
+    public function meter($current, $max, $prefix = '')
+    {        
+        $percentage = ceil(($current/$max) * 100);
+        
+        for($i=0;$i<= strlen($current) + strlen($max)+ strlen($percentage) + strlen($prefix) + 5;$i++)
+        {
+            echo "\010";            
+        }
+        
+        echo $prefix.$current.'/'.$max.' ('.$percentage.'%)';
+    }
+    
+    /**
      * Input a string in CLI
      * 
      * @param string $label     Label of the question
