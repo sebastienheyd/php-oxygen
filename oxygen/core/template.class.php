@@ -16,6 +16,8 @@ require_once(FW_DIR.DS."lib".DS.'vendor'.DS."smarty".DS."Smarty.class.php");
 class Template extends Smarty
 {
     private $_templateFile;
+    
+    public $module;
 
     /**
      * Get a new instance of Template (smarty)

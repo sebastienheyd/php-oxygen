@@ -75,7 +75,7 @@ class Controller
         ob_start();
 
         // Get rerouted uri or current uri
-        $uri = Router::getInstance()->parseUrl();
+        $uri = Route::getInstance()->parseUrl();
 
         if(!$uri->isDefined() && Config::get('url', 'routed_only') == '1' && $uri->getUri() != '/') 
         {

@@ -11,7 +11,7 @@
  * @package     PHP Oxygen
  */
 
-class Router
+class Route
 {
     private static $_instance;    
     
@@ -116,6 +116,59 @@ class Router
     }
     
     /**
+     * Return a route by his id
+     * 
+     * @param string $id        Route id
+     * @param string ...        [optional] Route args
+     * @return string           Uri
+     */
+    public static function byId($id)
+    {
+        $args = func_get_args();
+        
+        unset($args[0]);
+        
+        $cacheFile = WEBAPP_DIR.DS.'cache'.DS.'routes.xml';
+        
+        if(!is_file($cacheFile)) trigger_error('No route file');
+        
+        $routes = simplexml_load_file($cacheFile);
+        
+        $route = $routes->xpath('//route[@id="'.$id.'"]');
+        
+        if(empty($route)) return '';
+        
+        if(count($route) > 1) trigger_error('Found more than one route with id '.$id.' in routes.xml');
+        
+        $rule = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $route[0]->attributes()->rule));
+        
+        $redirect = preg_replace('#\(.*?\)#i', '|', $rule);
+        
+        if(count($args) == 0) return '/'.$redirect;
+        
+        $segments = explode('/', $redirect);
+        
+        $res = array();
+        foreach ($segments as $k => $s)
+        {
+            if($s == '|')
+            {
+                $res[] = $args[$k];
+            }
+            else 
+            {
+                $res[] = $s;
+            }
+        }
+        
+        $uri = join('/', $res);
+        
+        if(preg_match('#'.$rule.'#', $uri)) return '/'.$uri;
+        
+        trigger_error('Not enough arguments to get route');
+    }
+    
+    /**
      * Build a xml cache file with all modules routes rules
      * 
      * @param array $files      Array of files paths to parse
@@ -174,6 +227,12 @@ class Router
 
                     $result->writeAttribute('rule', $route->attributes()->rule);
                     $result->writeAttribute('redirect', $route->attributes()->redirect);
+                    
+                    if(isset($route->attributes()->id))
+                    {
+                        $result->writeAttribute('id', $route->attributes()->id);
+                    }
+                    
                     $result->endElement();
                 }
             }
