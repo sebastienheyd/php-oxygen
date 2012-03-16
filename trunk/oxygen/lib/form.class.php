@@ -151,12 +151,24 @@ class Form
      * Get a field value
      * 
      * @param string $fieldName     The field name to get the value from
-     * @return mixed                The field value
+     * @return mixed|null           The field value
      */
     public function getValue($fieldName)
     {
         $values = $this->getValues();        
         return isset($values->$fieldName) ?  $values->$fieldName : null;
+    }
+    
+    /**
+     * Return true if a checkbox is checked
+     * 
+     * @param string $fieldName     The checkbox name
+     * @return boolean              Return true the checkbox is checked
+     */
+    public function isChecked($checkBoxName)
+    {
+        $values = $this->getValues();
+        return isset($values->$checkBoxName);
     }
     
     /**

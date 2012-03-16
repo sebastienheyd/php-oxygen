@@ -37,8 +37,9 @@ class Template extends Smarty
         
         if(!is_null($module))
         {
-            $this->addTemplateDir(HOOKS_DIR.DS.$module.DS.'templates');
-            $this->addTemplateDir(WEBAPP_MODULES_DIR.DS.$module.DS.'templates');            
+            $this->module = $module;
+            $this->addTemplateDir(WEBAPP_MODULES_DIR.DS.$module.DS.'template');            
+            $this->addTemplateDir(MODULES_DIR.DS.$module.DS.'template');
         }
         
         if(!is_null($template))
