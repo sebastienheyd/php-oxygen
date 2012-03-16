@@ -26,12 +26,20 @@ function smarty_block_t($params, $content, &$smarty, &$repeat)
     {
         $srcLang = isset($smarty->tpl_vars['TPL_LANG']) ? $smarty->tpl_vars['TPL_LANG']->value : 'en';        
 
-        $path = explode(DS, str_replace(PROJECT_DIR.DS, '', $smarty->template_resource));
-        $isModule = array_search('module', $path);
+        if(isset($smarty->module))
+        {
+            $isModule = true;
+            $module = $smarty->module;
+        }
+        else
+        {
+            $path = explode(DS, str_replace(PROJECT_DIR.DS, '', $smarty->template_resource));
+            $isModule = array_search('module', $path); 
+            if($isModule !== false) $module = $path[$isModule+1];
+        }
 
         if($isModule !== false)
         {
-            $module = $path[$isModule+1];
             $file = get_module_file($module, '/i18n/templates.'.I18n::getLocale().'.xml');
             
             if($file !== false)
