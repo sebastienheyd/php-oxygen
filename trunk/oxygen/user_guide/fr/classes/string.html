@@ -119,6 +119,20 @@
             Les caractères pouvant être confondus ont été volontairement retirés des caractères pouvant être compris dans la chaine générée. Exemple : l (la lettre L) et 1 (le chiffre 1) ou O (la lettre O) et 0 (le chiffre zéro)
         </blockquote>
         
+        <h3>passwordStrength()</h3>
+        <p>Teste la force d'un mot de passe. La méthode renvoie une valeur en pourcent. Plus la valeur est haute, meilleur est le mot de passe. Pour cela la méthode va calculer le score en vérifiant entre autres les points suivants :</p>
+        <ul>
+            <li>la longueur du mot de passe</li>
+            <li>la présence de caractères alphabétiques et vérification de la casse</li>
+            <li>la présence d'un nombre</li>
+            <li>la présence d'un caractère spécial</li>
+            <li>la répétition des mêmes caractères (et insensiblement à la casse). Ex : aa, aA, Bb, ##, etc...</li>
+            <li>les combinaisons entre caractères</li>
+        </ul>
+        <blockquote class="info">
+            Pour sécuriser vos application le minimum recommandé est de 50%
+        </blockquote>        
+        
         <h3>camelize()</h3>
         <p>Transforme une chaine de caractère non camelCased en une chaine camelisée.</p>
         <php>

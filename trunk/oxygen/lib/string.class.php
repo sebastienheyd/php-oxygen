@@ -235,6 +235,47 @@ class String
     }      
     
     /**
+     * Test the given password strength. An acceptable password have more than 50%
+     * 
+     * @param string $pwd       The password to test
+     * @return integer          Password strength percentage
+     */
+    public static function passwordStrength($pwd)
+    {
+        $score = 0;
+        
+        // Tests on length (max score = 22)
+        $len = mb_strlen($pwd);
+        if($len >= 4) $score += 2;        
+        if($len >= 6) $score += 4;        
+        if($len >= 8) $score += 8;
+        if($len >= 15) $score += 8;
+                
+        // Tests on chars (max score = 5)
+        if(preg_match('/[a-z]/', $pwd)) $score += 2;
+        if(preg_match('/[A-Z]/', $pwd)) $score += 3;        
+        
+        // Tests on numbers (max score = 5)
+        if(preg_match('/[0-9]/', $pwd)) $score += 2;
+        if(preg_match('/\d.*\d/', $pwd)) $score += 3;
+        
+        // Tests on non alpha chars (max score = 10)
+        if(preg_match('/\W/', $pwd)) $score += 4;                
+        if(preg_match('/\W.*\W/', $pwd)) $score += 6;                
+        
+        // Tests on repetitions (max score = 10)
+        if(!preg_match('/([a-zA-Z0-9\W]{1,1})(?=\1+)/', $pwd)) $score += 5;
+        if(!preg_match('/([a-z]{1,1})(?=\1+)/i', $pwd)) $score += 5;
+        
+        // Tests on combos (max score = 20)
+        if(preg_match('/(?=.*[a-z])(?=.*[A-Z])/', $pwd)) $score += 5;
+        if(preg_match('/(?=.*[a-zA-Z])(?=.*[0-9])/', $pwd)) $score += 5;
+        if(preg_match('/(?=.*[a-zA-Z0-9])(?=.*[\W])/', $pwd)) $score += 10;
+                               
+        return round(($score/72)*100);
+    }
+    
+    /**
      * Camelize (or Pascalize) a string
      * 
      * @example camelize('my_database_field', true) => MyDatabaseField
