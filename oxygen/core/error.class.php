@@ -42,7 +42,7 @@ class Error
      */
     public function errorHandler($errno, $errstr, $errfile, $errline, $errcontext)
     {
-        if(Config::get('debug', 'error_display') != '1') return;                
+        if(Config::get('debug', 'error_display', '0') != '1') return;                
         
         $label = isset($this->_levels[$errno]) ? $this->_levels[$errno] : $errno;
         $msg = str_replace(PROJECT_DIR.DS, '', $errstr);
@@ -60,20 +60,21 @@ class Error
                 {
                     $cli = Cli::getInstance();
                     $cli->printf('['.$label.']', 'yellow');
-                    $cli->printf(' -> '.$msg.' in '.$file.' (ln.'.$errline.')'.PHP_EOL);
+                    $cli->printf(' -> "'.$msg.'" in '.$file.' (ln.'.$errline.')'.PHP_EOL);
                 }
                 else
                 {
                     echo '<code><span style="font-size:14px;"><strong style="color:#900;">'.$label.'</strong> : <strong>"'.$msg.'"</strong> in <i>'.$file.'</i> (ln.'.$errline.')<br /></span></code>';                    
                 }
+                
+                Log::debug('"'.$msg.'" in '.$file.' (ln.'.$errline.')');
 		    break;
         
             default: 
-                if(CLI_MODE)
-                {
-                    $message = '"'.$msg.'" in '.$file.' (ln.'.$errline.')';
-                    $this->_showCliError($label, $message, debug_backtrace());
-                }
+                $message = '"' . $msg . '" in ' . $file . ' (ln.' . $errline . ')';                            
+                Log::error($message);
+                
+                if(CLI_MODE) $this->_showCliError($label, $message, debug_backtrace());
 
                 $message = '"'.$msg.'" in <i>'.$file.'</i> (ln.'.$errline.')';
                 $this->_showError($label, $message, debug_backtrace());
@@ -106,11 +107,10 @@ class Error
         
         array_unshift($trace, $t);     
         
-        if(CLI_MODE)
-        {            
-            $message = '"'.$exception->getMessage().'" in '.str_replace(PROJECT_DIR.DS, '', $exception->getFile()).' (ln.'.$exception->getLine().')';         
-            $this->_showCliError(get_class($exception), $message, $trace);  
-        }
+        $message = '"' . $exception->getMessage() . '" in ' . str_replace(PROJECT_DIR.DS, '', $exception->getFile()) . ' (ln.' . $exception->getLine() . ')';
+        Log::error($message);        
+        
+        if(CLI_MODE) $this->_showCliError(get_class($exception), $message, $trace);
         
         $message = '"'.$exception->getMessage().'" in <i>'.str_replace(PROJECT_DIR.DS, '', $exception->getFile()).'</i> (ln.'.$exception->getLine().')'; 
         $this->_showError(get_class($exception), $message, $trace);                    
@@ -283,10 +283,14 @@ class Error
         while (ob_get_level()) { ob_end_clean(); }
         set_header(401);
 
+        $uri = Uri::getInstance()->getUri(true);
+        
         $tpl = Template::getInstance();
         $tpl->setTemplateDir(HOOKS_DIR.DS.'errors');
         $tpl->addTemplateDir(FW_DIR.DS.'errors');        
 
+        Log::error('401 - Authorization error : '.$uri);
+        
         try
         {
             $tpl->setTemplate('401.html')->render();            
@@ -317,6 +321,8 @@ class Error
         
         $tpl->assign('uri', $uri);
 
+        Log::error('404 - File not found : '.$uri);
+        
         try
         {
             $tpl->setTemplate('404.html')->render();            
