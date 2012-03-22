@@ -70,13 +70,15 @@ class Log
     {
         $logFile = LOGS_DIR.DS.$fileName;
         
-        if(filesize($logFile) >= 10240000)
+        // If logfile is more than 10 megas, backup and create a new file
+        if(is_file($logFile) && filesize($logFile) >= 10240000)
 		{
 			$nbFiles = count(glob($logFile.'.*'));
 			$nbFiles = str_pad($nbFiles, 3, '0', STR_PAD_LEFT);			
 			if(copy($logFile, $logFile.".".$nbFiles.".log")) unlink($logFile);
 		}
         
+        // already write into allinone.log file
         if($fileName != 'allinone.log') $this->write('allinone.log', $msg);
         
         return file_put_contents($logFile, $msg, FILE_APPEND | LOCK_EX);
