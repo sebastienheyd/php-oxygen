@@ -380,16 +380,15 @@ class Db
         
         try 
         {
+            $s = microtime(true);
             $this->_query->execute($parameters);
+            $log = Log::getInstance();
+            if($log->getLevel() > 0) Log::sql($this->interpolateQuery($this->_sql, $parameters), round(microtime(true) - $s, 5));
         } 
         catch (PDOException $exc)
         {
             $exception = new PDOException($exc->getMessage()."<br /><br />".$this->_sql.'<br /><br />'.$this->_printVars($parameters).'<br />');
-            if(!$this->_hasActiveTransaction)
-            {
-                /* @todo : throw explicit only for development environment */
-                throw $exception;                
-            }
+            if(!$this->_hasActiveTransaction) throw $exception;
             $this->_transactionException = $exception;
             $this->_transactionSuccess = false;
             return false;
