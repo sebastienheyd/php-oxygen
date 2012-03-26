@@ -313,7 +313,7 @@ class Error
         while (ob_get_level()) { ob_end_clean(); }
         set_header(404);
 
-        $uri = Uri::getInstance()->getUri(true);
+        $uri = $_SERVER['REQUEST_URI'];
 
         $tpl = Template::getInstance();
         $tpl->setTemplateDir(HOOKS_DIR.DS.'errors');

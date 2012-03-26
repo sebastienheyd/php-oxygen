@@ -76,7 +76,7 @@ class Route
             
             // Remove first / from uri
             $uri = trim($uriInst->getUri(), '/');
-            
+           
             // Parse routes
             foreach($routes as $route)
             {
@@ -105,7 +105,7 @@ class Route
                     $defaultRedirect = (string) $route->attributes()->redirect.'/'.$uri;
                 }
             }
-            
+
             if(!$uriInst->isDefined() && !is_null($defaultRedirect))
             {
                 $uriInst->setUri($defaultRedirect);
