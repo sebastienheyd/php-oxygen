@@ -26,7 +26,7 @@ class f_cache_Null extends f_cache_Driver
         return false;
     }
     
-    public function save($id, $datas, $ttl = 0)
+    public function save($id, $datas, $ttl = 60)
     {
         return true;
     }

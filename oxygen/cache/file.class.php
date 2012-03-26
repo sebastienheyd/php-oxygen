@@ -56,7 +56,7 @@ class f_cache_File extends f_cache_Driver
         return $datas;
     }
     
-    public function save($id, $datas, $ttl = 3600)
+    public function save($id, $datas, $ttl = 60)
     {                        		
         return file_put_contents($this->_cachePath.DS.$id.'.cache', $this->_prepareDatas($datas, $ttl), LOCK_EX) !== false;
     }
