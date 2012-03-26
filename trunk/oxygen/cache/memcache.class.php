@@ -27,7 +27,7 @@ class f_cache_Memcache extends f_cache_Driver
     {
         $this->isSupported();        
         $memcache = new Memcache();
-        $memcache->connect('127.0.0.1', 11211);     
+        $memcache->connect(Config::get('cache', 'memcache_host', '127.0.0.1'), Config::get('cache', 'memcache_port', 11211));     
         $this->_memcache = $memcache;
     }
     
@@ -36,7 +36,7 @@ class f_cache_Memcache extends f_cache_Driver
         return $this->_memcache->get($id);
     }
     
-    public function save($id, $datas, $ttl = 0)
+    public function save($id, $datas, $ttl = 60)
     {
         return $this->_memcache->set($id, $datas, MEMCACHE_COMPRESSED, $ttl);
     }
