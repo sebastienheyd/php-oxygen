@@ -60,7 +60,7 @@ if(ini_get('date.timezone') == '') date_default_timezone_set('Europe/Paris');
 Session::getInstance();
 
 // Are the url ended by a prefix (ex: .html)
-define('HTTP_PREFIX', Config::get('url', 'prefix', ''));
+define('HTTP_PREFIX', Config::get('route', 'prefix', ''));
 
 // Set the default localization
 I18n::setLocale('en_US');

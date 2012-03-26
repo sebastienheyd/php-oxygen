@@ -88,6 +88,13 @@ class Uri
         
         // get from SCRIPT_NAME
         $uri = $_SERVER['REQUEST_URI'];
+        
+        // prevent calling index.php when routed only
+        if(Config::get('route', 'routed_only') == '1' && preg_match('#^\/index.php#i', $uri))
+        {
+            Error::show404();
+        }
+        
         if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)
         {
             $uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
