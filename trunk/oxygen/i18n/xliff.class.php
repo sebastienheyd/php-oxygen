@@ -206,43 +206,25 @@ class f_i18n_Xliff
     private function _createFile($string, $srcLang, $origin)
     {
         // instantiate a new XML writer
-        $xml = new XMLWriter();
-        
-        // put content in memory and set options
-        $xml->openMemory();
-        $xml->setIndent(true);
-        $xml->setIndentString('    ');
-        
-        // start a new UTF-8 XML document
-        $xml->startDocument('1.0','UTF-8');
+        $xml = XML::writer();       
         
             // xliff node
-            $xml->startElement('xliff');
-            $xml->writeAttribute('version', '1.2');
-            $xml->writeAttribute('xmlns', 'urn:oasis:names:tc:xliff:document:1.2');
+            $xml->startElement('xliff', array('version' => '1.2', 'xmlns' => 'urn:oasis:names:tc:xliff:document:1.2'));
             
                 // file node
-                $xml->startElement('file');
-                $xml->writeAttribute('source-language', $srcLang);
-                $xml->writeAttribute('datatype', 'plaintext');
-                $xml->writeAttribute('original', $origin);
+                $xml->startElement('file', array('source-language' => $srcLang, 'datatype' => 'plaintext', 'original' => $origin));
                 
                     // body node
                     $xml->startElement('body');
                     
                         // trans-unit node
-                        $xml->startElement('trans-unit');
-                        $xml->writeAttribute('id', '1');
+                        $xml->startElement('trans-unit', array('id' => 1));
                         
                             // source node
-                            $xml->startElement('source');
-                                $xml->writeRaw($string);
-                            $xml->endElement();
+                            $xml->writeElement('source', $string);
                             
                             // target node
-                            $xml->startElement('target');
-                                $xml->text('');
-                            $xml->endElement();
+                            $xml->writeElement('target', '');
                         
                         // end trans-unit
                         $xml->endElement();
@@ -260,8 +242,7 @@ class f_i18n_Xliff
         $xml->endDocument();
         
         // get content and put contents into the file
-        $result = $xml->outputMemory(true);
-        file_put_contents($this->_file, $result);
+        $xml->toFile($this->_file);
         
         // instantiate the generated xml file
         $this->__construct($this->_file);

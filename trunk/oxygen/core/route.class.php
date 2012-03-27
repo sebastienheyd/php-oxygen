@@ -22,10 +22,7 @@ class Route
      */
     public static function getInstance()
     {
-        if(is_null(self::$_instance))
-		{
-			self::$_instance = new self();
-		}
+        if(is_null(self::$_instance)) self::$_instance = new self();
 		return self::$_instance;
     }
     
@@ -41,35 +38,26 @@ class Route
         $files = array_merge($search->in(MODULES_DIR)->fetch(), $search->in(WEBAPP_MODULES_DIR)->fetch());
         
         // Retrieve from webapp/config folder
-        if(is_file(WEBAPP_DIR.DS.'config'.DS.'routes.xml'))
-        {
-            $files[] = WEBAPP_DIR.DS.'config'.DS.'routes.xml';
-        }
+        if(is_file(WEBAPP_DIR.DS.'config'.DS.'routes.xml')) $files[] = WEBAPP_DIR.DS.'config'.DS.'routes.xml';
         
         // Get new instance of Uri
         $uriInst = Uri::getInstance();
 
         // Init vars
         $lastModified = 0;
-        $result = array();
         $defaultRedirect = null;
         
         // There is route files
         if(!empty($files))
         {
             // Get the last modification timestamp from all files
-            foreach($files as $file)
-            {
-                $lastModified = max($lastModified, filemtime($file));
-            }
+            foreach($files as $file) $lastModified = max($lastModified, filemtime($file));
             
             // Get cache file
             $cacheFile = WEBAPP_DIR.DS.'cache'.DS.'routes.xml';
-            if(!is_file($cacheFile) || filemtime($cacheFile) != $lastModified)
-            {
-                // Rebuild if is too old
-                $this->_buildRouteCacheFile($files);
-            }
+            
+            // Rebuild if is too old
+            if(!is_file($cacheFile) || filemtime($cacheFile) != $lastModified) $this->_buildRouteCacheFile($files);
             
             // Load routes rules from cache file
             $routes = simplexml_load_file($cacheFile);
@@ -100,16 +88,10 @@ class Route
                     $uriInst->setUri($uri);
                 }
                 
-                if($rule == 'default')
-                {
-                    $defaultRedirect = (string) $route->attributes()->redirect.'/'.$uri;
-                }
+                if($rule == 'default') $defaultRedirect = (string) $route->attributes()->redirect.'/'.$uri;
             }
 
-            if(!$uriInst->isDefined() && !is_null($defaultRedirect))
-            {
-                $uriInst->setUri($defaultRedirect);
-            }
+            if(!$uriInst->isDefined() && !is_null($defaultRedirect)) $uriInst->setUri($defaultRedirect);
         }        
 
         return $uriInst;
@@ -149,17 +131,7 @@ class Route
         $segments = explode('/', $redirect);
         
         $res = array();
-        foreach ($segments as $k => $s)
-        {
-            if($s == '|')
-            {
-                $res[] = $args[$k];
-            }
-            else 
-            {
-                $res[] = $s;
-            }
-        }
+        foreach ($segments as $k => $s) $res[] = ($s == '|') ? $args[$k] : $s;
         
         $uri = join('/', $res);
         
@@ -180,11 +152,7 @@ class Route
         $modules = array();
 
         // Start a new XML structure
-        $result = new XMLWriter();
-        $result->openMemory();
-        $result->setIndent(true);
-        $result->setIndentString('    ');
-        $result->startDocument('1.0','UTF-8');
+        $result = XML::writer();
         
         // Start <routes>
         $result->startElement('routes');
@@ -200,15 +168,15 @@ class Route
             if(strncasecmp(WEBAPP_MODULES_DIR, $file, strlen(WEBAPP_MODULES_DIR)) == 0)
             {
                 $segments = explode(DS, str_replace(WEBAPP_MODULES_DIR.DS, '', $file));
-                $module = first($segments); 
                 $inWebapp = true;
             }
             else
             {
                 $segments = explode(DS, str_replace(MODULES_DIR.DS, '', $file));
-                $module = first($segments);       
                 $inWebapp = false;
             }            
+            
+            $module = first($segments);       
             
             // Module routes file has not already be parsed
             if(!in_array($module, $modules))
@@ -223,16 +191,8 @@ class Route
                 // Write route rule
                 foreach($xml->xpath('//route') as $route)
                 {
-                    $result->startElement('route');
-
-                    $result->writeAttribute('rule', $route->attributes()->rule);
-                    $result->writeAttribute('redirect', $route->attributes()->redirect);
-                    
-                    if(isset($route->attributes()->id))
-                    {
-                        $result->writeAttribute('id', $route->attributes()->id);
-                    }
-                    
+                    $result->startElement('route', array('rule' => $route->attributes()->rule, 'redirect' => $route->attributes()->redirect));                    
+                    if(isset($route->attributes()->id)) $result->writeAttribute('id', $route->attributes()->id);                    
                     $result->endElement();
                 }
             }
@@ -245,7 +205,7 @@ class Route
         $result->endDocument();
         
         // Get content and put contents into the cache file
-        file_put_contents($cacheFile, $result->outputMemory(true));
+        $result->toFile($cacheFile);
         
         // Set cache file modification date
         touch($cacheFile, $lastModified);
