@@ -83,7 +83,7 @@
                 public function execute($id = null)
                 {
                     // Si l'id à été défini dans l'uri
-                    if(!is_null($id))
+                    if($id !== null)
                     {
                         // On instancie l'objet Hifi
                         $hifi = Hifi::load($id);

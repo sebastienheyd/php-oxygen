@@ -29,10 +29,7 @@ abstract class f_db_Where
     {
         $cond = array();
 
-        if (!is_array($key))
-		{
-			$key = array($key => $value);
-		}
+        if (!is_array($key)) $key = array($key => $value);
 
         foreach($key as $k => $v)
         {
@@ -41,7 +38,7 @@ abstract class f_db_Where
             // case of no escape
             if(preg_match('/\((.*)\)/i', $k))
             {
-                if(!is_null($value))
+                if($value !== null)
                 {
                     $k = str_replace('?', ':'.$varName, $k);
                     $this->_vars[$varName] = $v;
@@ -52,7 +49,7 @@ abstract class f_db_Where
                 return $this;                    
             }
 
-            if(is_null($v))
+            if($v === null)
             {
                 $cond['cond'] = DB::quoteIdentifier($k).' IS NULL ';
                 $cond['var'] = '';
@@ -123,10 +120,7 @@ abstract class f_db_Where
     {        
         $cond = array();
 
-        if (!is_array($key))
-		{
-			$key = array($key => $value);
-		}
+        if (!is_array($key)) $key = array($key => $value);
 
         foreach($key as $k => $v)
         {
@@ -135,7 +129,7 @@ abstract class f_db_Where
             // case of no escape
             if(preg_match('/\((.*)\)/i', $k))
             {
-                if(!is_null($value))
+                if($value !== null)
                 {
                     $k = str_replace('?', ':'.$varName, $k);
                     $this->_vars[$varName] = $v;
@@ -146,7 +140,7 @@ abstract class f_db_Where
                 return $this;                    
             }
 
-            if(is_null($v))
+            if($v === null)
             {
                 $cond['cond'] = DB::quoteIdentifier($k).' IS NULL ';
                 $cond['var'] = '';

@@ -19,7 +19,7 @@ class f_cache_Memcache extends f_cache_Driver
     
     public static function getInstance()
     {
-        if(!isset(self::$_instance)) self::$_instance = new self();
+        if(self::$_instance === null) self::$_instance = new self();
         return self::$_instance;   
     }
     

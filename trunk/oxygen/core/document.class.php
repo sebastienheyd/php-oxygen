@@ -34,17 +34,11 @@ abstract class Document
 
         if(count($primary) > count($args)) trigger_error('load : args number not corresponding to primary keys number', E_USER_ERROR);        
                         
-        if(count($primary) == 1 && !empty($args))
-        {
-            return DB::select()->from($tableName)->where($primary[0], $args[0])->fetchObject($className);
-        }
+        if(count($primary) == 1 && !empty($args)) return DB::select()->from($tableName)->where($primary[0], $args[0])->fetchObject($className);
         
         $q = DB::select()->from($tableName);
         
-        foreach($primary as $k => $v)
-        {
-            $q->where($v, $args[$k]);
-        }
+        foreach($primary as $k => $v) $q->where($v, $args[$k]);
         
         return $q->fetchObject($className);
     }
@@ -63,10 +57,7 @@ abstract class Document
         
         $sel = DB::select()->from($table);
         
-        if(!is_null($order))
-        {
-            $sel->orderBy($order, $orderDirection);
-        }
+        if($order !== null) $sel->orderBy($order, $orderDirection);
         
         return $sel->fetchAllObject($className);
     }
@@ -129,19 +120,13 @@ abstract class Document
         
         $q = DB::deleteFrom($this->getTableName());
         
-        foreach($this->getPrimary() as $v)
-        {
-            $q->where($v, $this->$v);
-        }                
+        foreach($this->getPrimary() as $v) $q->where($v, $this->$v);              
         
         $q->execute();
         
         if(method_exists($this, 'postDelete')) $this->postDelete();
         
-        foreach(get_object_vars($this) as $k => $v)
-        {
-            $this->$k = null;
-        }
+        foreach(get_object_vars($this) as $k => $v) $this->$k = null;
         
         return true;
     }
@@ -232,10 +217,7 @@ abstract class Document
     {
         $res = array();
         
-        foreach($this->getPrimary() as $k => $v)
-        {
-            $res[$v] = $this->$v;
-        }
+        foreach($this->getPrimary() as $k => $v) $res[$v] = $this->$v;
 
         return $res;
     }
@@ -288,19 +270,15 @@ abstract class Document
     public function __call($name, $args)
     {
         $prefix = substr($name, 0, 3);
-        $suffix = substr($name, 3);
         
-        switch($prefix)
+        if($prefix === 'set')
         {
-            case 'set':
-                $varName = String::snakeCase($suffix);
-                $this->$varName = $args;
-            break;
-        
-            default:
-                throw new BadMethodCallException('Method '.$name.' does not exist');
-            break;        
+            $suffix = substr($name, 3);
+            $varName = String::snakeCase($suffix);
+            $this->$varName = $args;
         }
+        
+        throw new BadMethodCallException('Method '.$name.' does not exist');
     }
     
     /**

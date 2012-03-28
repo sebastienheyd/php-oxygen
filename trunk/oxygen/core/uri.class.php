@@ -29,12 +29,9 @@ class Uri
      */
     public static function getInstance($uri = null)
     {
-        $instanceId = is_null($uri) ? 'default' : $uri;
-        
-        if(!isset(self::$_instances[$instanceId]))
-        {
-            self::$_instances[$instanceId] = new self($uri);
-        }
+        $instanceId = $uri;
+        if($uri === null) $instanceId = 'default';       
+        if(!isset(self::$_instances[$instanceId])) self::$_instances[$instanceId] = new self($uri);
         return self::$_instances[$instanceId];
     }
 
@@ -56,10 +53,10 @@ class Uri
      */
     public function setUri($uri = null)
     {
-        $this->_uri = is_null($uri) ? $this->_parseUri() : $uri;
+        $this->_uri = $uri === null ? $this->_parseUri() : $uri;
         $this->_segments = $this->_uri != '/' ? explode('/', trim($this->_uri, '/')) : array();
         $this->_host = $_SERVER['HTTP_HOST'];
-        $this->_defined = !is_null($uri);
+        $this->_defined = $uri !== null;
         if(!$this->_defined) $this->_origin = $this->_uri;
         return $this;
     }
@@ -90,23 +87,14 @@ class Uri
         $uri = $_SERVER['REQUEST_URI'];
         
         // prevent calling index.php when routed only
-        if(Config::get('route', 'routed_only') == '1' && preg_match('#^\/index.php#i', $uri))
-        {
-            Error::show404();
-        }
+        if(Config::get('route', 'routed_only') == '1' && preg_match('#^\/index.php#i', $uri)) Error::show404();
         
-        if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)
-        {
-            $uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
-        }
+        if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)  $uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
         $uri = strtolower($uri);
         
         // get suffix from config
         $this->_suffix = HTTP_PREFIX;
-        if(!is_null($this->_suffix)) 
-        {
-            $uri = str_replace($this->_suffix, '', $uri);
-        }
+        if($this->_suffix !== null)  $uri = str_replace($this->_suffix, '', $uri);
 
         // split on ? to get QUERY_STRING
         $p = preg_split('#\?#i', $uri, 2);
@@ -192,7 +180,7 @@ class Uri
      */
     public function getUri($origin = false)
     {
-        if($origin && !is_null($this->_origin)) return $this->_origin; 
+        if($origin && $this->_origin !== null) return $this->_origin; 
         return $this->_uri;
     }
     

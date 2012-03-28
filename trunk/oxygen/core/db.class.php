@@ -38,10 +38,10 @@ class Db
 	{
         $config = Config::get($config);
 
-        if(is_null($config)) trigger_error('Database config '.$config.' does not exists in config file');
+        if($config === false) trigger_error('Database config '.$config.' does not exists in config file');
         
         try
-		{
+		{            
 			$this->_connexion = new PDO($config->driver.':host='.$config->host.';dbname='.$config->base,
 			$config->login,
 			$config->password,
@@ -176,7 +176,7 @@ class Db
      */
     private function checkConnexion()
     {
-        return !is_null($this->_connexion);
+        return $this->_connexion !== null;
     }
 
     // ================================================= TRANSACTION STATIC METHODS
@@ -225,9 +225,8 @@ class Db
      */
     public static function throwTransactionException($config = 'db1')
     {
-        $exc = self::getInstance($config)->getTransactionException();
-        
-        if(!is_null($exc)) throw $exc;
+        $exc = self::getInstance($config)->getTransactionException();        
+        if($exc === null) throw $exc;
     } 
     
     /**
@@ -372,7 +371,7 @@ class Db
      */
     public function execute($parameters = null)
     {             
-        if(!is_null($parameters))
+        if($parameters !== null)
         {
             $parameters = func_num_args() > 1 ? func_get_args() : $parameters;            
             if(!is_array($parameters) && (is_string($parameters) || is_int($parameters))) $parameters = (array) $parameters;            
@@ -441,7 +440,7 @@ class Db
     public function fetchAll($fetchStyle = PDO::FETCH_ASSOC, $args = null)
     {      
         if($this->_lastQuery != $this->_sql) $this->execute();
-        $result = is_null($args) ? $this->_query->fetchAll($fetchStyle): $this->_query->fetchAll($fetchStyle, $args);
+        $result = $args === null ? $this->_query->fetchAll($fetchStyle): $this->_query->fetchAll($fetchStyle, $args);
 		$this->_query->closeCursor();
 		return $result;
     }
@@ -457,7 +456,7 @@ class Db
     {
         if($this->_lastQuery != $this->_sql) $this->execute();
 
-        if(is_null($args))
+        if($args === null)
         {
             if($fetchStyle == PDO::FETCH_COLUMN)
             {
@@ -604,7 +603,7 @@ class Db
      */
     public static function quoteIdentifier($var)
     {                   
-        if(is_null($var) || $var == '') trigger_error ('quoteIdentifier : string is null or empty', E_USER_ERROR);
+        if($var === null || $var == '') trigger_error ('quoteIdentifier : string is null or empty', E_USER_ERROR);
         
         // parenthesis : return as is
         if(preg_match('/\((.*)\)|([^a-zA-Z0-9\.`\'\\s"])/i', $var)) return $var;
@@ -651,7 +650,7 @@ class Db
      */
     public static function quoteTable($var)
     {       
-        if(is_null($var) || $var == '') trigger_error ('You have an error in your SELECT request, table name is empty', E_USER_ERROR);                  
+        if($var === null || $var == '') trigger_error ('You have an error in your SELECT request, table name is empty', E_USER_ERROR);                  
                 
         if(is_array($var))
         {
@@ -676,10 +675,7 @@ class Db
     {
         if(is_array($str)) return array_map(__METHOD__, $str);
 
-        if(!empty($str) && is_string($str)) 
-        {
-            return '"'.str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), $str).'"';
-        }                
+        if(!empty($str) && is_string($str)) return '"'.str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), $str).'"';
 
         return $str; 
     } 

@@ -56,10 +56,7 @@ class Controller
 	 */
 	public static function getInstance()
 	{
-		if(is_null(self::$_instance))
-		{
-			self::$_instance = new self();
-		}
+		if(self::$_instance === null) self::$_instance = new self();
 		return self::$_instance;
 	}   
 
@@ -123,7 +120,7 @@ class Controller
 	private function _parseFromRequest($uri)
 	{
         // no parametrer has been directly set by setModule and setAction
-        if(is_null($this->_action) && is_null($this->_module))
+        if($this->_action === null && $this->_module === null)
 		{
             // @todo add possibility to disallow direct request
 
@@ -143,8 +140,8 @@ class Controller
         else
         {
              $nb = $uri->nbSegments();
-             if($nb >= 1) { $this->_loadAsset(); }
-             if($nb > 2 && empty($this->_args)) { $this->_args =  $uri->segmentsSlice(2); }
+             if($nb >= 1) $this->_loadAsset();
+             if($nb > 2 && empty($this->_args)) $this->_args =  $uri->segmentsSlice(2);
         }
 	}
     
@@ -200,7 +197,7 @@ class Controller
      */
     private function _getActionClassName()
     {
-        if(!is_null($this->_module) && !is_null($this->_action))
+        if($this->_module !== null && $this->_action !== null)
         {
             $className = 'm_'.$this->_module.'_action_'.$this->_action;
             if(!class_file_path($className))

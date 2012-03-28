@@ -224,7 +224,7 @@ class Error
                     {
                         
                         $a = $arg;
-                        if(is_null($arg)) $a = 'null';
+                        if($arg === null) $a = 'null';
                         if(is_string($arg)) $a = "'".$arg."'";
                         if(is_object($arg)) $a = "object('".get_class($arg)."')";
                         if(is_array($arg)) $a = 'array()';

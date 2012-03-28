@@ -27,7 +27,7 @@ class Log
      */
     public static function getInstance()
     {
-        if(is_null(self::$_instance)) self::$_instance = new self();
+        if(self::$_instance === null) self::$_instance = new self();
         return self::$_instance;
     }
     
@@ -68,20 +68,78 @@ class Log
      */
     public function write($fileName, $msg)
     {
-        $logFile = LOGS_DIR.DS.$fileName;
-        
-        // If logfile is more than 10 megas, backup and create a new file
-        if(is_file($logFile) && filesize($logFile) >= 10240000)
+        $logFile = LOGS_DIR.DS.$fileName;    
+
+        if(is_file($logFile) && filesize($logFile) >= Config::get('debug', 'max_log_size', '5') * 1024 * 1024)
 		{
-			$nbFiles = count(glob($logFile.'.*'));
-			$nbFiles = str_pad($nbFiles, 3, '0', STR_PAD_LEFT);			
-			if(copy($logFile, $logFile.".".$nbFiles.".log")) unlink($logFile);
+			if($this->_saveToFile($logFile, $logFile.".".date('Ymd_His').".log"))
+            {
+                $files = glob($logFile.'.*');
+
+                $max_backups = Config::get('debug', 'max_log_backups', '5');
+                
+                if(!empty($files) && count($files) > $max_backups)
+                {
+                    rsort($files);
+                    $files = array_slice($files, $max_backups);                    
+                    foreach($files as $file) unlink($file);
+                }
+            }
+            
+            unlink($logFile);
 		}
         
         // already write into allinone.log file
         if($fileName != 'allinone.log') $this->write('allinone.log', $msg);
         
         return file_put_contents($logFile, $msg, FILE_APPEND | LOCK_EX);
+    }
+    
+    /**
+     * Save a backup from the current log file with rotation
+     * @param string $logFile       File name of the current log file
+     * @param string $backupFile    File name of the destination log file
+     * @return bool                 Return true on success 
+     */
+    private function _saveToFile($logFile, $backupFile)
+    {
+        if(function_exists('gzencode'))
+        {
+            return $this->_compressFile($logFile, $backupFile);
+        }
+        else
+        {
+            return copy($logFile, $backupFile);
+        }
+    }
+    
+    /**
+     * Compress log file into a .gz file
+     * 
+     * @param string $logFile       File name of the current log file
+     * @param string $backupFile    File name of the destination log file
+     * @param intefer $level        [optional] Compression level, default is 9
+     * @return boolean              Return true on success
+     */
+    private function _compressFile($logFile, $backupFile, $level = 9)
+    {
+        $dest = $backupFile . '.gz';
+        $mode = 'wb' . $level;
+        $success = false;
+
+        if ($fp_out = gzopen($dest, $mode))
+        {
+            if($fp_in = fopen($logFile, 'rb'))
+            {
+                while (!feof($fp_in)) gzwrite($fp_out, fread($fp_in, 1024 * 512));
+                fclose($fp_in);
+                $success = true;
+            }
+
+            gzclose($fp_out);
+        }
+        
+        return $success;
     }
     
     /**
@@ -94,12 +152,12 @@ class Log
      */
     public function formatMsg($msg, $type = '---', $time = null)
     {
-        if(mb_strlen($type) > 3) $type = substr($type, 0, 3);
-        if(is_null($time)) $time = '-------';
+        if(isset($type{4})) $type = substr($type, 0, 3);
+        if($time === null) $time = '-------';        
+        $time = str_pad($time, 7, '0');
+        $ip = str_pad($_SERVER['REMOTE_ADDR'], 15, ' ', STR_PAD_LEFT);
         
-        $time = str_pad($time, 7, '0', STR_PAD_RIGHT);
-        
-        return '['.date('Y-m-d H:i:s').'] ['.$_SERVER['REMOTE_ADDR'].'] ['.strtoupper($type).'] ['.$time.'] '.$msg.PHP_EOL;
+        return '['.date('Y-m-d H:i:s').'] ['.$ip.'] ['.strtoupper($type).'] ['.$time.'] '.$msg.PHP_EOL;
     }
     
     /**

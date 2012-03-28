@@ -68,19 +68,13 @@ class f_form_Captcha
         $values = Request::getInstance()->post($formId);
         
         // check if all hidden fields are correctly filled
-        if(is_null($values) || !isset($values->spinner) || !isset($values->name) || $values->name != '')
-        {
-            return false;
-        }        
+        if($values === null || !isset($values->spinner) || !isset($values->name) || $values->name != '') return false;
         
         // get datas from the encrypted spinner key
         list($timestamp, $remoteAddr) = @unserialize(Security::decode($values->spinner));
         
         // check if form is posted at the right time and from the right remote address
-        if(time() - $timestamp > $timeLimit || $_SERVER['REMOTE_ADDR'] != $remoteAddr)
-        {
-            return false;
-        }        
+        if(time() - $timestamp > $timeLimit || $_SERVER['REMOTE_ADDR'] != $remoteAddr) return false;     
         
         // everything is ok, return true
         return true;

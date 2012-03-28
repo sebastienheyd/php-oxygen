@@ -18,7 +18,7 @@
 class {$className} extends Document
 {
 {foreach from=$vars key=var item=value}
-    protected ${$var}{if !is_null($value.Default)} = '{$value.Default}'{/if};
+    protected ${$var}{if $value.Default !== null} = '{$value.Default}'{/if};
 {/foreach}
 
     protected static $tableName = '{$tableName}';
@@ -134,7 +134,7 @@ class {$className} extends Document
         try
         {
             $dateObj = $this->{$field.getMethodName}();
-            if(is_null($dateObj)) return '';
+            if($dateObj === null) return '';
             return $this->{$field.getMethodName}()->toSmartFormat($format);
         }
         catch(Exception $e)
@@ -151,7 +151,7 @@ class {$className} extends Document
         try
         {
             $dateObj = $this->{$field.getMethodName}();
-            if(is_null($dateObj)) return '';
+            if($dateObj === null) return '';
             return $this->{$field.getMethodName}()->toDiff();
         }
         catch(Exception $e)

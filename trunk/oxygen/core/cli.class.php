@@ -20,12 +20,8 @@ class Cli
      */
     public static function getInstance()
     {
-        if((defined('CLI_MODE') && CLI_MODE == false) || !self::isCurrentMode()) return false;       
-        
-        if(!isset(self::$_instance))
-        {
-            self::$_instance = new self();
-        }
+        if((defined('CLI_MODE') && CLI_MODE == false) || !self::isCurrentMode()) return false;               
+        if(self::$_instance === null) self::$_instance = new self();
         return self::$_instance;
     }
 
@@ -64,7 +60,7 @@ class Cli
                         '1;37' => 'white'                        
         );
         
-        if(!is_null($color) && $k = array_search($color, $colors)) return "\033[".$k."m";
+        if($color !== null && $k = array_search($color, $colors)) return "\033[".$k."m";
         return "\033[00m";        
     }
     
