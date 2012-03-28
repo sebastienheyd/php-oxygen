@@ -13,7 +13,7 @@
 
 class f_date_Format
 {
-    private static $instance;
+    private static $_instance;
     private $_xml;
     private $_date;
     
@@ -24,11 +24,8 @@ class f_date_Format
      */
     public static function getInstance()
     {
-        if(is_null(self::$instance))
-        {
-            self::$instance = new self();
-        }
-        return self::$instance;
+        if(self::$_instance === null) self::$_instance = new self();
+        return self::$_instance;
     }
     
     /**
@@ -221,7 +218,7 @@ class f_date_Format
      */
     public function toSmartFormat($format = 'fulltext-date-time', $lang = null)
     {
-        if(is_null($lang)) $lang = I18n::getLang();
+        if($lang === null) $lang = I18n::getLang();
         
         $lang = strtolower($lang);        
         
@@ -346,7 +343,7 @@ class f_date_Format
      */
     private function _loadLocale($key, $lang = null, $replace = array())
     {
-        if(is_null($lang)) $lang = I18n::getLang();
+        if($lang === null) $lang = I18n::getLang();
         
         $lang = strtolower($lang);
         

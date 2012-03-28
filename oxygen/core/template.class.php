@@ -37,17 +37,14 @@ class Template extends Smarty
         $this->addPluginsDir(HOOKS_DIR.DS.'lib'.DS.'smartyplugins');
         $this->addPluginsDir(FW_DIR.DS.'lib'.DS.'smartyplugins'); 
         
-        if(!is_null($module))
+        if($module !== null)
         {
             $this->module = $module;
             $this->addTemplateDir(WEBAPP_MODULES_DIR.DS.$module.DS.'template');            
             $this->addTemplateDir(MODULES_DIR.DS.$module.DS.'template');
         }
-        
-        if(!is_null($template))
-        {
-            $this->setTemplate($template);
-        }   
+         
+        if($template !== null) $this->setTemplate($template);
     }
 
     /**
@@ -110,7 +107,7 @@ class Template extends Smarty
     public function get($cacheId = null)
     {
         $this->assign('HTTP_PREFIX', HTTP_PREFIX);
-        if(!is_null($cacheId)) $this->setCaching(Smarty::CACHING_LIFETIME_SAVED);
+        if($cacheId !== null) $this->setCaching(Smarty::CACHING_LIFETIME_SAVED);
         return $this->fetch($this->_templateFile, $cacheId);
     }    
     
@@ -123,7 +120,7 @@ class Template extends Smarty
     public function render($cacheId = null)
     {
         $this->assign('HTTP_PREFIX', HTTP_PREFIX);
-        if(!is_null($cacheId)) $this->setCaching(Smarty::CACHING_LIFETIME_SAVED);
+        if($cacheId !== null) $this->setCaching(Smarty::CACHING_LIFETIME_SAVED);
         $this->display($this->_templateFile, $cacheId);
     }
 }

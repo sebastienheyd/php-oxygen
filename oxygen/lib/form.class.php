@@ -25,22 +25,16 @@ class Form
      */
     public static function getInstance($object = null)
     {
-        if(is_null($object))
+        if($object === null)
         {
             $post = Request::getInstance()->post;
         }
         else
         {
-            if($object instanceof Document)
-            {
-                $post = $object->getObjectVars();
-            }
+            if($object instanceof Document) $post = $object->getObjectVars();
         }
         
-        if(!isset($post) || empty($post))
-        {
-            return false;
-        }
+        if(!isset($post) || empty($post)) return false;
         
         return new self($post);
     }

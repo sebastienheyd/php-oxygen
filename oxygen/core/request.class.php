@@ -25,10 +25,7 @@ class Request
      */
     public static function getInstance()
     {
-        if(is_null(self::$_instance))
-        {
-            self::$_instance = new self();
-        }
+        if(self::$_instance === null) self::$_instance = new self();
         return self::$_instance;
     }
     

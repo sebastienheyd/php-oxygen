@@ -287,12 +287,12 @@ class File
         if(!strstr($this->_dirname, $restrictToDir)) trigger_error('Security error : file is out of base directory', E_USER_ERROR);
         
         // Clean up the output buffer
-        while (ob_get_level()) { ob_end_clean(); }
+        while (ob_get_level()) ob_end_clean();
         
         // Sets name and size
 		$original = $this->_basename;
         $filesize = filesize($this->_file);        
-        if(is_null($filename)) $filename = $original;
+        if($filename === null) $filename = $original;
 
         // Set headers
 		header('Content-Type: application/force-download; name="'.$original.'"');

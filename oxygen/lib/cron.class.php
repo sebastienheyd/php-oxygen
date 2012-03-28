@@ -53,15 +53,9 @@ class Cron
     {
         $shortCuts = array('@yearly' => '0 0 1 1 *', '@annualy' => '0 0 1 1 *', '@monthly' => '0 0 1 * *', '@weekly' => '0 0 * * 0', '@daily' => '0 0 * * *', '@midnight' => '0 0 * * *', '@hourly' => '0 * * * *');
 
-        if (isset($shortCuts[$time]))
-        {
-            $time = $shortCuts[$time];
-        }
+        if (isset($shortCuts[$time])) $time = $shortCuts[$time];
 
-        if (!preg_match('/^([0-9\/\*\-,]+)? ([0-9\/\*\-,]+)? ([0-9\/\*\-,]+)? ([0-9\/\*\-,]+)? ([0-7\/\*\-,]+)?$/', $time))
-        {
-            throw new InvalidArgumentException('Job is not well formatted (' . $time . ')');
-        }
+        if (!preg_match('/^([0-9\/\*\-,]+)? ([0-9\/\*\-,]+)? ([0-9\/\*\-,]+)? ([0-9\/\*\-,]+)? ([0-7\/\*\-,]+)?$/', $time)) throw new InvalidArgumentException('Job is not well formatted (' . $time . ')');
 
         list($this->_exeMinute, $this->_exeHour, $this->_exeDayOfMonth, $this->_exeMonth, $this->_exeDayOfWeek) = explode(' ', $time);
         return $this;
@@ -86,12 +80,7 @@ class Cron
 
         $minute = $minute[0] == '0' ? $minute[1] : $minute;
 
-        if ($minutes[$minute] && $hours[$hour] && $daysOfMonth[$dayOfMonth] && $months[$month] && $daysOfWeek[$dayofweek])
-        {
-            return true;
-        }
-
-        return false;
+        return ($minutes[$minute] && $hours[$hour] && $daysOfMonth[$dayOfMonth] && $months[$month] && $daysOfWeek[$dayofweek]);
     }
 
     /**
@@ -109,19 +98,13 @@ class Cron
         // interval is * set all to true
         if ($interval == '*')
         {
-            for ($i = $min; $i <= $max; $i++)
-            {
-                $result[$i] = true;
-            }
+            for ($i = $min; $i <= $max; $i++) $result[$i] = true;
             return $result;
         }
         else
         {
             // or set all to false
-            for ($i = $min; $i <= $max; $i++)
-            {
-                $result[$i] = false;
-            }
+            for ($i = $min; $i <= $max; $i++) $result[$i] = false;
         }
 
         // explode for multiple time definitions
@@ -138,10 +121,7 @@ class Cron
                 $tmp = explode('/', $val);
                 $between = $tmp[0];
 
-                if ($between != '*' && !preg_match('/^([0-9]+)\-([0-9]+)$/', $between))
-                {
-                    throw new UnexpectedValueException('Job interval is not correctly formatted');
-                }
+                if ($between != '*' && !preg_match('/^([0-9]+)\-([0-9]+)$/', $between)) throw new UnexpectedValueException('Job interval is not correctly formatted');
 
                 $every = $tmp[1];
             }
@@ -156,57 +136,38 @@ class Cron
             }
             else
             {
-                if (!is_null($every) && $every != '*')
+                if ($every !== null && $every != '*')
                 {
-                    if ($every < $min || $every > $max)
-                    {
-                        throw new RangeException('Value is not in range (' . $min . ' < ' . $every . ' < ' . $max . ')');
-                    }
+                    if ($every < $min || $every > $max) throw new RangeException('Value is not in range (' . $min . ' < ' . $every . ' < ' . $max . ')');
                 }
                 else
                 {
-                    if ($val[0] < $min || $val[0] > $max)
-                    {
-                        throw new RangeException('Value is not in range (' . $min . ' < ' . $val[0] . ' < ' . $max . ')');
-                    }
+                    if ($val[0] < $min || $val[0] > $max) throw new RangeException('Value is not in range (' . $min . ' < ' . $val[0] . ' < ' . $max . ')');
                 }
             }
 
-            if (isset($val[0]) && isset($val[1]) && is_null($every))
+            if (isset($val[0]) && isset($val[1]) && $every === null)
             {
                 if ($val[0] <= $val[1])
                 {
-                    for ($i = $val[0]; $i <= $val[1]; $i++)
-                    {
-                        $result[$i] = true; /* ex : 9-12 = 9, 10, 11, 12 */
-                    }
+                    for ($i = $val[0]; $i <= $val[1]; $i++) $result[$i] = true; /* ex : 9-12 = 9, 10, 11, 12 */
                 }
                 else
                 {
-                    for ($i = $val[0]; $i <= $max; $i++)
-                    {
-                        $result[$i] = true; /* ex : 10-4 = 10, 11, 12... */
-                    }
-
-                    for ($i = $min; $i <= $val[1]; $i++)
-                    {
-                        $result[$i] = true; /* ... 1, 2, 3, 4 */
-                    }
+                    for ($i = $val[0]; $i <= $max; $i++) $result[$i] = true; /* ex : 10-4 = 10, 11, 12... */
+                    for ($i = $min; $i <= $val[1]; $i++) $result[$i] = true; /* ... 1, 2, 3, 4 */
                 }
             }
             else
             {
-                if (!is_null($every))
+                if ($every !== null)
                 {
                     // ex : */5
                     if ($between == '*')
                     {
                         for ($i = $min; $i <= $max; $i++)
                         {
-                            if ($i % $every == 0)
-                            {
-                                $result[$i] = true;
-                            }
+                            if ($i % $every == 0) $result[$i] = true;
                         }
                     }
                     else
@@ -215,10 +176,7 @@ class Cron
                         list($rmin, $rmax) = explode('-', $between);
                         for ($i = $rmin; $i <= $rmax; $i++)
                         {
-                            if ($i % $every == 0)
-                            {
-                                $result[$i] = true;
-                            }
+                            if ($i % $every == 0) $result[$i] = true;
                         }
                     }
                 }

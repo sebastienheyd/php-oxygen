@@ -98,7 +98,7 @@ class I18n
      */
     public static function getLocaleLabel($lang = null)
     {
-        if(is_null($lang)) $lang = self::getLang();
+        if($lang === null) $lang = self::getLang();
         return self::getLangLabel($lang).' ('.self::getRegionLabel($lang).')';        
     }
     
@@ -121,7 +121,7 @@ class I18n
      */
     public static function getLangLabel($lang = null)
     {
-        if(is_null($lang)) $lang = self::getLang();
+        if($lang === null) $lang = self::getLang();
         $xml = simplexml_load_file(FW_DIR.DS.'i18n'.DS.'xml'.DS.'iso-639.xml');        
         $xlang = $xml->xpath('/codes/language[@iso-639-1="'.self::getLang().'"]/label[@lang="'.strtolower($lang).'"]');  
         if(empty($xlang)) return $lang != 'en' ? self::getLangLabel('en') : '/';   
@@ -148,7 +148,7 @@ class I18n
      */
     public static function getRegionLabel($lang = null)
     {
-        if(is_null($lang)) $lang = self::getLang();
+        if($lang === null) $lang = self::getLang();
         $xml = simplexml_load_file(FW_DIR.DS.'i18n'.DS.'xml'.DS.'iso-3166.xml');
         $region = $xml->xpath('/regions/region[@code="'.self::getRegion().'"]/label[@lang="'.strtolower($lang).'"]');
         if(empty($region)) return $lang != 'en' ? self::getRegionLabel('en') : '/'; 

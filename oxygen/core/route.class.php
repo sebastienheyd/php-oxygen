@@ -22,7 +22,7 @@ class Route
      */
     public static function getInstance()
     {
-        if(is_null(self::$_instance)) self::$_instance = new self();
+        if(self::$_instance === null) self::$_instance = new self();
 		return self::$_instance;
     }
     
@@ -91,7 +91,7 @@ class Route
                 if($rule == 'default') $defaultRedirect = (string) $route->attributes()->redirect.'/'.$uri;
             }
 
-            if(!$uriInst->isDefined() && !is_null($defaultRedirect)) $uriInst->setUri($defaultRedirect);
+            if(!$uriInst->isDefined() && $defaultRedirect !== null) $uriInst->setUri($defaultRedirect);
         }        
 
         return $uriInst;

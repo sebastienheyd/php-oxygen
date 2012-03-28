@@ -29,10 +29,10 @@ class Session
         // check if session datas must be stored in database
         $config = Config::get('session');
 
-        if(isset($config->type) && $config->type == 'database' && isset($config->table))
+        if(isset($config->type) && $config->type == 'database')
         {
-            $this->_db = DB::getInstance($config->db_config);
-            $this->_tableName = (string) $config->table;
+            $this->_db = DB::getInstance(isset($config->db_config) ? $config->db_config : 'db1');
+            $this->_tableName = isset($config->table) ? $config->table : 'sessions';
 
             // create table if necessary
             if(!$this->_db->tableExists($this->_tableName, $config->db_config)) $this->_initSessionTable();
@@ -48,13 +48,8 @@ class Session
 	 */
 	public static function getInstance()
 	{
-		if(is_null(self::$_instance))
-        {
-            self::$_instance = new self();
-        }
-
+		if(self::$_instance === null) self::$_instance = new self();
         self::$_instance->start();
-
 		return self::$_instance;
 	}
     
@@ -140,7 +135,7 @@ class Session
      */
     public function __set($name, $value)
     {
-        if(is_null($value))
+        if($value === null)
         {           
             if(isset($_SESSION[$name])) unset($_SESSION[$name]);
         }
@@ -359,7 +354,7 @@ class Session
      */
     public function dbDestroy($id = null)
     {
-        if(is_null($id)) $id = $this->getId();
+        if($id === null) $id = $this->getId();
         $res = $this->_db->prepare('DELETE FROM `'.$this->_tableName.'` WHERE `session_id`=?')->execute($id);
         return true;
     }

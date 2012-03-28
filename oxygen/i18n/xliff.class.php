@@ -48,10 +48,7 @@ class f_i18n_Xliff
      */
     public static function getInstance($file)
     {
-        if(!isset(self::$_instances[$file]))
-        {
-            self::$_instances[$file] = new self($file);
-        }        
+        if(!isset(self::$_instances[$file])) self::$_instances[$file] = new self($file);      
         return self::$_instances[$file];
     }       
     
@@ -67,7 +64,7 @@ class f_i18n_Xliff
      */
     public function translate($string, $args = array(), $srcLang = 'en', $origin = 'default', $addToFile = true)
     {        
-        if(is_null($this->_xml)) $this->_createFile($string, $srcLang, $origin);
+        if($this->_xml === null) $this->_createFile($string, $srcLang, $origin);
         
         $t = $this->_xml->xpath('//ns:file[@source-language="'.$srcLang.'"][@original="'.$origin.'"]//ns:trans-unit/ns:source[.="'.$string.'"]/../ns:target');                   
             
@@ -82,7 +79,7 @@ class f_i18n_Xliff
                 $this->_addToFile($string, $srcLang, $origin, $target);         
             }
             
-            $res = !is_null($target) ? $target : $string;                
+            $res = $target !== null ? $target : $string;                
         }    
         else
         {
@@ -153,7 +150,7 @@ class f_i18n_Xliff
         
         // create target node
         $targetNode = $doc->createElement('target');        
-        $targetText = $doc->createTextNode(!is_null($target) ? $target : '');
+        $targetText = $doc->createTextNode($target !== null ? $target : '');
         $targetNode->appendChild($targetText);
         
         // create trans-unit node
@@ -163,7 +160,7 @@ class f_i18n_Xliff
         $transUnit->appendChild($targetNode);
         
         // there is already a body node
-        if(!is_null($body))
+        if($body !== null)
         {
             // add the new trans-unit node
             $body->appendChild($transUnit);

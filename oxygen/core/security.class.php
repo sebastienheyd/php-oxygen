@@ -44,7 +44,7 @@ class Security
     {
         if(!function_exists('mcrypt_encrypt')) return self::xorencode($text, $key);
         
-        if(is_null($key)) $key = self::getKey();
+        if($key === null) $key = self::getKey();
         
         $size  = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
         $iv    = mcrypt_create_iv($size, MCRYPT_RAND);
@@ -65,7 +65,7 @@ class Security
     {
         if(!function_exists('mcrypt_encrypt')) return self::xordecode($text, $key);
         
-        if(is_null($key)) $key = self::getKey();
+        if($key === null) $key = self::getKey();
         
         $size  = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
         $iv    = mcrypt_create_iv($size, MCRYPT_RAND);
@@ -83,7 +83,7 @@ class Security
      */    
     public static function xorencode($text, $key = null)
     {
-        if(is_null($key)) $key = self::getKey();
+        if($key === null) $key = self::getKey();
         
         $n = mb_strlen($text, '8bit');                
         $m = mb_strlen($key, '8bit');
@@ -102,7 +102,7 @@ class Security
      */     
     public static function xordecode($text, $key = null)
     {
-        if(is_null($key)) $key = self::getKey();
+        if($key === null) $key = self::getKey();
         
         $n = mb_strlen($text, '8bit');                
         $m = mb_strlen($key, '8bit');

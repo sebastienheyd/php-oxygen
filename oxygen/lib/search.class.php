@@ -136,7 +136,7 @@ class Search
         $result = array();
         
         // no folder... no search ! ;-)
-        if(is_null($this->_folder)) trigger_error('You must define a folder to find files', E_USER_ERROR);        
+        if($this->_folder === null) trigger_error('You must define a folder to find files', E_USER_ERROR);        
         
         // folder is not in the base directory (by default the project dir)
         if(!strstr($this->_folder, $restrictToDir)) trigger_error('Directory listing is not secure, directory is outside project directory');        

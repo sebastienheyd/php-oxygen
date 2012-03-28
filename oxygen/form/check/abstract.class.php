@@ -54,7 +54,7 @@ abstract class f_form_check_Abstract
         
         $moduleName = get_module_name(get_class($this));
         
-        if(!is_null($moduleName))
+        if($moduleName !== null)
         {
             $file = MODULES_DIR.DS.$moduleName.DS.'i18n'.DS.'rules.'.I18n::getLang().'.xml';
         }

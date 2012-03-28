@@ -69,7 +69,7 @@ class Email
      */
     public function from($emailAddress, $name = null)
     {
-        $value = !is_null($name) ? '"'.$this->_b($name).'" <'.$emailAddress.'>':$emailAddress; // Strip accents 
+        $value = $name !== null ? '"'.$this->_b($name).'" <'.$emailAddress.'>':$emailAddress; // Strip accents 
         $this->_from = $value;
         $this->_returnPath = $emailAddress;
         return $this;
@@ -178,8 +178,8 @@ class Email
     {
         if($file = File::load($file))
         {
-            $mimeType = is_null($mimeType) ? $file->getMimeType() : $mimeType;
-            $fileName = is_null($fileName) ? $file->getFileName() : $fileName;
+            $mimeType = $mimeType === null ? $file->getMimeType() : $mimeType;
+            $fileName = $fileName === null ? $file->getFileName() : $fileName;
 
             $this->addStringAttachment($file->getContents(), $fileName, $mimeType);
         }
@@ -196,7 +196,7 @@ class Email
      */
     public function addStringAttachment($contentString, $fileName, $mimeType = null)
     {
-        if(is_null($mimeType)) $mimeType = File::getMimeTypeFrom($fileName);        
+        if($mimeType === null) $mimeType = File::getMimeTypeFrom($fileName);        
         $a['mimeType'] = $mimeType;
         $a['name'] = $fileName;
         $a['content'] = $contentString;
@@ -260,7 +260,7 @@ class Email
         {                      
             $header .= 'Content-Type: multipart/alternative; boundary=alt-' . $this->_frontier . self::$_line;
         }
-        else if (isset($this->_bodyText) && !is_null($this->_bodyText))
+        else if (isset($this->_bodyText) && $this->_bodyText !== null)
         {
             if($this->_hasAttachment())
             {
@@ -364,7 +364,7 @@ class Email
      */
     private function _isMultiPart()
     {
-        return isset($this->_bodyText) && isset($this->_bodyHtml) && !is_null($this->_bodyText) && !is_null($this->_bodyHtml);
+        return isset($this->_bodyText) && isset($this->_bodyHtml) && $this->_bodyText !== null && $this->_bodyHtml !== null;
     }
     
     /**

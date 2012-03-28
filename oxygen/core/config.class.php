@@ -22,7 +22,7 @@ class Config
      */
     public static function getInstance()
     {
-		if(is_null(self::$_instance)) self::$_instance = new self();
+		if(self::$_instance === null) self::$_instance = new self();
 		return self::$_instance;
     }
     
@@ -71,7 +71,7 @@ class Config
     {
         $inst = self::getInstance();
         
-        if(is_null($name))
+        if($name === null)
         {
             if(isset($inst->$section)) $value = $inst->$section;               
         }
@@ -80,7 +80,7 @@ class Config
             if(isset($inst->$section->$name)) $value = $inst->$section->$name;     
         }
         
-        if(empty($value) || $value == '') return $defaultValue;
+        if(!isset($value) || empty($value) || $value == '') return $defaultValue;
         
         return $value;
     }
