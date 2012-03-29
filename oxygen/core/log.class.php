@@ -15,9 +15,11 @@ class Log
 {
     static $_instance;
     
-    const ALL   = 30;
-    const DEBUG = 20;
+    const DEBUG = 40;
+    const INFO  = 30;
+    const WARN  = 20;
     const ERROR = 10;
+    const OFF   = 0;
     
     private $_level;
     private $_inst;
@@ -36,9 +38,12 @@ class Log
      */
     private function __construct()
     {
-        $authorized = array('ERROR', 'DEBUG', 'ALL');
-        $level = strtoupper(Config::get('debug', 'logging_level', 'debug'));
-        if(!in_array($level, $authorized)) $level = 'DEBUG';
+        $level = strtoupper(Config::get('debug', 'logging_level', 'info'));
+        
+        $refl = new ReflectionClass('Log');
+        $authorized = array_keys($refl->getConstants());
+        if(!in_array($level, $authorized)) $level = 'OFF';    
+        
         $this->_level = constant("self::".$level);
         $this->_inst = $this->_getClass();
     }
@@ -105,26 +110,37 @@ class Log
     }
     
     /**
-     * Log an information, only logged when level = ALL
-     * 
-     * @param string $msg   The message to log
-     */
-    public static function info($msg)
-    {
-        $inst = self::getInstance();
-        if($inst->getLevel() >= self::ALL) $inst->getHandler()->write('info', $msg);
-    }     
-    
-    /**
-     * Log a debug information, only logged when level >= DEBUG
+     * Log a debug information, only logged when level == DEBUG
      * 
      * @param string $msg   The message to log
      */    
     public static function debug($msg)
     {
         $inst = self::getInstance();
-        if($inst->getLevel() >= self::DEBUG) $inst->getHandler()->write('debug', $msg);
-    } 
+        if($inst->getLevel() == self::DEBUG) $inst->getHandler()->write('debug', $msg);
+    }     
+    
+    /**
+     * Log an information, only logged when level >= INFO
+     * 
+     * @param string $msg   The message to log
+     */
+    public static function info($msg)
+    {
+        $inst = self::getInstance();
+        if($inst->getLevel() >= self::INFO) $inst->getHandler()->write('info', $msg);
+    }     
+    
+    /**
+     * Log a warn information, only logged when level >= WARN
+     * 
+     * @param string $msg   The message to log
+     */    
+    public static function warn($msg)
+    {
+        $inst = self::getInstance();
+        if($inst->getLevel() >= self::WARN) $inst->getHandler()->write('warning', $msg);
+    }     
     
     /**
      * Log an error event, only logged when level >= ERROR
@@ -138,16 +154,16 @@ class Log
     }    
     
     /**
-     * Log an sql query, only logged when level >= DEBUG
+     * Log an sql query, only logged when level >= INFO
      * 
      * @param string $msg   The message to log
      */       
     public static function sql($msg)
     {     
         $inst = self::getInstance();
-        if($inst->getLevel() >= self::DEBUG)
+        if($inst->getLevel() >= self::INFO)
         {            
-            if($inst->getLevel() == self::ALL) $msg = $inst->getBacktrace(array('/db/')).' | '.trim($msg);
+            if($inst->getLevel() == self::DEBUG) $msg = $inst->getBacktrace(array('/db/')).' | '.trim($msg);
             $inst->getHandler()->write('sql', $msg);
         }
     }
