@@ -11,12 +11,15 @@
  * @package     PHP Oxygen
  */
 
-class f_cache_Memcache extends f_cache_Driver
+class f_cache_Memcache implements f_cache_Interface
 {
-    static $_instance;
+    private static $_instance;
     
     private $_memcache;
     
+    /**
+     * @return f_cache_Memcache 
+     */
     public static function getInstance()
     {
         if(self::$_instance === null) self::$_instance = new self();
@@ -24,11 +27,8 @@ class f_cache_Memcache extends f_cache_Driver
     }
     
     private function __construct()
-    {
-        $this->isSupported();        
-        $memcache = new Memcache();
-        $memcache->connect(Config::get('cache', 'memcache_host', '127.0.0.1'), Config::get('cache', 'memcache_port', 11211));     
-        $this->_memcache = $memcache;
+    {             
+        $this->isSupported();   
     }
     
     public function get($id)
@@ -51,8 +51,21 @@ class f_cache_Memcache extends f_cache_Driver
         return $this->_memcache->flush();
     }
     
-    protected function isSupported()
+    public function isSupported()
     {
-        if(!extension_loaded('memcache')) trigger_error('Memcached extension is not loaded', E_USER_ERROR);
+        if(!extension_loaded('memcache')) throw new Exception('Memcached extension is not loaded');
+        
+        $memcache = new Memcache();
+        
+        $host = Config::get('cache', 'memcache_host', '127.0.0.1');
+        $port = Config::get('cache', 'memcache_port', 11211);
+        
+        $memcache->addServer($host, $port);
+        $stats = $memcache->getExtendedStats();
+        $available = (bool) $stats["$host:$port"];    
+        
+        $this->_memcache = $memcache->connect($host, $port);
+        
+        if(!$available || !$this->_memcache) throw new Exception('Cannot connect to memcache server');
     }
 }

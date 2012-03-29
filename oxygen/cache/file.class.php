@@ -11,7 +11,7 @@
  * @package     PHP Oxygen
  */
 
-class f_cache_File extends f_cache_Driver
+class f_cache_File implements f_cache_Interface
 {
     static $_instance;
     
@@ -48,10 +48,7 @@ class f_cache_File extends f_cache_Driver
         
         $datas = $cache['datas'];
         
-        if($cache['type'] == 'array' || $cache['type'] == 'object')
-        {
-            $datas = unserialize($cache['datas']);
-        }
+        if($cache['type'] == 'array' || $cache['type'] == 'object') $datas = unserialize($cache['datas']);
         
         return $datas;
     }
@@ -79,14 +76,10 @@ class f_cache_File extends f_cache_Driver
         return count($files) == $i;
     }
     
-    protected function isSupported()
+    public function isSupported()
     {
-        if(!is_dir($this->_cachePath))
-        {
-            mkdir($this->_cachePath, 0775, true);
-        }            
-            
-        if(!is_writable($this->_cachePath)) trigger_error('Cache dir '.$this->_cachePath.' is not writeable', E_USER_ERROR);        
+        if(!is_dir($this->_cachePath)) mkdir($this->_cachePath, 0775, true);
+        if(!is_writable($this->_cachePath)) throw new Exception('Cache dir '.$this->_cachePath.' is not writeable');        
     }
     
     private function _prepareDatas($datas, $ttl)

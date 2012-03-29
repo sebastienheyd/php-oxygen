@@ -46,7 +46,8 @@ class Error
         
         $label = isset($this->_levels[$errno]) ? $this->_levels[$errno] : $errno;
         $msg = str_replace(PROJECT_DIR.DS, '', $errstr);
-        $file = str_replace(PROJECT_DIR.DS, '', $errfile);        
+        $file = str_replace(PROJECT_DIR.DS, '', $errfile); 
+        Log::error($label.' : "'.$msg.'" in '.$file.' (ln.'.$errline.')');
 
         switch ($errno)
 		{
@@ -65,15 +66,10 @@ class Error
                 else
                 {
                     echo '<code><span style="font-size:14px;"><strong style="color:#900;">'.$label.'</strong> : <strong>"'.$msg.'"</strong> in <i>'.$file.'</i> (ln.'.$errline.')<br /></span></code>';                    
-                }
-                
-                Log::debug('"'.$msg.'" in '.$file.' (ln.'.$errline.')');
+                }                                
 		    break;
         
-            default: 
-                $message = '"' . $msg . '" in ' . $file . ' (ln.' . $errline . ')';                            
-                Log::error($message);
-                
+            default:                 
                 if(CLI_MODE) $this->_showCliError($label, $message, debug_backtrace());
 
                 $message = '"'.$msg.'" in <i>'.$file.'</i> (ln.'.$errline.')';
@@ -107,10 +103,12 @@ class Error
         
         array_unshift($trace, $t);     
         
-        $message = '"' . $exception->getMessage() . '" in ' . str_replace(PROJECT_DIR.DS, '', $exception->getFile()) . ' (ln.' . $exception->getLine() . ')';
+        $class = get_class($exception);
+        
+        $message = $class.' : "' . $exception->getMessage() . '" in ' . str_replace(PROJECT_DIR.DS, '', $exception->getFile()) . ' (ln.' . $exception->getLine() . ')';
         Log::error($message);        
         
-        if(CLI_MODE) $this->_showCliError(get_class($exception), $message, $trace);
+        if(CLI_MODE) $this->_showCliError($class, $message, $trace);
         
         $message = '"'.$exception->getMessage().'" in <i>'.str_replace(PROJECT_DIR.DS, '', $exception->getFile()).'</i> (ln.'.$exception->getLine().')'; 
         $this->_showError(get_class($exception), $message, $trace);                    

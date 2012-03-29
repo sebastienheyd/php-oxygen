@@ -11,7 +11,7 @@
  * @package     PHP Oxygen
  */
 
-abstract class f_cache_Driver
+interface f_cache_Interface
 {
     /**
 	 * Fetch datas from cache
@@ -19,7 +19,7 @@ abstract class f_cache_Driver
 	 * @param 	mixed           Unique cache identifier
 	 * @return 	mixed|false		Datas or false if none
 	 */
-    abstract public function get($id);
+    public function get($id);
     
 	/**
 	 * Save content into cache
@@ -30,7 +30,7 @@ abstract class f_cache_Driver
      * 
      * @return boolean  Return true on success
      */
-    abstract public function save($id, $datas, $ttl = 60);
+    public function save($id, $datas, $ttl = 60);
     
 	/**
 	 * Delete from Cache
@@ -38,17 +38,19 @@ abstract class f_cache_Driver
 	 * @param 	string		Unique cache identifier
 	 * @return 	boolean		Return true on success
 	 */
-    abstract public function delete($id);
+    public function delete($id);
     
     /**
      * Flush all cache
+     * 
      * @return boolean  Return true on success 
      */
-    abstract public function flush();
+    public function flush(); 
     
     /**
-     * Is cache system supported
-     * @return void     Error if not supported 
+     * Check if handler is supported
+     * 
+     * @return boolean  Return true if handler is supported 
      */
-    abstract protected function isSupported();        
+    public function isSupported();   
 }

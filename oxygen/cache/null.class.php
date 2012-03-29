@@ -11,7 +11,7 @@
  * @package     PHP Oxygen
  */
 
-class f_cache_Null extends f_cache_Driver
+class f_cache_Null implements f_cache_Interface
 {
     static $_instance;
     
@@ -41,7 +41,7 @@ class f_cache_Null extends f_cache_Driver
         return true;
     }
     
-    protected function isSupported()
+    public function isSupported()
     {
         return true;
     }
