@@ -11,7 +11,7 @@
  * @package     PHP Oxygen
  */
 
-class f_cache_Apc extends f_cache_Driver
+class f_cache_Apc implements f_cache_Interface
 {
     static $_instance;
     
@@ -46,9 +46,8 @@ class f_cache_Apc extends f_cache_Driver
         return apc_clear_cache('user');
     }
     
-    protected function isSupported()
+    public function isSupported()
     {
-        if(!extension_loaded('apc') || !function_exists('apc_store'))
-            trigger_error('APC extension is not loaded', E_USER_ERROR);
+        if(!extension_loaded('apc') || !function_exists('apc_store')) throw new Exception('APC extension is not loaded');
     }
 }

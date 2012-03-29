@@ -15,10 +15,12 @@ class Cache
 {
     private static $_class;
     
+    private static $_handlers = array('apc', 'memcache', 'file', 'null');
+    
     /**
      * Get cache engine class instance to use
      * 
-     * @return f_cache_Driver 
+     * @return f_cache_Interface
      */
     private static function getClass()
     {
@@ -26,15 +28,11 @@ class Cache
         if(isset(self::$_class)) return self::$_class;
         
         // Check for authorized engines
-        $authorized = array('apc', 'memcache', 'file', 'off');
-        $config = strtolower(Config::get('cache', 'type', 'off'));        
-        if(!in_array($config, $authorized)) trigger_error($config.' is not a valid cache system');
-
-        // Special case for off = null
-        if($config == 'off') $config = 'null';
-        
-        // Class name
-        $class = 'f_cache_'.ucfirst($config);
+        $handler = strtolower(Config::get('cache', 'handler', 'null'));        
+        if(!in_array($handler, self::$_handlers)) trigger_error($handler.' is not a valid cache handler');
+       
+        // Handler class name
+        $class = 'f_cache_'.ucfirst($handler);
         
         // Instanciation
         self::$_class = call_user_func(array($class, 'getInstance'));     
@@ -87,5 +85,24 @@ class Cache
     public static function flush()
     {
         return self::getClass()->flush();
+    }
+    
+    /**
+     * Check if handler is supported
+     * 
+     * @return boolean  Return true if handler is supported 
+     */
+    public static function isSupported($exception = true)
+    {
+        if($exception) return self::getClass()->isSupported();
+        
+        try
+        {
+            return self::getClass()->isSupported();
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }        
     }
 }
