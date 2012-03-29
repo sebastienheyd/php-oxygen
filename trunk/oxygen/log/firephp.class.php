@@ -39,17 +39,20 @@ class f_log_Firephp implements f_log_Interface
         {
             switch ($type)
             {
-                case 'info':
-                    $this->_fbInst->log($msg);
+                case 'error':
+                    $this->_fbInst->error($msg);
                 break;
-
-                case 'sql':
-                case 'debug':
-                        $this->_fbInst->info($msg);
+            
+                case 'warning':
+                    $this->_fbInst->warn($msg);
+                break;
+            
+                case 'info':
+                    $this->_fbInst->info($msg);
                 break;
 
                 default:
-                    $this->_fbInst->error($msg);
+                        $this->_fbInst->log($msg);
                 break;
             }
         }
