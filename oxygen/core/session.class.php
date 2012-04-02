@@ -32,13 +32,15 @@ class Session
         if(isset($config->type) && $config->type == 'database')
         {
             $this->_db = DB::getInstance(isset($config->db_config) ? $config->db_config : 'db1');
-            $this->_tableName = isset($config->table) ? $config->table : 'sessions';
+            $this->_tableName = Db::prefixTable(isset($config->table) ? $config->table : 'sessions');
 
             // create table if necessary
             if(!$this->_db->tableExists($this->_tableName, $config->db_config)) $this->_initSessionTable();
 
             $this->_lifeTime = get_cfg_var("session.gc_maxlifetime");
         }
+        
+        $this->start();
 	}
 
 	/**
@@ -49,7 +51,6 @@ class Session
 	public static function getInstance()
 	{
 		if(self::$_instance === null) self::$_instance = new self();
-        self::$_instance->start();
 		return self::$_instance;
 	}
     
@@ -74,10 +75,8 @@ class Session
      */
     public static function get($name, $defaultValue = null)
     {
-        $i = self::getInstance();
-        
-        if(!isset($i->$name)) return $defaultValue;
-        
+        $i = self::getInstance();        
+        if(!isset($i->$name)) return $defaultValue;        
         return $i->$name;
     }
     
@@ -101,12 +100,8 @@ class Session
     {
         if(!$this->_sessionActive)
         {
-            $config = Config::get('session');
-            if($config->type == 'database' && isset($config->table))
-            {
-                // register this object as the session handler
-                $this->setDbHandler();
-            }
+            $handler = Config::get('session', 'handler', 'default');
+            if($handler == 'database') $this->setDbHandler();
             $this->_sessionActive = @session_start();
         }
         return $this->_sessionActive;
