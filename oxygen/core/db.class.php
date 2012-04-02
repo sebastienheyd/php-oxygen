@@ -579,6 +579,11 @@ class Db
         return DB::query($q, $config)->fetchAllColumn();
     }
     
+    /**
+     * Return last inserted id
+     * 
+     * @return string
+     */
     public function getLastId()
     {
         return $this->_connexion->lastInsertId();
@@ -654,12 +659,22 @@ class Db
     public static function quoteTable($var, $config = 'db1')
     {       
         if($var === null || $var == '') trigger_error ('You have an error in your SELECT request, table name is empty', E_USER_ERROR);                  
-
-        $config = Config::get($config);
-        if($config->prefix != '' && !preg_match('#^'.$config->prefix.'#', $var)) $var = $config->prefix.$var;
-        
-        return self::quoteIdentifier($var);        
+        return self::quoteIdentifier(self::prefixTable($tableName, $config));        
     } 
+    
+    /**
+     * Prefix table name
+     * 
+     * @param string $tableName     Table name to prefix if necessary
+     * @param string $config        Config to use
+     * @return string               The prefixed table name
+     */
+    public static function prefixTable($tableName, $config = 'db1')
+    {
+        $config = Config::get($config);        
+        if($config->prefix != '' && !preg_match('#^'.$config->prefix.'#', $var)) $tableName = $config->prefix.$tableName;            
+        return $tableName;
+    }
     
     /**
      * Escape string to insert
@@ -695,7 +710,7 @@ class Db
             $params[$key] = is_string($value) ? self::escape($value) : $value;
         }
 
-        return preg_replace($keys, $params, $query, 1, $count);
+        return preg_replace($keys, $params, $query, 1);
     }
     
     /**
