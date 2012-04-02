@@ -16,6 +16,7 @@ class f_db_Insert
     private $_db;
     private $_table;
     private $_values;
+    private $_config;
    
     /**
      * Get instance of f_db_Insert
@@ -42,6 +43,7 @@ class f_db_Insert
         $this->_db = DB::getInstance($config);
         $this->_table = $table;
         $this->_values = $values;
+        $this->_config = $config;
     }   
         
     /**
@@ -51,7 +53,7 @@ class f_db_Insert
      */
     public function execute()
     {
-        $sql = 'INSERT INTO '.DB::quoteTable($this->_table).' ';
+        $sql = 'INSERT INTO '.DB::quoteTable($this->_table, $this->_config).' ';
         
         $cols = array();
         $vals = array();

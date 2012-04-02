@@ -147,7 +147,7 @@ class f_db_Select extends f_db_Where
             }            
         }                
 
-        $this->_join[] = array('table' => Db::quoteTable($table), 'condition' => $condition, 'type' => $type);
+        $this->_join[] = array('table' => $table, 'condition' => $condition, 'type' => $type);
         return $this;
     }   
     
@@ -204,7 +204,7 @@ class f_db_Select extends f_db_Where
      *
      * @return string       SQL request
      */
-    public function build()
+    public function build($config = 'db1')
     {        
         $sql  = $this->_distinct ? 'SELECT DISTINCT ' : 'SELECT ';
 
@@ -212,14 +212,14 @@ class f_db_Select extends f_db_Where
 
         $sql .= 'FROM ';
 
-        $sql .= !empty ($this->_from) ? join(', ', array_unique(array_map(array('DB', 'quoteTable'), $this->_from))).' ' : '* ';
+        $sql .= !empty ($this->_from) ? join(', ', array_unique(array_map(array('DB', 'quoteTable'), $this->_from, array($config)))).' ' : '* ';
 
         if(!empty($this->_join))
         {
             foreach($this->_join as $join)
             {
                 if($join['type'] != '') $sql .= $join['type'].' ';
-                $sql .= 'JOIN '.$join['table'].' '.$join['condition'].' ';
+                $sql .= 'JOIN '.Db::quoteTable($join['table'], $config).' '.Db::quoteIdentifier($join['condition']).' ';
             }
         }
 
@@ -263,7 +263,7 @@ class f_db_Select extends f_db_Where
     public function execute($config = 'db1')
     {
         $this->_executed = true;
-        return DB::query($this->build(), $config)->execute($this->_vars);
+        return DB::query($this->build($config), $config)->execute($this->_vars);
     }
     
     /**
