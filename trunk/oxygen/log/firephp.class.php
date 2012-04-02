@@ -48,6 +48,7 @@ class f_log_Firephp implements f_log_Interface
                 break;
             
                 case 'info':
+                case 'sql':
                     $this->_fbInst->info($msg);
                 break;
 

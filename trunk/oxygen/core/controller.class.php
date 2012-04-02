@@ -30,25 +30,6 @@ class Controller
 
 	private function __construct() {}
 
-    /**
-     * Magic method to get non existant class vars
-     * 
-     * @param string $name      Name of the var to get
-     * @return mixed            Return the var content
-     */    
-    public function __get($name)
-    {
-        switch ($name)
-        {
-            case 'config':
-                return Config::getInstance();
-            break;
-            case 'request':
-                return Request::getInstance();
-            break;
-        }
-    }
-
 	/**
      * Get controller instance
      * 
@@ -100,10 +81,10 @@ class Controller
             //... process handleError()
             $mv = $this->_handleError();
         }
-		$view = '';
-		if(is_string($mv)) $view = $mv;
+        
+		$view = $mv;
 		if(is_object($mv)) $view = $this->_processView($mv);
-
+            
         $this->_removeFromChain();
         if(empty($this->_chain['classNames'])) ob_end_flush ();
         
@@ -115,22 +96,25 @@ class Controller
     /**
 	 * Get the parameters from HTTP request
      * 
+     * @param Uri $uri      Instance of Uri
      * @return void
 	 */
-	private function _parseFromRequest($uri)
+	private function _parseFromRequest(Uri $uri)
 	{
+        Log::debug('{Controller->_parseFromRequest()} '.$uri->getUri());
+        
         // no parametrer has been directly set by setModule and setAction
         if($this->_action === null && $this->_module === null)
 		{
-            // @todo add possibility to disallow direct request
-
+            $request = Request::getInstance();
+            
             // if $_GET['module'] has been set
-            if(isset($this->request->get->module))
+            if(isset($request->get->module))
             {
-                $this->_module = $this->request->get->module;
+                $this->_module = $request->get->module;
                 
                 // get action or return default action 
-                $this->_action = ucfirst_last($this->request->get('action', 'index'));
+                $this->_action = ucfirst_last($request->get('action', 'index'));
             }
             else
             {                
@@ -151,24 +135,19 @@ class Controller
      * @param Uri $uri 
      * @return void
      */
-    private function _parseFromUri($uri)
+    private function _parseFromUri(Uri $uri)
     {
+        Log::debug('{Controller->_parseFromUri()} '.$uri->getUri());
+        
         $nb = $uri->nbSegments();
 
-        // if uri content more than one segment (module/action)
-        if($nb >= 1)
-        {      
-            // load asset if exists
-            $this->_loadAsset();
-            $this->_module = $uri->segment(1);
-            $this->_action = ucfirst_last($uri->segment(2, 'index'));
-            $this->_args = $uri->segmentsSlice(2);
-        }
-        else
-        {
-            Error::showConfigurationError();
-            die();
-        }
+        if($nb == 0) Error::showConfigurationError();
+        
+        // load asset if exists
+        $this->_loadAsset();
+        $this->_module = $uri->segment(1);
+        $this->_action = ucfirst_last($uri->segment(2, 'index'));
+        $this->_args = $uri->segmentsSlice(2);
     }
     
     /**
@@ -182,10 +161,21 @@ class Controller
         $segments = explode('/', trim($uri, '/'));
         
         $mUri = join('/', array_slice($segments, 1));
+
+        $paths = array(
+                            FW_DIR.DS.'assets'.$uri,
+                            WEBAPP_MODULES_DIR.DS.$segments[0].DS.'assets'.DS.$mUri,
+                            MODULES_DIR.DS.$segments[0].DS.'assets'.DS.$mUri
+                        );
         
-        if($file = File::load(FW_DIR.DS.'assets'.$uri)) $file->output();        
-        if($file = File::load(WEBAPP_MODULES_DIR.DS.$segments[0].DS.'assets'.DS.$mUri)) $file->output();
-        if($file = File::load(MODULES_DIR.DS.$segments[0].DS.'assets'.DS.$mUri)) $file->output();
+        foreach($paths as $f)
+        {
+            if($file = File::load($f))
+            {
+                Log::info('{Controller->_loadAsset()} '.$f);
+                $file->output();      
+            }
+        }
     }
    
 // ============================================================ ACTION PROCESSING 
@@ -204,12 +194,7 @@ class Controller
             {   
                 $this->_action = 'Index';
                 $className = 'm_'.$this->_module.'_action_'.$this->_action;
-
-                if(!class_file_path($className))
-                {
-                    Error::show404();
-                }
-
+                if(!class_file_path($className)) Error::show404();
                 $this->_args = Uri::getInstance()->segmentsSlice(1);
             }
             if(!class_exists($className)) trigger_error('Class '.$className.' not found !', E_USER_ERROR);
@@ -226,6 +211,7 @@ class Controller
 	 */
 	private function _processAction()
 	{
+        Log::debug('{Controller->_processAction()} '.$this->_className.'->'.self::DEFAULT_ACTION_METHOD.'()');
 		$class = new $this->_className();
         $result = call_user_func_array(array($class, self::DEFAULT_ACTION_METHOD), $this->_args);
         return is_string($result) ? $result : $class;
@@ -238,6 +224,7 @@ class Controller
 	 */
 	private function _isAuthorized()
 	{
+        Log::debug('{Controller->_isAuthorized()} '.$this->_className.'->'.self::DEFAULT_AUTHORIZATION_METHOD.'()');
 		$class = new $this->_className();
         if(!method_exists($class, self::DEFAULT_AUTHORIZATION_METHOD)) return true;
 		return (boolean) $class->{self::DEFAULT_AUTHORIZATION_METHOD}();
@@ -250,6 +237,7 @@ class Controller
 	 */
 	private function _handleError()
 	{
+        Log::debug('{Controller->_handleError()} '.$this->_className.'->'.self::DEFAULT_ERRORHANDLER_METHOD.'()');
 		$class = new $this->_className();
         if(!method_exists($class, self::DEFAULT_ERRORHANDLER_METHOD)) Error::show401();        
         $execute = $class->{self::DEFAULT_ERRORHANDLER_METHOD}();
@@ -352,9 +340,11 @@ class Controller
      */
     private function _addToChain()
     {
+        Log::info('{Controller} Call '.$this->_className);
         $this->_chain['modules'][] = $this->_module;
 		$this->_chain['actions'][] = $this->_action;
 		$this->_chain['classNames'][] = $this->_className;
+		$this->_chain['timestamps'][] = microtime(true);
     }
 
     /**
@@ -365,14 +355,20 @@ class Controller
         $modules = $this->_chain['modules'];
 		$actions = $this->_chain['actions'];
 		$classNames = $this->_chain['classNames'];
+		$timestamps = $this->_chain['timestamps'];
 
 		$module = end($modules);
 		$action = end($actions);
 		$className = end($classNames);
+		$timestamp = end($timestamps);
 
 		array_pop($this->_chain['modules']);
 		array_pop($this->_chain['actions']);
 		array_pop($this->_chain['classNames']);
+		array_pop($this->_chain['timestamps']);
+        
+        $time = round((microtime(true) - $timestamp) * 1000, 2);
+        Log::info('{Controller} ['.$time.'ms] End of '.$className);
     }
 
 // ============================================================ SETTERS & OTHER PUBLIC METHODS 

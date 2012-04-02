@@ -50,7 +50,6 @@ class Db
 			$this->_connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             $this->_connexion->exec('SET NAMES "UTF8"');
-            $this->_connexion->exec('SET @SECURE_KEY:="'.Security::getKey().'";');
 		}
 		catch(PDOException $e)
 		{
@@ -260,19 +259,20 @@ class Db
 	 */
 	public function addTransaction()
 	{
+        // increase iterator
         $this->_transactions++;
-
-		if($this->_hasActiveTransaction)
-		{
-			return false;
-		}
-		else
-		{
-			$this->_hasActiveTransaction = $this->_connexion->beginTransaction();
-            $this->_transactionSuccess = true;
-            $this->_transactionException = null;
-			return $this->_hasActiveTransaction;
-		}
+        
+        // we already have an open transaction
+		if($this->_hasActiveTransaction) return false;
+        
+        // begin a new transaction
+        $this->_hasActiveTransaction = $this->_connexion->beginTransaction();
+        $this->_transactionSuccess = true;
+        $this->_transactionException = null;
+        
+        
+        // return transaction status
+        return $this->_hasActiveTransaction;
 	}   
     
     /**
@@ -302,20 +302,14 @@ class Db
 	 */
 	public function removeTransaction()
 	{
+        // decrease iterator
         $this->_transactions--;
 
         if($this->_transactions == 0)
         {
-            $this->_hasActiveTransaction = false;
-            
-            if($this->_transactionSuccess)
-            {
-                return $this->_connexion->commit();                
-            }    
-            else
-            {
-                return !$this->_connexion->rollBack();
-            }
+            $this->_hasActiveTransaction = false;            
+            if($this->_transactionSuccess) return $this->_connexion->commit();
+            return !$this->_connexion->rollBack();
         }
 	}    
 
@@ -381,8 +375,7 @@ class Db
         {
             $s = microtime(true);
             $this->_query->execute($parameters);
-            $log = Log::getInstance();
-            if($log->getLevel() > 0) Log::sql($this->interpolateQuery($this->_sql, $parameters), round(microtime(true) - $s, 5));
+            if(Log::getInstance()->getLevel() >= Log::INFO) Log::sql('{Db->execute()} ['.round((microtime(true) - $s) * 1000, 2).'ms] '.$this->interpolateQuery($this->_sql, $parameters));
         } 
         catch (PDOException $exc)
         {
@@ -407,14 +400,9 @@ class Db
      */
     private function _printVars($parameters)
     {
-        $txt = '';
-        if(!empty($parameters))
-        {
-           foreach($parameters as $k => $v)
-           {
-               $txt .= $k." = '".$v."'".'<br />';
-           }
-        }
+        if(empty($parameters)) return '';
+        $txt = '';        
+        foreach($parameters as $k => $v) $txt .= $k." = '".$v."'".'<br />';        
         return $txt;
     }
     
@@ -656,10 +644,10 @@ class Db
      * @param string $config    Config to use, mainly for prefix
      * @return string           Autoquoted query string
      */
-    public static function quoteTable($var, $config = 'db1')
+    public static function quoteTable($tableName, $config = 'db1')
     {       
-        if($var === null || $var == '') trigger_error ('You have an error in your SELECT request, table name is empty', E_USER_ERROR);                  
-        return self::quoteIdentifier(self::prefixTable($tableName, $config));        
+        if($tableName === null || $tableName == '') trigger_error ('You have an error in your SELECT request, table name is empty', E_USER_ERROR);
+        return self::quoteIdentifier(self::prefixTable($tableName, $config));
     } 
     
     /**
@@ -671,8 +659,8 @@ class Db
      */
     public static function prefixTable($tableName, $config = 'db1')
     {
-        $config = Config::get($config);        
-        if($config->prefix != '' && !preg_match('#^'.$config->prefix.'#', $var)) $tableName = $config->prefix.$tableName;            
+        $prefix = Config::get($config, 'prefix', '');        
+        if($prefix != '' && !preg_match('#^'.$prefix.'#', $tableName)) $tableName = $prefix.$tableName;            
         return $tableName;
     }
     
@@ -685,9 +673,7 @@ class Db
     public static function escape($str) 
     {
         if(is_array($str)) return array_map(__METHOD__, $str);
-
         if(!empty($str) && is_string($str)) return '"'.str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), $str).'"';
-
         return $str; 
     } 
     

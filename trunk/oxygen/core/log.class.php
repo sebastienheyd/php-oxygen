@@ -48,7 +48,7 @@ class Log
         $this->_inst = $this->_getClass();
     }
     
-/**
+    /**
      * Get cache engine class instance to use
      * 
      * @return f_log_Driver 
@@ -105,7 +105,7 @@ class Log
         {
             if(isset($trace['class']) && strstr($trace['class'], 'Log')) continue;
             if(preg_match('#'.join('|', $exclude).'#', $trace['file'])) continue;
-            return $trace['file'].' (ln.'. $trace['line'].')';                
+            return str_replace(PROJECT_DIR, '', $trace['file']).' (ln.'. $trace['line'].')';                
         }
     }
     
@@ -163,7 +163,7 @@ class Log
         $inst = self::getInstance();
         if($inst->getLevel() >= self::INFO)
         {            
-            if($inst->getLevel() == self::DEBUG) $msg = $inst->getBacktrace(array('/db/')).' | '.trim($msg);
+            if($inst->getLevel() == self::DEBUG) $inst->getHandler()->write('debug', '{Db->execute()} Call from '.$inst->getBacktrace(array('/db/')));
             $inst->getHandler()->write('sql', $msg);
         }
     }
