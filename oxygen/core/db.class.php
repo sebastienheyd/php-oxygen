@@ -21,11 +21,11 @@ class Db
     private $_transactionSuccess = true;
     private $_transactions = 0;
     private $_transactionException;
-    private $_parameters;
-    
+    private $_parameters;    
+
     private $_lastQuery = '';
     
-    private static $_instances;
+    private static $_instances;   
 
     /**
      * Main constructor
@@ -38,7 +38,7 @@ class Db
 	{
         $config = Config::get($config);
 
-        if($config === false) trigger_error('Database config '.$config.' does not exists in config file');
+        if($config === false) trigger_error('Database config '.$config.' does not exists in config file');       
         
         try
 		{            
@@ -532,22 +532,24 @@ class Db
      * Delete all entries in a table (keep auto_increment value)
      * 
      * @param string $table     Table name
+     * @param string $config    Config to use, mainly to get the prefix
      * @return integer          Number of removed lines
      */
-    public function deleteAll($table)
+    public function deleteAll($table, $config = 'db1')
     {
-        return $this->queryExec('DELETE FROM '.self::quoteTable($table));
+        return $this->queryExec('DELETE FROM '.self::quoteTable($table, $config));
     }
 
     /**
      * Delete all entries in a table (reset auto_increment value)
      * 
      * @param string $table     Table name
+     * @param string $config    Config to use, mainly to get the prefix     
      * @return integer          Number of removed lines (only with InnoDb)
      */
-    public function truncate($table)
+    public function truncate($table, $config = 'db1')
     {
-        return $this->queryExec('TRUNCATE TABLE '.self::quoteTable($table));
+        return $this->queryExec('TRUNCATE TABLE '.self::quoteTable($table, $config));
     }
     
     // ================================================= GENERAL METHODS     
@@ -561,7 +563,7 @@ class Db
      */
     public static function tableExists($tableName, $config = 'db1')
 	{
-		return DB::query("SHOW TABLES LIKE '$tableName'", $config)->fetchCol() !== false;
+		return DB::query('SHOW TABLES LIKE '.self::quoteTable($tableName, $config), $config)->fetchCol() !== false;
 	}
     
     /**
@@ -645,22 +647,16 @@ class Db
     /**
      * Quote table identifier
      * 
-     * @param string $var   Query string to autoquote table names
-     * @return string       Autoquoted query string
+     * @param string $var       Query string to autoquote table names
+     * @param string $config    Config to use, mainly for prefix
+     * @return string           Autoquoted query string
      */
-    public static function quoteTable($var)
+    public static function quoteTable($var, $config = 'db1')
     {       
         if($var === null || $var == '') trigger_error ('You have an error in your SELECT request, table name is empty', E_USER_ERROR);                  
-                
-        if(is_array($var))
-        {
-            foreach($var as $k => $v)
-            { 
-                $res[0] = $k;
-                $res[1] = $v;
-            }
-            $var = $res;
-        }
+
+        $config = Config::get($config);
+        if($config->prefix != '' && !preg_match('#^'.$config->prefix.'#', $var)) $var = $config->prefix.$var;
         
         return self::quoteIdentifier($var);        
     } 
