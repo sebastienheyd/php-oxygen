@@ -21,10 +21,10 @@ class Upload
     private $_error;
     private $_size;
     
-    static $UPLOAD_SUCCESS = 1;
-    static $FILE_EXISTS = 10;
-    static $FILE_IS_NOT_UPLOADED = 20;
-    static $MOVE_UPLOAD_ERROR = 30;
+    const UPLOAD_SUCCESS = 1;
+    const FILE_EXISTS = 10;
+    const FILE_IS_NOT_UPLOADED = 20;
+    const MOVE_UPLOAD_ERROR = 30;
     
     /**
      * Main constructor
@@ -68,10 +68,7 @@ class Upload
     public static function get($name)
     {
         $k = md5($name);
-        if(!isset(self::$_instances[$k]))
-        {
-            self::$_instances[$k] = new self($name);
-        }
+        if(!isset(self::$_instances[$k]))  self::$_instances[$k] = new self($name);
         return self::$_instances[$k];
     }
     
@@ -125,17 +122,14 @@ class Upload
     {
         if($checkIfFileExists)
         {
-            if(is_file($file)) return self::$FILE_EXISTS;
+            if(is_file($file)) return self::FILE_EXISTS;
         }
         
         if($this->isUploaded())
         {
-            if(@move_uploaded_file($this->_tmp_name, $file))
-            {
-                return self::$UPLOAD_SUCCESS;
-            }
-            return self::$MOVE_UPLOAD_ERROR;
+            if(@move_uploaded_file($this->_tmp_name, $file)) return self::UPLOAD_SUCCESS;
+            return self::MOVE_UPLOAD_ERROR;
         }
-        return self::$FILE_IS_NOT_UPLOADED;
+        return self::FILE_IS_NOT_UPLOADED;
     }
 }
