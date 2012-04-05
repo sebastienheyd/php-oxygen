@@ -161,10 +161,7 @@ class Search
                 if(!preg_match($excludes, $k))
                 {
                     // add file/directory to list
-                    if(($this->_type == 'file' && $v->isFile()) || ($this->_type == 'dir' && $v->isDir()) || $this->_type == 'any')
-                    {
-                        $result[] = $k;  
-                    }                 
+                    if(($this->_type == 'file' && $v->isFile()) || ($this->_type == 'dir' && $v->isDir()) || $this->_type == 'any') $result[] = $k;                 
                 }
             }
 
@@ -191,10 +188,7 @@ class Search
         foreach($this->_patterns as $pattern)
         {
             // convert glob to regexp and check
-            if(preg_match($this->_globToRegex($pattern), $path))
-            {
-                return true;
-            }                        
+            if(preg_match($this->_globToRegex($pattern), $path)) return true;                      
         }
         return false;
     }

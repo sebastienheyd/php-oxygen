@@ -23,6 +23,11 @@ class f_log_File implements f_log_Interface
         if(!isset(self::$_instance)) self::$_instance = new self();
         return self::$_instance;  
     }
+    
+    public function __construct()
+    {
+        if(!is_dir(LOGS_DIR)) mkdir(LOGS_DIR, 0775);
+    }
         
     public function write($type, $msg)
     {

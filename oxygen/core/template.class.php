@@ -33,14 +33,19 @@ class Template extends Smarty
         
         $this->cache_dir = WEBAPP_DIR.DS.'cache'.DS.'html'.DS;
         $this->compile_dir = WEBAPP_DIR.DS.'cache'.DS.'templates_c'.DS;
-        
-        $this->addPluginsDir(HOOKS_DIR.DS.'lib'.DS.'smartyplugins');
-        $this->addPluginsDir(FW_DIR.DS.'lib'.DS.'smartyplugins'); 
+                      
+        // Get plugins directories
+        $pluginsDir = array();        
+        if(is_dir(HOOKS_DIR.DS.'lib'.DS.'smartyplugins')) $pluginsDir[] = HOOKS_DIR.DS.'lib'.DS.'smartyplugins';
+        $pluginsDir[] = FW_DIR.DS.'lib'.DS.'smartyplugins';         
+        array_merge($pluginsDir, Search::dir('smartyplugins')->in(WEBAPP_MODULES_DIR)->setDepth(1,1)->fetch());        
+        array_merge($pluginsDir, Search::dir('smartyplugins')->in(MODULES_DIR)->setDepth(1,1)->fetch());        
+        $this->addPluginsDir($pluginsDir); 
         
         if($module !== null)
         {
             $this->module = $module;
-            $this->addTemplateDir(WEBAPP_MODULES_DIR.DS.$module.DS.'template');            
+            if(is_dir(WEBAPP_MODULES_DIR.DS.$module.DS.'template')) $this->addTemplateDir(WEBAPP_MODULES_DIR.DS.$module.DS.'template');
             $this->addTemplateDir(MODULES_DIR.DS.$module.DS.'template');
         }
          
