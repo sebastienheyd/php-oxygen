@@ -21,8 +21,8 @@ class I18n
      * @param array $args           [optional] Associative array of elements to replace in the given string.<br />Exemple : translate('My name is %name%', array('name' => 'Jim'))
      * @param type $srcLang         [optional] ISO 639-1 code of the source language. Default is 'en'
      * @param string $origin        [optional] The name of the original file where is located the given string. Default is 'default'
-     * @param boolean $addToFile    [optional] If not found with the current language, add to xliff file ?
-     * @return string               The translated string if found else the source string, default is true
+     * @param boolean $addToFile    [optional] If not found with the current language, add to xliff file ? Default is true
+     * @return string               The translated string if found else the source string
      */
     public static function translate($file, $string, $args = array(), $srcLang = 'en', $origin = 'default', $addToFile = true)
     {
@@ -32,10 +32,7 @@ class I18n
         // replace args in string
         if(!empty($args))
         {
-            foreach($args as $k => $v)
-            {
-                $string = str_replace("%$k%", $v, $string);
-            }
+            foreach($args as $k => $v) $string = str_replace("%$k%", $v, $string);
         }
         
         // return translated string

@@ -38,8 +38,8 @@ class Template extends Smarty
         $pluginsDir = array();        
         if(is_dir(HOOKS_DIR.DS.'lib'.DS.'smartyplugins')) $pluginsDir[] = HOOKS_DIR.DS.'lib'.DS.'smartyplugins';
         $pluginsDir[] = FW_DIR.DS.'lib'.DS.'smartyplugins';         
-        array_merge($pluginsDir, Search::dir('smartyplugins')->in(WEBAPP_MODULES_DIR)->setDepth(1,1)->fetch());        
-        array_merge($pluginsDir, Search::dir('smartyplugins')->in(MODULES_DIR)->setDepth(1,1)->fetch());        
+        $pluginsDir = array_merge($pluginsDir, Search::dir('smartyplugins')->in(WEBAPP_MODULES_DIR)->setDepth(1,1)->fetch());        
+        $pluginsDir = array_merge($pluginsDir, Search::dir('smartyplugins')->in(MODULES_DIR)->setDepth(1,1)->fetch());        
         $this->addPluginsDir($pluginsDir); 
         
         if($module !== null)
