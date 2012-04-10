@@ -33,7 +33,7 @@ class File
     {        
         if(!isset(self::$_instances[$file]))
         {
-            if(!is_file($file)) return false;
+            if(!is_file($file) || !is_readable($file)) return false;
             self::$_instances[$file] = new self($file);
         }
         return self::$_instances[$file];
