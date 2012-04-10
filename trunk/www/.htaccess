@@ -34,6 +34,13 @@
 
 
 ############################################
+## Always force latest IE rendering engine & Chrome Frame
+
+BrowserMatch MSIE ie
+Header set X-UA-Compatible "IE=Edge,chrome=1" env=ie
+
+
+############################################
 ## Rewrite rules
 
 # enable rewrites

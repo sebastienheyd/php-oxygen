@@ -23,6 +23,7 @@ class Controller
 	private $_className;
     private $_args = array();
 	private $_chain;
+    private $_explicit;
 
 	const DEFAULT_ACTION_METHOD = "execute";
 	const DEFAULT_AUTHORIZATION_METHOD = "isAuthorized";
@@ -52,18 +53,20 @@ class Controller
         
         ob_start();
 
-        // Get rerouted uri or current uri
-        $uri = Route::getInstance()->parseUrl();
-
-        if(!$uri->isDefined() && Config::get('route', 'routed_only') == '1' && $uri->getUri() != '/') 
+        if(!$this->_explicit)
         {
-            $this->_loadAsset();
-            Error::show404 ();        
-        }            
-        
-        // Action and module names are not directly specified.
-        // Ex : Controller::getInstance()->setModule('default')->setAction('index')->dispatch();
-		$this->_parseFromRequest($uri);
+            // Get rerouted uri or current uri
+            $uri = Route::getInstance()->parseUrl();
+
+            if(!$uri->isDefined() && Config::get('route', 'routed_only') == '1' && $uri->getUri() != '/') 
+            {
+                $this->_loadAsset();
+                Error::show404 ();        
+            }            
+
+            // Action and module names are not directly specified.
+            $this->_parseFromRequest($uri);            
+        }
 
         // Convert module/action to className
         $this->_getActionClassName();
@@ -187,19 +190,13 @@ class Controller
      */
     private function _getActionClassName()
     {
-        if($this->_module !== null && $this->_action !== null)
+        if($this->_module !== null)
         {
+            if($this->_action === null) $this->_action = 'Index';
             $className = 'm_'.$this->_module.'_action_'.$this->_action;
-            if(!class_file_path($className))
-            {   
-                $this->_action = 'Index';
-                $className = 'm_'.$this->_module.'_action_'.$this->_action;
-                if(!class_file_path($className)) Error::show404();
-                $this->_args = Uri::getInstance()->segmentsSlice(1);
-            }
             if(!class_exists($className)) trigger_error('Class '.$className.' not found !', E_USER_ERROR);
-            if(!method_exists($className, self::DEFAULT_ACTION_METHOD)) trigger_error('Method '.self::DEFAULT_ACTION_METHOD.' not found in '.$className, E_USER_ERROR);
-            
+            if($this->_args === null) $this->_args = Uri::getInstance()->segmentsSlice(1);            
+            if(!method_exists($className, self::DEFAULT_ACTION_METHOD)) trigger_error('Method '.self::DEFAULT_ACTION_METHOD.' not found in '.$className, E_USER_ERROR);            
             $this->_className = $className;
         }
     }     
@@ -382,6 +379,7 @@ class Controller
 	public function setModule($moduleName)
 	{
 		$this->_module = $moduleName;
+        $this->_explicit = true;
 		return $this;
 	}
 
@@ -394,12 +392,19 @@ class Controller
 	public function setAction($actionName)
 	{
 		$this->_action = ucfirst_last($actionName);
+        $this->_explicit = true;
 		return $this;
 	}
     
+    /**
+     * Set args to explicit module/action
+     * 
+     * @param mixed $args       Args as function args
+     * @return Controller       Return current Controller instance
+     */
     public function setArgs($args)
     {
-        $this->_args = $args;
+        $this->_args = func_get_args();
         return $this;
     }
 
