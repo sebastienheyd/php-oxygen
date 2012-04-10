@@ -27,6 +27,10 @@ class Error
                     E_USER_NOTICE		=>	'User Notice',
                     E_STRICT			=>	'Runtime Notice'
                 );
+    
+    const OFF = 0;
+    const DEBUG = 10;
+    const STRICT = 20;
 
 // ======================================================================== HANDLERS
     
@@ -42,13 +46,16 @@ class Error
      */
     public function errorHandler($errno, $errstr, $errfile, $errline, $errcontext)
     {
-        if(Config::get('debug', 'error_display', '0') != '1') return;                
-        
+        $conf = strtoupper(Config::get('debug', 'error_level', 'debug'));
+        $level = constant('self::'.$conf);
+
         $label = isset($this->_levels[$errno]) ? $this->_levels[$errno] : $errno;
         $msg = str_replace(PROJECT_DIR.DS, '', $errstr);
         $file = str_replace(PROJECT_DIR.DS, '', $errfile); 
         Log::error($label.' : "'.$msg.'" in '.$file.' (ln.'.$errline.')');
 
+        if($level == self::OFF) return;    
+        
         switch ($errno)
 		{
 		    case E_NOTICE:
@@ -57,6 +64,8 @@ class Error
             case E_USER_WARNING:
             case E_CORE_WARNING:
             case E_COMPILE_WARNING:
+                if($level < self::STRICT) return;
+                
                 if(CLI_MODE)
                 {
                     $cli = Cli::getInstance();

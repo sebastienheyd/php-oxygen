@@ -15,6 +15,8 @@ class Route
 {
     private static $_instance;    
     
+    private $_routes = array();
+    
     /**
      * Get instance of Router
      * 
@@ -27,11 +29,9 @@ class Route
     }
     
     /**
-     * Parse url and reroute with routes.xml rules if found
-     * 
-     * @return Uri      Return the instance of Uri (rerouted or not) 
+     * Main constructor 
      */
-    public function parseUrl()
+    private function __construct()
     {
         // Retrieve all routes.xml files from modules or modules overload
         $search = Search::file('config/routes.xml')->setDepth(2,2);
@@ -40,12 +40,7 @@ class Route
         // Retrieve from webapp/config folder
         if(is_file(WEBAPP_DIR.DS.'config'.DS.'routes.xml')) $files[] = WEBAPP_DIR.DS.'config'.DS.'routes.xml';
         
-        // Get new instance of Uri
-        $uriInst = Uri::getInstance();
-
-        // Init vars
         $lastModified = 0;
-        $defaultRedirect = null;
         
         // There is route files
         if(!empty($files))
@@ -57,42 +52,56 @@ class Route
             $cacheFile = WEBAPP_DIR.DS.'cache'.DS.'routes.xml';
             
             // Rebuild if is too old
-            if(!is_file($cacheFile) || filemtime($cacheFile) != $lastModified) $this->_buildRouteCacheFile($files);
+            if(!is_file($cacheFile) || filemtime($cacheFile) != $lastModified) $this->_buildRouteCacheFile($files);  
             
             // Load routes rules from cache file
-            $routes = simplexml_load_file($cacheFile);
-            
-            // Remove first / from uri
-            $uri = trim($uriInst->getUri(), '/');
+            $this->_routes = simplexml_load_file($cacheFile);
+        }
+    }
+    
+    /**
+     * Parse url and reroute with routes.xml rules if found
+     * 
+     * @return Uri      Return the instance of Uri (rerouted or not) 
+     */
+    public function parseUrl()
+    {        
+        // Get new instance of Uri
+        $uriInst = Uri::getInstance();
+
+        // Init vars        
+        $defaultRedirect = null;        
            
-            // Parse routes
-            foreach($routes as $route)
+        // Remove first / from uri
+        $uri = trim($uriInst->getUri(), '/');
+
+        // Parse routes
+        foreach($this->_routes as $route)
+        {
+            // Converts shortcuts to regexp
+            $rule = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $route->attributes()->rule));
+
+            // Rule match to uri
+            if(preg_match('#^'.$rule.'$#', $uri))
             {
-                // Converts shortcuts to regexp
-                $rule = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $route->attributes()->rule));
-  
-                // Rule match to uri
-                if(preg_match('#^'.$rule.'$#', $uri))
+                // Is there any back reference
+                if(strpos($route->attributes()->redirect, '$') !== false && strpos($rule, '(') !== false)
                 {
-                    // Is there any back reference
-                    if(strpos($route->attributes()->redirect, '$') !== false && strpos($rule, '(') !== false)
-                    {
-                        $uri = preg_replace('#^'.$rule.'$#', $route->attributes()->redirect, $uri);
-                    }
-                    else
-                    {
-                        $uri = $route->attributes()->redirect;
-                    }
-                    
-                    // Define rerouted uri to current instance of Uri
-                    $uriInst->setUri($uri);
+                    $uri = preg_replace('#^'.$rule.'$#', $route->attributes()->redirect, $uri);
                 }
-                
-                if($rule == 'default') $defaultRedirect = (string) $route->attributes()->redirect.'/'.$uri;
+                else
+                {
+                    $uri = $route->attributes()->redirect;
+                }
+
+                // Define rerouted uri to current instance of Uri
+                $uriInst->setUri($uri);
             }
 
-            if(!$uriInst->isDefined() && $defaultRedirect !== null) $uriInst->setUri($defaultRedirect);
-        }        
+            if($rule == 'default') $defaultRedirect = (string) $route->attributes()->redirect.'/'.$uri;
+        }
+
+        if(!$uriInst->isDefined() && $defaultRedirect !== null) $uriInst->setUri($defaultRedirect);   
 
         return $uriInst;
     }
