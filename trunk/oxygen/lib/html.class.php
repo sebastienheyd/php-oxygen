@@ -23,6 +23,7 @@ class Html
     private $_title;
     private $_css = array();
     private $_js = array();
+    private $_rawjs = array();
     private $_content = '';
        
     /**
@@ -141,8 +142,7 @@ class Html
      */
     public function css($href, $media = 'all')
     {
-        $tag = sprintf('<link rel="stylesheet" type="text/css" media="%s" href="%s" />', $media, $href);
-        if(!in_array($tag, $this->_css)) $this->_css[] = $tag;
+        if(!in_array($tag, $this->_css[$media])) $this->_css[$media][] = $href;
         return $this;
     }
        
@@ -154,8 +154,7 @@ class Html
      */
     public function js($src)
     {
-        $tag = sprintf('<script type="text/javascript" src="%s"></script>', $src);
-        if(!in_array($tag, $this->_js)) $this->_js[] = $tag;
+        if(!in_array($src, $this->_js)) $this->_js[] = $src;
         return $this;
     }
     
@@ -167,7 +166,7 @@ class Html
      */
     public function rawJs($script)
     {
-        $this->_js[] = sprintf('<script type="text/javascript">%s</script>', $script);
+        $this->_rawjs[] = sprintf('<script type="text/javascript">%s</script>', $script);
         return $this;
     }
     
@@ -203,13 +202,14 @@ class Html
         
         if($this->_favicon !== null) $res[] = $this->_favicon;
         
-        foreach($this->_css as $css)  $res[] = $css;
+        foreach($this->_css as $media => $href)  $res[] = sprintf('<link rel="stylesheet" type="text/css" media="%s" href="%s" />', $media, $href);
         
         $res[] = '</head>';
         $res[] = '<body>';
         $res[] = $this->_content;
         
-        foreach($this->_js as $js)  $res[] = $js;
+        foreach($this->_js as $js)  $res[] = sprintf('<script type="text/javascript" src="%s"></script>', $js);
+        foreach($this->_rawjs as $js)  $res[] = $js;
         
         $res[] = '</body>';        
         $res[] = '</html>';
@@ -217,7 +217,39 @@ class Html
         $html = join(PHP_EOL, $res);
         
         if($type != 'screen') return $html;
-        
+        $this->_compileAssets($this->_css);
+        $this->_compileAssets($this->_js);
         echo $html;
+    }
+    
+    private function _compileAssets($assets)
+    {
+        $files = array();
+        foreach($assets as $asset)
+        {            
+            $segments = explode('/', trim($asset, '/'));        
+            $mUri = join('/', array_slice($segments, 1));
+            
+            $paths = array(
+                FW_DIR.DS.'assets'.$asset,
+                WEBAPP_MODULES_DIR.DS.$segments[0].DS.'assets'.DS.$mUri,
+                MODULES_DIR.DS.$segments[0].DS.'assets'.DS.$mUri
+            );
+            
+            $file = null;
+            foreach($paths as $p)
+            {
+                if(is_file($p)) $files[] = $p;
+            }
+        }
+        
+        if(!empty($files))
+        {
+            $fileName = md5(serialize($files));
+            $lastModified = 0;
+            foreach($files as $file) $lastModified = max($lastModified, filemtime($file));
+            
+            
+        }      
     }
 }
