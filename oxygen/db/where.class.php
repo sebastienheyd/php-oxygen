@@ -88,7 +88,8 @@ abstract class f_db_Where
      */
     protected function whereIn($field, $values, $type = 'AND')
     {
-        if(is_array($values)) $values = join(',', array_map(array('Db', 'escape'), $values));
+        if(!is_array($values)) $values = explode(',', $values);
+        $values = join(',', array_map(array('Db', 'escape'), $values));
         $this->_where[] = array('noescape' => Db::quoteIdentifier($field).' IN ('.$values.')', 'type' => $type);
         return $this;
     }
