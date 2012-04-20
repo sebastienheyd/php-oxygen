@@ -167,7 +167,7 @@ class File
         header("Cache-Control: maxage=".$expires);
         header("content-type: ".$this->getMimeType());              
         header("Expires: " . gmdate(DATE_RFC1123, time()+$expires).' GMT');           
-        
+        Log::info($gmDate);
         if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $lastModified)
         {
             header("Last-Modified: $gmDate", true, 304);
@@ -178,51 +178,9 @@ class File
         
         // special case on js and css files to minify them
         if($this->_extension == 'js' || $this->_extension == 'css')
-        {           
-            // check for gzip compression
-            if (isset($_SERVER['HTTP_ACCEPT_ENCODING']))
-                $encodings = explode(',', strtolower(preg_replace("/\s+/", "", $_SERVER['HTTP_ACCEPT_ENCODING'])));  
-
-            // if we want and we can compress
-            if($useCache && (in_array('gzip', $encodings) || in_array('x-gzip', $encodings) || isset($_SERVER['---------------'])) && function_exists('gzencode') && !ini_get('zlib.output_compression')) 
-            {
-                $enc = in_array('x-gzip', $encodings) ? "x-gzip" : "gzip";
-
-                // save into a cache file
-                $cacheFile = CACHE_DIR.DS.'assets'.DS.$this->_basename.'.gz';
-
-                // there is no compressed cache file or cache file has not the same modification time
-                if(!is_file($cacheFile) || (is_file($cacheFile) && $lastModified != filemtime($cacheFile)))
-                {
-                    // generate a new cache file
-                    if(!is_dir(CACHE_DIR.DS.'assets')) mkdir(CACHE_DIR.DS.'assets');
-                    if($this->_extension == 'css')
-                    {
-                         $content = $this->_minifyCss(file_get_contents($this->_file));   
-                    }
-                    else
-                    {
-                         $content = $this->_minifyJs(file_get_contents($this->_file));   
-                    }
-                    file_put_contents($cacheFile, gzencode($content));
-                    touch($cacheFile, $lastModified);
-                }
-
-                header("Content-Encoding: " . $enc);
-                readfile($cacheFile);
-            }        
-            else
-            {
-                // no gzip compression...
-                if($this->_extension == 'css')
-                {
-                    echo $this->_minifyCss(file_get_contents($this->_file)); 
-                }
-                else
-                {
-                    echo $this->_minifyJs(file_get_contents($this->_file)); 
-                }                          
-            }            
+        {         
+            if($gzip = $this->_checkGzip()) header("Content-Encoding: " . $gzip);                        
+            echo $this->getMinify($lastModified, $useCache);
         }
         else
         {
@@ -231,6 +189,57 @@ class File
                 
         // Exit the script, you cannot display anything after that
         exit();
+    }
+    
+    public function getMinify($lastModified, $useCache = true)
+    {
+        $gzip = $this->_checkGzip();
+        
+        // if we want and we can compress
+        if($useCache && $gzip) 
+        {            
+            // save into a cache file
+            $cacheFile = CACHE_DIR.DS.'assets'.DS.md5($this->_file).'.'.$this->_extension.'.gz';
+
+            // there is no compressed cache file or cache file has not the same modification time
+            if(!is_file($cacheFile) || (is_file($cacheFile) && $lastModified != filemtime($cacheFile)))
+            {
+                // generate a new cache file
+                if(!is_dir(CACHE_DIR.DS.'assets')) mkdir(CACHE_DIR.DS.'assets');
+                if($this->_extension == 'css')
+                {
+                    $content = $this->_minifyCss(file_get_contents($this->_file));   
+                }
+                else
+                {
+                    $content = $this->_minifyJs(file_get_contents($this->_file));   
+                }
+                file_put_contents($cacheFile, gzencode($content));
+                touch($cacheFile, $lastModified);
+            }
+
+            return file_get_contents($cacheFile);
+        }        
+        else
+        {
+            // no gzip compression...
+            if($this->_extension == 'css') return $this->_minifyCss(file_get_contents($this->_file));             
+            return $this->_minifyJs(file_get_contents($this->_file)); 
+        }
+    }
+    
+    private function _checkGzip()
+    {
+        // check for gzip compression
+        if (isset($_SERVER['HTTP_ACCEPT_ENCODING']))
+            $encodings = explode(',', strtolower(preg_replace("/\s+/", "", $_SERVER['HTTP_ACCEPT_ENCODING'])));  
+        
+        if((in_array('gzip', $encodings) || in_array('x-gzip', $encodings) || isset($_SERVER['---------------'])) && function_exists('gzencode') && !ini_get('zlib.output_compression'))
+        {
+            return in_array('x-gzip', $encodings) ? "x-gzip" : "gzip";
+        }
+        
+        return false;
     }
     
     /**

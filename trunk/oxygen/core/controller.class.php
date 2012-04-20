@@ -163,6 +163,19 @@ class Controller
         $uri = Uri::getInstance()->getUri(true);
         $segments = explode('/', trim($uri, '/'));
         
+        if(count($segments) == 1)
+        {
+            if(preg_match('#(.js|.css)$#', $segments[0]))
+            {
+                $f = CACHE_DIR.DS.'merged'.DS.$segments[0];
+                if($file = File::load($f))
+                {
+                    Log::info('{Controller->_loadAsset()} '.$f);
+                    $file->output(); 
+                }
+            }
+        }
+        
         $mUri = join('/', array_slice($segments, 1));
 
         $paths = array(
