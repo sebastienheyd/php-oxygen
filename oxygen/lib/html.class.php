@@ -142,7 +142,7 @@ class Html
      */
     public function css($href, $media = 'all')
     {
-        if(!in_array($tag, $this->_css[$media])) $this->_css[$media][] = $href;
+        if(!isset($this->_css[$media]) || !in_array($href, $this->_css[$media])) $this->_css[$media][] = $href;
         return $this;
     }
        
@@ -188,7 +188,7 @@ class Html
      * @param string $type      [optional] Type of output (screen or var). Default is screen
      * @return string|void 
      */
-    public function output($type = 'screen')
+    public function output($type = 'screen', $mergeAssets = true)
     {
         $res = array();
         
@@ -202,28 +202,56 @@ class Html
         
         if($this->_favicon !== null) $res[] = $this->_favicon;
         
-        foreach($this->_css as $media => $href)  $res[] = sprintf('<link rel="stylesheet" type="text/css" media="%s" href="%s" />', $media, $href);
+        if(!empty($this->_css))
+        {
+            if($mergeAssets)
+            {
+                foreach($this->_css as $media => $files)
+                {
+                    $res[] = sprintf('<link rel="stylesheet" type="text/css" media="%s" href="%s" />', $media, $this->_compileAssets($files, 'css'));
+                }
+            }
+            else
+            {
+                foreach($this->_css as $media => $href)  $res[] = sprintf('<link rel="stylesheet" type="text/css" media="%s" href="%s" />', $media, $href);                
+            }
+        }
         
         $res[] = '</head>';
         $res[] = '<body>';
         $res[] = $this->_content;
         
-        foreach($this->_js as $js)  $res[] = sprintf('<script type="text/javascript" src="%s"></script>', $js);
-        foreach($this->_rawjs as $js)  $res[] = $js;
+        if(!empty($this->_js))
+        {
+            if($mergeAssets)
+            {
+                $res[] = sprintf('<script type="text/javascript" src="%s"></script>', $this->_compileAssets($this->_js, 'js'));
+            }
+            else
+            {
+                foreach($this->_js as $js)  $res[] = sprintf('<script type="text/javascript" src="%s"></script>', $js);            
+            }            
+        }
+        
+        if(!empty($this->_rawjs))
+        {
+            foreach($this->_rawjs as $js)  $res[] = $js;            
+        }
         
         $res[] = '</body>';        
         $res[] = '</html>';
         
         $html = join(PHP_EOL, $res);
         
-        if($type != 'screen') return $html;
-        $this->_compileAssets($this->_css);
-        $this->_compileAssets($this->_js);
+        if($type != 'screen') return $html;       
+        
         echo $html;
     }
     
-    private function _compileAssets($assets)
+    private function _compileAssets($assets, $ext)
     {
+        if(!in_array($ext, array('js', 'css'))) trigger_error('ext '.$ext.' is not valid', E_USER_ERROR);
+        
         $files = array();
         foreach($assets as $asset)
         {            
@@ -242,14 +270,26 @@ class Html
                 if(is_file($p)) $files[] = $p;
             }
         }
-        
+
         if(!empty($files))
         {
-            $fileName = md5(serialize($files));
+            $cacheFileName = md5(serialize($files)).'.'.$ext;
+            $cacheFile = CACHE_DIR.DS.'merged'.DS.$cacheFileName;
+            
+            if(!is_dir(CACHE_DIR.DS.'merged')) mkdir(CACHE_DIR.DS.'merged', 0775);
+            
             $lastModified = 0;
             foreach($files as $file) $lastModified = max($lastModified, filemtime($file));
+
+            if(!is_file($cacheFile) || (is_file($cacheFile) && filemtime($cacheFile) != $lastModified))
+            {       
+                $content = '';
+                foreach($files as $file) $content .= file_get_contents($file).PHP_EOL;
+                file_put_contents($cacheFile, $content, LOCK_EX);
+                touch($cacheFile, $lastModified);
+            }
             
-            
+            return '/'.$cacheFileName;
         }      
-    }
+    }   
 }
