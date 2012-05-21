@@ -50,17 +50,25 @@ require_once(FW_DIR.DS.'functions.php');
 require_once(FW_DIR.DS.'autoload.php');
 
 // Sets error handlers
+error_reporting(-1);
 @set_error_handler(array(new Error(),'errorHandler'));
 @set_exception_handler(array(new Error(),'exceptionHandler'));
 
 // Get default timezone
 if(ini_get('date.timezone') == '') date_default_timezone_set('Europe/Paris');
 
-// Init the session
-Session::getInstance();
-
 // Are the url ended by a prefix (ex: .html)
 define('HTTP_PREFIX', Config::get('route', 'prefix', ''));
 
-// Set the default localization
-I18n::setLocale('en_US');
+try
+{
+    // Init the session
+    Session::getInstance();
+    // Set the default localization
+    I18n::setLocale('en_US');    
+}
+catch (Exception $e)
+{
+    die('Cannot start session : '.$e->getMessage());
+}
+
