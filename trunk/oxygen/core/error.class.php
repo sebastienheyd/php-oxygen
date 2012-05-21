@@ -46,6 +46,9 @@ class Error
      */
     public function errorHandler($errno, $errstr, $errfile, $errline, $errcontext)
     {
+        // Special case for @ error-control operator
+        if(error_reporting() === 0) return;
+        
         $conf = strtoupper(Config::get('debug', 'error_level', 'debug'));
         $level = constant('self::'.$conf);
 
@@ -216,7 +219,7 @@ class Error
         {
             foreach($bt as $k  => $v)
             {
-                if(isset($v['class']) && $v['class'] == get_class()) continue;
+                if(isset($v['class']) && $v['class'] === get_class()) continue;
                 
                 $r = array();
                 

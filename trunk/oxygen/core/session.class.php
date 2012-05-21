@@ -28,8 +28,8 @@ class Session
 	{
         // check if session datas must be stored in database
         $config = Config::get('session');
-
-        if(isset($config->type) && $config->type == 'database')
+       
+        if(isset($config->handler) && $config->handler === 'database')
         {
             $this->_db = DB::getInstance(isset($config->db_config) ? $config->db_config : 'db1');
             $this->_tableName = Db::prefixTable(isset($config->table) ? $config->table : 'sessions');
@@ -50,7 +50,7 @@ class Session
 	 */
 	public static function getInstance()
 	{
-		if(self::$_instance === null) self::$_instance = new self();
+		if(!isset(self::$_instance)) self::$_instance = new self();
 		return self::$_instance;
 	}
     
@@ -100,9 +100,8 @@ class Session
     {
         if(!$this->_sessionActive)
         {
-            $handler = Config::get('session', 'handler', 'default');
-            if($handler == 'database') $this->setDbHandler();
-            $this->_sessionActive = @session_start();
+            if($this->_db !== null) $this->setDbHandler();
+            $this->_sessionActive = session_start();
         }
         return $this->_sessionActive;
     }
