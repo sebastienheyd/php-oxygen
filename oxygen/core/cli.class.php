@@ -21,7 +21,7 @@ class Cli
     public static function getInstance()
     {
         if((defined('CLI_MODE') && CLI_MODE == false) || !self::isCurrentMode()) return false;               
-        if(self::$_instance === null) self::$_instance = new self();
+        if(!isset(self::$_instance)) self::$_instance = new self();
         return self::$_instance;
     }
 

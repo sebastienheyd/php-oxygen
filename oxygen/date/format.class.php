@@ -24,7 +24,7 @@ class f_date_Format
      */
     public static function getInstance()
     {
-        if(self::$_instance === null) self::$_instance = new self();
+        if(!isset(self::$_instance)) self::$_instance = new self();
         return self::$_instance;
     }
     
