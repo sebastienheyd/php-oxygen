@@ -48,7 +48,7 @@ class Error
     {
         // Special case for @ error-control operator
         if(error_reporting() === 0) return;
-        
+
         $conf = strtoupper(Config::get('debug', 'error_level', 'debug'));
         $level = constant('self::'.$conf);
 
@@ -58,7 +58,7 @@ class Error
         Log::error($label.' : "'.$msg.'" in '.$file.' (ln.'.$errline.')');
 
         if($level == self::OFF) return;    
-        
+
         switch ($errno)
 		{
 		    case E_NOTICE:
@@ -124,6 +124,14 @@ class Error
         
         $message = '"'.$exception->getMessage().'" in <i>'.str_replace(PROJECT_DIR.DS, '', $exception->getFile()).'</i> (ln.'.$exception->getLine().')'; 
         $this->_showError(get_class($exception), $message, $trace);                    
+    }
+    
+    /**
+     * Handler for fatal errors after script execution 
+     */
+    public function shutdownHandler() {
+        $e = error_get_last();
+        if($e !== NULL) $this->errorHandler($e['type'], $e['message'], $e['file'], $e['line'], null);
     }
     
 // ======================================================================== ERROR DISPLAY
