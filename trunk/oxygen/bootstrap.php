@@ -53,6 +53,7 @@ require_once(FW_DIR.DS.'autoload.php');
 error_reporting(-1);
 @set_error_handler(array(new Error(),'errorHandler'));
 @set_exception_handler(array(new Error(),'exceptionHandler'));
+@register_shutdown_function(array(new Error(), 'shutdownHandler'));
 
 // Get default timezone
 if(ini_get('date.timezone') == '') date_default_timezone_set('Europe/Paris');
