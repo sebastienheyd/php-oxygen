@@ -35,7 +35,7 @@ class Html
      */
     public static function getInstance($type = 'xhtml-strict', $lang = 'en')
     {
-        if(self::$_instance === null) self::$_instance = new self($type, $lang);
+        if(!isset(self::$_instance)) self::$_instance = new self($type, $lang);
         return self::$_instance;
     }
     
