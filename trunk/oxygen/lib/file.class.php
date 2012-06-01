@@ -158,23 +158,24 @@ class File
         // Clean up the output buffer
         while (ob_get_level()) { ob_end_clean(); }               
 
+        $format = 'D, d M Y H:i:s \G\M\T';
         $lastModified = filemtime($this->_file);
-        $gmDate = gmdate(DATE_RFC1123, $lastModified).' GMT';
+        $gmDate = gmdate($format, $lastModified);
         $expires = 60*60*24*365; // one year
         
         // Set the file header and read the file
         header("Pragma: public");
         header("Cache-Control: maxage=".$expires);
         header("content-type: ".$this->getMimeType());              
-        header("Expires: " . gmdate(DATE_RFC1123, time()+$expires).' GMT');           
-        Log::info($gmDate);
-        if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $lastModified)
+        header("Expires: " . gmdate($format, time()+$expires));           
+
+        if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $lastModified)
         {
             header("Last-Modified: $gmDate", true, 304);
             exit();
         }        
         
-        header("Last-Modified: $gmDate");
+        header("Last-Modified: $gmDate", true, 200);
         
         // special case on js and css files to minify them
         if($this->_extension == 'js' || $this->_extension == 'css')
