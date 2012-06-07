@@ -20,7 +20,7 @@ class Cli
      */
     public static function getInstance()
     {
-        if((defined('CLI_MODE') && CLI_MODE == false) || !self::isCurrentMode()) return false;               
+        if((defined('CLI_MODE') && CLI_MODE === false) || !self::isCurrentMode()) return false;               
         if(!isset(self::$_instance)) self::$_instance = new self();
         return self::$_instance;
     }
@@ -32,7 +32,7 @@ class Cli
      */
     public static function isCurrentMode()
     {
-        return php_sapi_name() == 'cli';
+        return PHP_SAPI === 'cli';
     }
 
     /**
@@ -82,10 +82,7 @@ class Cli
      */
     public function getString($string, $color = null)
     {    
-        $str  = $this->getColor($color);
-        $str .= $string;
-        $str .= $this->getColor();
-        return $str;
+        return $this->getColor($color).$string.$this->getColor();
     }
     
     /**
@@ -124,11 +121,9 @@ class Cli
     public function meter($current, $max, $prefix = '')
     {        
         $percentage = ceil(($current/$max) * 100);
+        $l = strlen($current) + strlen($max)+ strlen($percentage) + strlen($prefix) + 5;
         
-        for($i=0;$i<= strlen($current) + strlen($max)+ strlen($percentage) + strlen($prefix) + 5;$i++)
-        {
-            echo "\010";            
-        }
+        for($i=0;$i<=$l ;$i++) echo "\010";            
         
         echo $prefix.$current.'/'.$max.' ('.$percentage.'%)';
     }
