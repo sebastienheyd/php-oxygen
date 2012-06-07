@@ -36,7 +36,7 @@ if(!function_exists('get_called_class'))
                 $lineContent = trim($scriptContent[$line]);
 
                 // special case.
-                if($v['function'] == 'call_user_func' || $v['function'] == 'call_user_func_array') return $v['args'][0][0];
+                if($v['function'] === 'call_user_func' || $v['function'] === 'call_user_func_array') return $v['args'][0][0];
                                     
                 if(preg_match('/([a-zA-Z0-9\_]+)::'.$v['function'].'/', $lineContent, $matches) && isset($matches[1]))
                 {
@@ -113,10 +113,7 @@ if(!function_exists('to_object'))
     {
         foreach($array as $key => $value)
         {
-            if(is_array($value))
-            {
-                $array[$key] = to_object($value);
-            }
+            if(is_array($value)) $array[$key] = to_object($value);
         }
 
         return (object)$array;
@@ -135,10 +132,7 @@ if(!function_exists('to_array'))
     {
         foreach($obj as $key => $value)
         {
-            if(is_object($value))
-            {
-                $obj[$key] = @to_array($value);
-            }
+            if(is_object($value)) $obj[$key] = @to_array($value);
         }
 
         return (array) $obj;
@@ -157,7 +151,7 @@ if(!function_exists('get_module_file'))
      */
     function get_module_file($module, $filePath, $check = true)
     {   
-        if($filePath[0] == DS) $filePath = substr($filePath, 1);
+        if($filePath[0] === DS) $filePath = substr($filePath, 1);
         
         if(is_file(WEBAPP_MODULES_DIR.DS.$module.DS.$filePath))
         {
@@ -286,19 +280,19 @@ if(!function_exists('set_header'))
             505	=> 'HTTP Version Not Supported'
         );
 
-		if ($code == '' || !is_numeric($code)) trigger_error('Status codes must be numeric', E_USER_ERROR);
+		if ($code === '' || !is_numeric($code)) trigger_error('Status codes must be numeric', E_USER_ERROR);
 
         if (isset($status[$code]) && $text == '') $text = $status[$code];
 
-		if ($text == '') trigger_error('No status text available.  Please check your status code number or supply your own message text.', E_USER_ERROR);
+		if ($text === '') trigger_error('No status text available.  Please check your status code number or supply your own message text.', E_USER_ERROR);
 
 		$server_protocol = (isset($_SERVER['SERVER_PROTOCOL'])) ? $_SERVER['SERVER_PROTOCOL'] : false;
 
-		if (substr(php_sapi_name(), 0, 3) == 'cgi')
+		if (substr(PHP_SAPI, 0, 3) === 'cgi')
 		{
 			header("Status: {$code} {$text}", true);
 		}
-		elseif ($server_protocol == 'HTTP/1.1' OR $server_protocol == 'HTTP/1.0')
+		elseif ($server_protocol === 'HTTP/1.1' OR $server_protocol === 'HTTP/1.0')
 		{
 			header($server_protocol." {$code} {$text}", true, $code);
 		}
@@ -326,11 +320,11 @@ if (!function_exists('redirect'))
 			$uri = Uri::getInstance()->getHost(true).$uri;
 		}
 
-        if($method == 'refresh')
+        if($method === 'refresh')
         {
             header("Refresh:0;url=".$uri);
         }
-        else if($method == 'javascript')
+        else if($method === 'javascript')
         {
             while (ob_get_level()) { ob_end_clean(); }
             echo '<script language="javascript">location.href="'.$uri.'";</script>';            

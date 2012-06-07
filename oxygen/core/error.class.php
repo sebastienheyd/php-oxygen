@@ -11,6 +11,12 @@
  * @package     PHP Oxygen
  */
 
+if(version_compare(PHP_VERSION, '5.3.0', '<') === true)
+{
+    define('E_USER_DEPRECATED', 16384);
+    define('E_DEPRECATED', 8192);
+}
+
 class Error
 {   
     private $_levels = array(

@@ -13,12 +13,12 @@
 
 
 // First, check the php version for the correct one
-if (version_compare(phpversion(), '5.2.0', '<') === true)
+if (version_compare(PHP_VERSION, '5.2.0', '<') === true)
 {
     echo '<h1>You have an invalid PHP version.</h1>';
     echo '<p>PHP Oxygen supports PHP 5.2.0 or newer. Please upgrade your PHP version</p>';
     echo '<hr />';
-    echo 'Current PHP Version : '.phpversion();
+    echo 'Current PHP Version : '.PHP_VERSION;
     exit;
 }
 
@@ -37,7 +37,7 @@ define('CACHE_DIR', WEBAPP_DIR.DS.'cache');
 define('WEBAPP_MODULES_DIR', WEBAPP_DIR.DS.'module');
 define('CONFIG_DIR', WEBAPP_DIR.DS.'config');
 define('LOGS_DIR', WEBAPP_DIR.DS.'logs');
-define('CLI_MODE', php_sapi_name() == 'cli');
+define('CLI_MODE', PHP_SAPI === 'cli');
 define('DATETIME_SQL', 'Y-m-d H:i:s');
 define('DATE_SQL', 'Y-m-d');
 define('TIME_SQL', 'H:i:s');
@@ -51,12 +51,12 @@ require_once(FW_DIR.DS.'autoload.php');
 
 // Sets error handlers
 error_reporting(-1);
-@set_error_handler(array(new Error(),'errorHandler'));
-@set_exception_handler(array(new Error(),'exceptionHandler'));
-@register_shutdown_function(array(new Error(), 'shutdownHandler'));
+set_error_handler(array(new Error(),'errorHandler'));
+set_exception_handler(array(new Error(),'exceptionHandler'));
+register_shutdown_function(array(new Error(), 'shutdownHandler'));
 
 // Get default timezone
-if(ini_get('date.timezone') == '') date_default_timezone_set('Europe/Paris');
+if(ini_get('date.timezone') === '') date_default_timezone_set('Europe/Paris');
 
 // Are the url ended by a prefix (ex: .html)
 define('HTTP_PREFIX', Config::get('route', 'prefix', ''));
