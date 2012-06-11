@@ -16,6 +16,7 @@ class f_cache_File implements f_cache_Interface
     static $_instance;
     
     private $_cachePath;
+    private $_cacheArr = array();
     
     /**
      * @return f_cache_File 
@@ -34,69 +35,54 @@ class f_cache_File implements f_cache_Interface
     
     public function get($id)
     {        
+        if(isset($this->_cacheArr[$id])) return $this->_cacheArr[$id];
+        
         $file = $this->_cachePath.DS.$id.'.cache';
         
         if(!is_file($file)) return false;
         
         $cache = unserialize(file_get_contents($file));
         
-        if(($cache['time'] + $cache['ttl']) < time())
+        if(time() > $cache[0])
 		{
 			unlink($file);
 			return false;
 		}
         
-        $datas = $cache['datas'];
+        $datas = $cache[2];        
+        if($cache[1] === 'array' || $cache[1] === 'object') $datas = unserialize($datas);
         
-        if($cache['type'] == 'array' || $cache['type'] == 'object') $datas = unserialize($cache['datas']);
+        $this->_cacheArr[$id] = $datas;
         
         return $datas;
     }
     
     public function save($id, $datas, $ttl = 60)
-    {                        		
-        return file_put_contents($this->_cachePath.DS.$id.'.cache', $this->_prepareDatas($datas, $ttl), LOCK_EX) !== false;
+    {         
+        $this->_cacheArr[$id] = $datas; 
+        
+        $type = gettype($datas);
+        
+        if($type === 'NULL' || $type === 'resource') $datas = false;        
+        if($type === 'array' || $type === 'object') $datas = serialize($datas);
+                
+        return file_put_contents($this->_cachePath.DS.$id.'.cache', serialize(array(time() + $ttl, $type, $datas)), LOCK_EX) !== false;
     }
     
     public function delete($id)
-    {
+    {        
         return @unlink($this->_cachePath.DS.$id.'.cache');
     }
     
     public function flush()
-    {
-        $files = Search::file('*.cache')->in($this->_cachePath)->fetch();
-        
-        $i = 0;
-        foreach($files as $file)
-        {
-            if(unlink($file)) $i++;
-        }
-        
-        return count($files) == $i;
+    {        
+        $files = array_map('unlink', glob(Search::file('*.cache')->in($this->_cachePath)->fetch()));
+        return !in_array(false, $files);
     }
     
     public function isSupported()
     {
         if(!is_dir($this->_cachePath)) mkdir($this->_cachePath, 0775, true);
         if(!is_writable($this->_cachePath)) throw new Exception('Cache dir '.$this->_cachePath.' is not writeable');        
-    }
-    
-    private function _prepareDatas($datas, $ttl)
-    {        
-        $type = gettype($datas);
-        
-        if($type == 'NULL' || $type == 'resource') return false;
-        
-        if($type == 'array' || $type == 'object') $datas = serialize($datas);
-
-        $contents = array(
-				'time'		=> time(),
-				'ttl'		=> $ttl,	
-                'type'      => $type,
-				'datas'		=> $datas
-        );
-        
-        return serialize($contents);
-    }    
+    }   
 }
