@@ -120,12 +120,10 @@ class Cli
      */
     public function meter($current, $max, $prefix = '')
     {        
-        $percentage = ceil(($current/$max) * 100);
-        $l = strlen($current) + strlen($max)+ strlen($percentage) + strlen($prefix) + 5;
-        
-        for($i=0;$i<=$l ;$i++) echo "\010";            
-        
-        echo $prefix.$current.'/'.$max.' ('.$percentage.'%)';
+        $str = $prefix.$current.'/'.$max.' ('.ceil(($current/$max) * 100).'%)';
+        $l = strlen($str);
+        for($i=0;$i<=$l ;$i++) echo "\010";
+        echo $str;
     }
     
     /**
