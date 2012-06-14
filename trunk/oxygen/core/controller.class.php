@@ -140,11 +140,9 @@ class Controller
      */
     private function _parseFromUri(Uri $uri)
     {
-        Log::debug('{Controller->_parseFromUri()} '.$uri->getUri());
-        
-        $nb = $uri->nbSegments();
+        Log::debug('{Controller->_parseFromUri()} '.$uri->getUri());        
 
-        if($nb == 0) Error::showConfigurationError();
+        if($uri->nbSegments() === 0) Error::showConfigurationError();
         
         // load asset if exists
         $this->_loadAsset();
@@ -163,7 +161,7 @@ class Controller
         $uri = Uri::getInstance()->getUri(true);
         $segments = explode('/', trim($uri, '/'));
         
-        if(count($segments) == 1)
+        if(!empty($segments))
         {
             if(preg_match('#(.js|.css)$#', $segments[0]))
             {
@@ -280,7 +278,7 @@ class Controller
 
         if(method_exists($model, 'setView')) $viewName = ucfirst($model->getView());
 
-        if(!is_string($viewName) || $viewName == '')  return '';
+        if(!is_string($viewName) || $viewName === '')  return '';
 
         $className = $this->_getViewClassName($model, $viewName);
 		$methodName = self::DEFAULT_ACTION_METHOD;
@@ -324,13 +322,12 @@ class Controller
             
             $tpl->cache_lifetime = $model->cacheLifetime;
             
+            $modelContent = $model->getModel();
+            
             // Assign all models to template
-            if(is_array($model->getModel()) && count($model->getModel()) > 0)
+            if(is_array($modelContent) && !empty($modelContent))
             {
-                foreach($model->getModel() as $k => $v)
-                {
-                    $tpl->assign($k, $v);
-                }
+                foreach($modelContent as $k => $v) $tpl->assign($k, $v);
             }
 
             $tpl->addTemplateDir(WEBAPP_MODULES_DIR.DS.$module.DS.'template');
@@ -420,19 +417,4 @@ class Controller
         $this->_args = func_get_args();
         return $this;
     }
-
-	/**
-	 * Redirect to an http url
-	 *
-	 * @param string $url   The http url to redirect to
-	 * @return void
-	 */
-	public static function redirect($url)
-	{
-        while (ob_get_level()) { ob_end_clean(); }         
-        $url = str_ireplace("location:", "", $url);
-        $url = str_ireplace("http://", "", $url);
-        header("Location: http://".$url, true);
-        exit;     
-	}
 }

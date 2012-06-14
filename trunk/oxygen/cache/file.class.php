@@ -17,6 +17,7 @@ class f_cache_File implements f_cache_Interface
     
     private $_cachePath;
     private $_cacheArr = array();
+    private $_timeToken;
     
     /**
      * @return f_cache_File 
@@ -29,8 +30,9 @@ class f_cache_File implements f_cache_Interface
     
     private function __construct()
     {
-        $this->_cachePath = CACHE_DIR.DS.'files';
+        $this->_cachePath = CACHE_DIR.DS.'files';    
         $this->isSupported();
+
     }
     
     public function get($id)
@@ -43,14 +45,14 @@ class f_cache_File implements f_cache_Interface
         
         $cache = unserialize(file_get_contents($file));
         
-        if(time() > $cache[0])
+        if(time() > ($cache[0] + $cache[1]) || $cache[0] <= $this->_getTimeToken())
 		{
 			unlink($file);
 			return false;
 		}
         
-        $datas = $cache[2];        
-        if($cache[1] === 'array' || $cache[1] === 'object') $datas = unserialize($datas);
+        $datas = $cache[3];        
+        if($cache[2] === 'array' || $cache[2] === 'object') $datas = unserialize($datas);
         
         $this->_cacheArr[$id] = $datas;
         
@@ -66,7 +68,7 @@ class f_cache_File implements f_cache_Interface
         if($type === 'NULL' || $type === 'resource') $datas = false;        
         if($type === 'array' || $type === 'object') $datas = serialize($datas);
                 
-        return file_put_contents($this->_cachePath.DS.$id.'.cache', serialize(array(time() + $ttl, $type, $datas)), LOCK_EX) !== false;
+        return file_put_contents($this->_cachePath.DS.$id.'.cache', serialize(array(time(), $ttl, $type, $datas)), LOCK_EX) !== false;
     }
     
     public function delete($id)
@@ -76,8 +78,8 @@ class f_cache_File implements f_cache_Interface
     
     public function flush()
     {        
-        $files = array_map('unlink', glob(Search::file('*.cache')->in($this->_cachePath)->fetch()));
-        return !in_array(false, $files);
+        $this->_timeToken = time();        
+        return file_put_contents($this->_cachePath.DS.'time_token', $this->_timeToken, LOCK_EX) !== false;
     }
     
     public function isSupported()
@@ -85,4 +87,12 @@ class f_cache_File implements f_cache_Interface
         if(!is_dir($this->_cachePath)) mkdir($this->_cachePath, 0775, true);
         if(!is_writable($this->_cachePath)) throw new Exception('Cache dir '.$this->_cachePath.' is not writeable');        
     }   
+    
+    private function _getTimeToken()
+    {
+        if($this->_timeToken !== null) return $this->_timeToken;
+        if(is_file($this->_cachePath.DS.'time_token')) return file_get_contents($this->_cachePath.DS.'time_token');
+        if($this->flush()) return $this->_timeToken;      
+        trigger_error('Cannot define cache time token', E_USER_ERROR);
+    }
 }
