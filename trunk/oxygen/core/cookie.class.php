@@ -27,13 +27,20 @@ class Cookie
      */
     public static function get($name)
     {
-        if(isset($_COOKIE[$name]))
+        if(preg_match('#^(.*?)\[(.*?)\]$#', $name, $m))
         {
-            $value = Security::decode($_COOKIE[$name]);
-            if($v = unserialize($value)) $value = $v;
-            return $value;
+            if(!isset($_COOKIE[$m[1]][$m[2]])) return false;
+            $value = $_COOKIE[$m[1]][$m[2]];
         }
-        return false;
+        else
+        {
+            if(!isset($_COOKIE[$name])) return false;
+            $value = $_COOKIE[$name];
+        }
+                    
+        $value = Security::decode($value);
+        if($v = unserialize($value)) $value = $v;
+        return $value;              
     }
     
     /**
