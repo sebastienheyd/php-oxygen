@@ -24,6 +24,7 @@ class Db
     private $_parameters;    
 
     private $_lastQuery = '';
+    private $_executed = false;
     
     private static $_instances;   
 
@@ -42,7 +43,7 @@ class Db
         
         try
 		{            
-			$this->_connexion = new PDO($config->driver.':host='.$config->host.';dbname='.$config->base,
+			$this->_connexion = new PDO($config->driver.':'.$config->type.'='.$config->host.';dbname='.$config->base,
 			$config->login,
 			$config->password,
 			array(PDO::ATTR_PERSISTENT => (int) $config->persist));
@@ -77,7 +78,7 @@ class Db
      * @return DB|Exception|false       Return instance of DB when connexion succeed. Return an exception or false when connexion failed.
      */
     public static function getInstance($config = 'db1', $throwException = true)
-    {   
+    {           
         if(!isset(self::$_instances[$config]))
         {
             $class = new self($config, $throwException);
@@ -199,10 +200,7 @@ class Db
      */
     public static function endTransaction($config = 'db1')
     {
-        if(!self::commit($config))
-        {
-            self::throwTransactionException($config);
-        }
+        if(!self::commit($config)) self::throwTransactionException($config);
         return true;
     }    
 
@@ -305,7 +303,7 @@ class Db
         // decrease iterator
         $this->_transactions--;
 
-        if($this->_transactions == 0)
+        if($this->_transactions === 0)
         {
             $this->_hasActiveTransaction = false;            
             if($this->_transactionSuccess) return $this->_connexion->commit();
@@ -338,7 +336,7 @@ class Db
      */    
     public function queryExec($query)
     {
-        if(strncasecmp('select', $query, 6) == 0) trigger_error('You must use Db::query() to return a SELECT query values', E_USER_NOTICE);
+        if(strncasecmp('select', $query, 6) === 0) trigger_error('You must use Db::query() to return a SELECT query values', E_USER_NOTICE);
         $this->_sql = $query;
         return $this->_connexion->exec($query);
     }
@@ -385,8 +383,8 @@ class Db
             $this->_transactionSuccess = false;
             return false;
         }
-                  
-        $this->_lastQuery = $this->_sql;
+
+        $this->_executed = true;
         $this->_parameters = $parameters;
         
         return $this;
@@ -427,9 +425,10 @@ class Db
      */
     public function fetchAll($fetchStyle = PDO::FETCH_ASSOC, $args = null)
     {      
-        if($this->_lastQuery != $this->_sql) $this->execute();
+        if(!$this->_executed) $this->execute();
         $result = $args === null ? $this->_query->fetchAll($fetchStyle): $this->_query->fetchAll($fetchStyle, $args);
 		$this->_query->closeCursor();
+        $this->_executed = false;
 		return $result;
     }
 
@@ -442,11 +441,11 @@ class Db
      */
     public function fetch($fetchStyle = PDO::FETCH_ASSOC, $args = null)
     {
-        if($this->_lastQuery != $this->_sql) $this->execute();
+        if(!$this->_executed) $this->execute();
 
         if($args === null)
         {
-            if($fetchStyle == PDO::FETCH_COLUMN)
+            if($fetchStyle === PDO::FETCH_COLUMN)
             {
                 $this->_query->setFetchMode($fetchStyle, 0);
             }
@@ -462,6 +461,7 @@ class Db
         
         $result = $this->_query->fetch($fetchStyle);
         $this->_query->closeCursor();
+        $this->_executed = false;
         return $result;
     }
 
@@ -473,9 +473,10 @@ class Db
      */
     public function fetchObject($className = 'stdClass')
     {        
-        if($this->_lastQuery != $this->_sql) $this->execute();
+        if(!$this->_executed) $this->execute();
         $result = $this->_query->fetchObject($className);
         $this->_query->closeCursor();
+        $this->_executed = false;
         return $result;
     }
     
@@ -563,7 +564,7 @@ class Db
      */
     public static function getTablesList($prefix = '', $config = 'db1')
     {
-        $q = $prefix == '' ? 'SHOW TABLES' : 'SHOW TABLES LIKE "'.$prefix.'%"';
+        $q = $prefix === '' ? 'SHOW TABLES' : 'SHOW TABLES LIKE "'.$prefix.'%"';
         return DB::query($q, $config)->fetchAllColumn();
     }
     
@@ -646,7 +647,7 @@ class Db
      */
     public static function quoteTable($tableName, $config = 'db1')
     {       
-        if($tableName === null || $tableName == '') trigger_error ('You have an error in your SELECT request, table name is empty', E_USER_ERROR);
+        if($tableName === null || $tableName === '') trigger_error ('You have an error in your SELECT request, table name is empty', E_USER_ERROR);
         return self::quoteIdentifier(self::prefixTable($tableName, $config));
     } 
     
@@ -660,7 +661,7 @@ class Db
     public static function prefixTable($tableName, $config = 'db1')
     {
         $prefix = Config::get($config, 'prefix', '');        
-        if($prefix != '' && !preg_match('#^'.$prefix.'#', $tableName)) $tableName = $prefix.$tableName;            
+        if($prefix !== '' && !preg_match('#^'.$prefix.'#', $tableName)) $tableName = $prefix.$tableName;            
         return $tableName;
     }
     
