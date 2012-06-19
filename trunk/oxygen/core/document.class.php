@@ -34,7 +34,7 @@ abstract class Document
 
         if(count($primary) > count($args)) trigger_error('load : args number not corresponding to primary keys number', E_USER_ERROR);        
                         
-        if(count($primary) == 1 && !empty($args)) return DB::select()->from($tableName)->where($primary[0], $args[0])->fetchObject($className);
+        if(count($primary) === 1 && !empty($args)) return DB::select()->from($tableName)->where($primary[0], $args[0])->fetchObject($className);
         
         $q = DB::select()->from($tableName);
         

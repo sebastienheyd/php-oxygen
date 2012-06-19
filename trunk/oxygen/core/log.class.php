@@ -29,7 +29,7 @@ class Log
      */
     public static function getInstance()
     {
-        if(is_null(self::$_instance)) self::$_instance = new self();
+        if(!isset(self::$_instance)) self::$_instance = new self();
         return self::$_instance;
     }      
     
@@ -117,7 +117,7 @@ class Log
     public static function debug($msg)
     {
         $inst = self::getInstance();
-        if($inst->getLevel() == self::DEBUG) $inst->getHandler()->write('debug', $msg);
+        if($inst->getLevel() === self::DEBUG) $inst->getHandler()->write('debug', $msg);
     }     
     
     /**
@@ -163,7 +163,7 @@ class Log
         $inst = self::getInstance();
         if($inst->getLevel() >= self::INFO)
         {            
-            if($inst->getLevel() == self::DEBUG) $inst->getHandler()->write('debug', '{Db->execute()} Call from '.$inst->getBacktrace(array('/db/')));
+            if($inst->getLevel() === self::DEBUG) $inst->getHandler()->write('debug', '{Db->execute()} Call from '.$inst->getBacktrace(array('/db/')));
             $inst->getHandler()->write('sql', $msg);
         }
     }
