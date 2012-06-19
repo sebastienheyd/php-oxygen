@@ -193,10 +193,7 @@ class Uri
     {
         $host = '';
         
-        if($httpPrefix)
-        {
-            $host .= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != '' && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://'; 
-        }
+        if($httpPrefix) $host .= (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != '' && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
         
         $host .= $this->_host;
         

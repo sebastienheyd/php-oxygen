@@ -23,7 +23,6 @@ class Db
     private $_transactionException;
     private $_parameters;    
 
-    private $_lastQuery = '';
     private $_executed = false;
     
     private static $_instances;   
@@ -267,8 +266,7 @@ class Db
         $this->_hasActiveTransaction = $this->_connexion->beginTransaction();
         $this->_transactionSuccess = true;
         $this->_transactionException = null;
-        
-        
+                
         // return transaction status
         return $this->_hasActiveTransaction;
 	}   

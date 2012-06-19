@@ -16,8 +16,8 @@ var menu = '\
             <ul>\n\
                 <li><a href="#">Premiers pas</a></li>\n\
                 <li><a href="#">Modèle-Vue-Contrôleur</a></li>\n\
-                <li><a href="#">Licence</a></li>\n\
-                <li><a href="#">A propos</a></li>\n\
+                <li><a href="'+basepath+lang+'/introduction/license.html">Licence</a></li>\n\
+                <li><a href="'+basepath+lang+'/introduction/about.html">A propos</a></li>\n\
             </ul>\n\
         </li>\n\
     </ul>\n\
@@ -44,6 +44,7 @@ var menu = '\
         <li class="menuLabel"><span class="menuTitle">Les classes</span>\n\
             <ul>\n\
                 <li><a href="#">Cache</a></li>\n\
+                <li><a href="#">Cookie</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/cron.html">Cron</a></li>\n\
                 <li><a href="#">Controller</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/date.html">Date</a></li>\n\

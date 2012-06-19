@@ -64,10 +64,7 @@ class f_date_Format
 			$c = substr($format, $i, 1);
 			if ($c == '\\')
 			{
-				if ($escaped)
-				{
-					$result .= '\\';
-				}
+				if ($escaped) $result .= '\\';
 				$escaped = ! $escaped;
 			}
 			else if ( $escaped )
@@ -321,16 +318,14 @@ class f_date_Format
         {
             return $this->_loadLocale('now', $lang);
         }
-        else
+
+        $res = array();
+        foreach($times as $type => $value)
         {
-            $res = array();
-            foreach($times as $type => $value)
-            {
-                if($value == 1) $type = substr($type, 0, -1);
-                $res[] = $this->_loadLocale($type, $lang, array('time' => $value));
-            }    
-            return $this->_loadLocale($diff['position'], $lang, array('time' => join($separator, $res)));
-        }
+            if($value == 1) $type = substr($type, 0, -1);
+            $res[] = $this->_loadLocale($type, $lang, array('time' => $value));
+        }    
+        return $this->_loadLocale($diff['position'], $lang, array('time' => join($separator, $res)));
     }        
     
     /**

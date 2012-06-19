@@ -98,7 +98,7 @@ class Route
                 $uriInst->setUri($uri);
             }
 
-            if($rule == 'default') $defaultRedirect = (string) $route->attributes()->redirect.'/'.$uri;
+            if($rule === 'default') $defaultRedirect = (string) $route->attributes()->redirect.'/'.$uri;
         }
 
         if(!$uriInst->isDefined() && $defaultRedirect !== null) $uriInst->setUri($defaultRedirect);   

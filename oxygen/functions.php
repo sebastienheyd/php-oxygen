@@ -28,34 +28,33 @@ if(!function_exists('get_called_class'))
         foreach($bt as $k => $v)
         {
             // if file is defined
-            if(!empty($v['file']))
+            if(empty($v['file'])) continue;
+
+            // get script content, line number and line content
+            $scriptContent = file($v['file']);
+            $line = $v['line'] - 1;
+            $lineContent = trim($scriptContent[$line]);
+
+            // special case.
+            if($v['function'] === 'call_user_func' || $v['function'] === 'call_user_func_array') return $v['args'][0][0];
+
+            if(preg_match('/([a-zA-Z0-9\_]+)::'.$v['function'].'/', $lineContent, $matches) && isset($matches[1]))
             {
-                // get script content, line number and line content
-                $scriptContent = file($v['file']);
-                $line = $v['line'] - 1;
-                $lineContent = trim($scriptContent[$line]);
-
-                // special case.
-                if($v['function'] === 'call_user_func' || $v['function'] === 'call_user_func_array') return $v['args'][0][0];
-                                    
-                if(preg_match('/([a-zA-Z0-9\_]+)::'.$v['function'].'/', $lineContent, $matches) && isset($matches[1]))
+                switch ($matches[1])
                 {
-                    switch ($matches[1])
-                    {
-                        case 'self':
-                        case 'parent':
-                            for ($i=$line; $i >= 0; $i--)
-                            {
-                                if(preg_match('/class[\s]+([a-zA-Z0-9\_]+)+?/si', trim($scriptContent[$i]), $matches)) return $matches[1];
-                            }
-                        break;                           
+                    case 'self':
+                    case 'parent':
+                        for ($i=$line; $i >= 0; $i--)
+                        {
+                            if(preg_match('/class[\s]+([a-zA-Z0-9\_]+)+?/si', trim($scriptContent[$i]), $matches)) return $matches[1];
+                        }
+                    break;                           
 
-                        default:
-                            return $matches[1];
-                        break;
-                    }                      
-                }                            
-            }                                   
+                    default:
+                        return $matches[1];
+                    break;
+                }                      
+            }                                                               
         }    
     }
 }
@@ -153,10 +152,7 @@ if(!function_exists('get_module_file'))
     {   
         if($filePath[0] === DS) $filePath = substr($filePath, 1);
         
-        if(is_file(WEBAPP_MODULES_DIR.DS.$module.DS.$filePath))
-        {
-            return WEBAPP_MODULES_DIR.DS.$module.DS.$filePath;
-        }
+        if(is_file(WEBAPP_MODULES_DIR.DS.$module.DS.$filePath)) return WEBAPP_MODULES_DIR.DS.$module.DS.$filePath;
         
         if($check && !is_file(MODULES_DIR.DS.$module.DS.$filePath)) return false;
 
@@ -195,7 +191,7 @@ if(!function_exists('class_file_path'))
         if(is_file($fpath.$fileName)) return $fpath.$fileName;
         
         // file is in the framework
-        if($className[0] == 'f')
+        if($className[0] === 'f')
         {            
             $possibilities = array();
             
@@ -217,7 +213,7 @@ if(!function_exists('class_file_path'))
         }
 
         // file is module in webapp
-        if($className[0] == 'm')
+        if($className[0] === 'm')
         {
             $path[0] = MODULES_DIR; $fpath = join(DS, $path).DS;            
             if(is_file($fpath.$fileName)) return $fpath.$fileName;

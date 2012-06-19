@@ -65,7 +65,7 @@ class Error
         $file = str_replace(PROJECT_DIR.DS, '', $errfile); 
         Log::error($label.' : "'.$msg.'" in '.$file.' (ln.'.$errline.')');
 
-        if($level == self::OFF) return;    
+        if($level === self::OFF) return;    
 
         switch ($errno)
 		{
@@ -231,68 +231,67 @@ class Error
     {
         $result = array();    
 
-        if(!empty($bt))
+        if(empty($bt)) return $result;
+
+        foreach($bt as $k  => $v)
         {
-            foreach($bt as $k  => $v)
+            if(isset($v['class']) && $v['class'] === get_class()) continue;
+
+            $r = array();
+
+            $r['function'] = isset($v['class']) ? $v['class'].$v['type'].$v['function'] : $v['function'];                    
+
+            if(isset($v['exception'])) $r['exception'] = $v['exception'];
+
+            if(!empty($v['args']))
             {
-                if(isset($v['class']) && $v['class'] === get_class()) continue;
-                
-                $r = array();
-                
-                $r['function'] = isset($v['class']) ? $v['class'].$v['type'].$v['function'] : $v['function'];                    
-
-                if(isset($v['exception'])) $r['exception'] = $v['exception'];
-                
-                if(!empty($v['args']))
+                $args = array();
+                foreach($v['args'] as $arg)
                 {
-                    $args = array();
-                    foreach($v['args'] as $arg)
-                    {
-                        
-                        $a = $arg;
-                        if($arg === null) $a = 'null';
-                        if(is_string($arg)) $a = "'".$arg."'";
-                        if(is_object($arg)) $a = "object('".get_class($arg)."')";
-                        if(is_array($arg)) $a = 'array()';
-                        $args[] = $a;
-                    }
 
-                    $r['args'] = join(', ', $args);
-                }
-                else
-                {
-                    $r['args'] = '';
+                    $a = $arg;
+                    if($arg === null) $a = 'null';
+                    if(is_string($arg)) $a = "'".$arg."'";
+                    if(is_object($arg)) $a = "object('".get_class($arg)."')";
+                    if(is_array($arg)) $a = 'array()';
+                    $args[] = $a;
                 }
 
-                if(isset($v['line']) && isset($v['file']))
+                $r['args'] = join(', ', $args);
+            }
+            else
+            {
+                $r['args'] = '';
+            }
+
+            if(isset($v['line']) && isset($v['file']))
+            {
+                $r['line'] = $v['line'];                    
+                $r['file'] = str_replace(PROJECT_DIR.DS, '', $v['file']);                
+            }
+
+            if(!empty($v['file']))
+            {
+                $f = file($v['file']);
+                $r['code'] = isset($f[$v['line']-1]) ? trim($f[$v['line']-1]) : '';
+
+                $nbLines = 9;
+                $offset = $v['line'] - ceil($nbLines/2) < 0 ? 0 : $v['line'] - ceil($nbLines/2);               
+
+                foreach(array_slice($f, $offset, $nbLines) as $k => $line)
                 {
-                    $r['line'] = $v['line'];                    
-                    $r['file'] = str_replace(PROJECT_DIR.DS, '', $v['file']);                
-                }
-                
-                if(!empty($v['file']))
-                {
-                    $f = file($v['file']);
-                    $r['code'] = isset($f[$v['line']-1]) ? trim($f[$v['line']-1]) : '';
+                    $line = str_replace(PHP_EOL, '', $line);
+                    $str = highlight_string('<?php '.$line.' ?>', true);
+                    $str = preg_replace('#(&lt;\?.*?)(php)?(.*?&nbsp;)#s','',$str);
+                    $str = preg_replace('#(\?&gt;)#s','',$str);
+                    $str = str_replace(array('<code>', '</code>'), array('',''), $str);
 
-                    $nbLines = 9;
-                    $offset = $v['line'] - ceil($nbLines/2) < 0 ? 0 : $v['line'] - ceil($nbLines/2);               
+                    $r['fragment'][++$offset] = $str;
+                }                                    
+            }
 
-                    foreach(array_slice($f, $offset, $nbLines) as $k => $line)
-                    {
-                        $line = str_replace(PHP_EOL, '', $line);
-                        $str = highlight_string('<?php '.$line.' ?>', true);
-                        $str = preg_replace('#(&lt;\?.*?)(php)?(.*?&nbsp;)#s','',$str);
-                        $str = preg_replace('#(\?&gt;)#s','',$str);
-                        $str = str_replace(array('<code>', '</code>'), array('',''), $str);
-
-                        $r['fragment'][++$offset] = $str;
-                    }                                    
-                }
-                
-                $result[] = $r;                
-            }            
-        }
+            $result[] = $r;                
+        }            
 
         return $result;
     }
