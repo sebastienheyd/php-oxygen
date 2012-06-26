@@ -154,7 +154,7 @@ class File
     public function output($restrictToDir = PROJECT_DIR, $useCache = true)
     {
         $this->isInDir($restrictToDir);
-        
+                
         // Clean up the output buffer
         while (ob_get_level()) { ob_end_clean(); }               
 
@@ -165,11 +165,14 @@ class File
         
         // Set the file header and read the file
         header("Pragma: public");
+        header("Vary: Accept-Encoding");       
         header("Cache-Control: maxage=".$expires);
         header("content-type: ".$this->getMimeType());              
-        header("Expires: " . gmdate($format, time()+$expires));           
+        header("Expires: " . gmdate($format, time()+$expires));      
+        
+        $headers = apache_request_headers();
 
-        if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $lastModified)
+        if(isset($headers['If-Modified-Since']) && $headers['If-Modified-Since'] === $gmDate)
         {
             header("Last-Modified: $gmDate", true, 304);
             exit();
@@ -178,7 +181,7 @@ class File
         header("Last-Modified: $gmDate", true, 200);
         
         // special case on js and css files to minify them
-        if($this->_extension == 'js' || $this->_extension == 'css')
+        if($this->_extension === 'js' || $this->_extension === 'css')
         {         
             if($gzip = $this->_checkGzip()) header("Content-Encoding: " . $gzip);                        
             echo $this->getMinify($lastModified, $useCache);
@@ -207,7 +210,7 @@ class File
             {
                 // generate a new cache file
                 if(!is_dir(CACHE_DIR.DS.'assets')) mkdir(CACHE_DIR.DS.'assets');
-                if($this->_extension == 'css')
+                if($this->_extension === 'css')
                 {
                     $content = $this->_minifyCss(file_get_contents($this->_file));   
                 }
@@ -224,7 +227,7 @@ class File
         else
         {
             // no gzip compression...
-            if($this->_extension == 'css') return $this->_minifyCss(file_get_contents($this->_file));             
+            if($this->_extension === 'css') return $this->_minifyCss(file_get_contents($this->_file));             
             return $this->_minifyJs(file_get_contents($this->_file)); 
         }
     }
