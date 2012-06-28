@@ -168,11 +168,9 @@ class File
         header("Vary: Accept-Encoding");       
         header("Cache-Control: maxage=".$expires);
         header("content-type: ".$this->getMimeType());              
-        header("Expires: " . gmdate($format, time()+$expires));      
-        
-        $headers = apache_request_headers();
+        header("Expires: " . gmdate($format, time()+$expires));              
 
-        if(isset($headers['If-Modified-Since']) && $headers['If-Modified-Since'] === $gmDate)
+        if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $_SERVER['HTTP_IF_MODIFIED_SINCE'] === $gmDate)
         {
             header("Last-Modified: $gmDate", true, 304);
             exit();
