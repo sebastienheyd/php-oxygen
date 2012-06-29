@@ -34,27 +34,35 @@ class Cookie
      * @param string $name      Name of the cookie to get
      * @return mixed|false
      */
-    public static function get($name)
+    public static function get($name, $default = false)
     {
         // handling array notation
         if(preg_match('#^(.*?)\[(.*?)\]$#', $name, $m))
         {
-            if(!isset($_COOKIE[$m[1]][$m[2]])) return false;
+            if(!isset($_COOKIE[$m[1]][$m[2]])) return $default;
             $value = $_COOKIE[$m[1]][$m[2]];
         }
         else
         {
-            if(!isset($_COOKIE[$name])) return false;
+            if(!isset($_COOKIE[$name])) return $default;
             $value = $_COOKIE[$name];
         }
                     
-        // decode cookie content
-        $value = Security::decode($value);
+        // decode cookie content        
+        list($check, $value) = explode('~~', Security::decode($value));
+
+        // name saved in cookie is not the same
+        if($check !== $name)
+        {
+            Cookie::delete($name);
+            return $default;
+        }
         
         // if content is a serialized array
         if($v = unserialize($value)) $value = $v;
-        
-        return $value;              
+
+        return $value;                          
+
     }
     
     /**
@@ -65,18 +73,18 @@ class Cookie
      * @param integer $lifetime     [optional] The lifetime of the cookie in seconds. Default is 3600 (one hour)
      * @param string $path          [optional] The path on the server in which the cookie will be available on
      * @param string $domain        [optional] The domain that the cookie is available to
-     * @param boolean $secure       [optional] Indicates that the cookie should only be transmitted over a secure HTTPS connection from the client
-     * @param boolean $httponly     [optional] When TRUE the cookie will be made accessible only through the HTTP protocol.
+     * @param boolean $secure       [optional] Indicates that the cookie should only be transmitted over a secure HTTPS connection from the client. If null will detect if https is available
+     * @param boolean $httponly     [optional] When TRUE the cookie will be made accessible only through the HTTP protocol. Default is true.
      * 
      * @return boolean              Return true on success
      */
-    public static function set($name, $value, $lifetime = 3600, $path = null, $domain = null, $secure = null, $httponly = null)
+    public static function set($name, $value, $lifetime = 3600, $path = null, $domain = null, $secure = null, $httponly = true)
     {
         // false value will delete the cookie so we force the value as an integer
         if($value === true || $value === false) $value = (int) $value;
         
         // null value will delete the cookie (sets value as false)
-        if($value === null) return setrawcookie($name, false, time() - 3600);
+        if($value === null) return setrawcookie($name, false, time() - 86400);
         
         // serialize arrays       
         if(is_array($value) && !empty($value)) $value = serialize($value);
@@ -84,10 +92,14 @@ class Cookie
         if(is_string($value) && $value !== '')
         {
             // encrypt the content
-            $value = Security::encode($value);
+            $value = Security::encode($name.'~~'.$value);
             if ( strlen( $value ) > ( 4 * 1024 ) ) throw new OverflowException("The cookie $name exceeds the maximum cookie size. Some data may be lost");            
         }
         
+        // set https if available
+        if($secure === null) $secure = isset($_SERVER["HTTPS"]);
+        
+        // for immediate effect, sets in $_COOKIE too
         $_COOKIE[$name] = $value;        
         return setrawcookie($name, $value, time() + $lifetime, $path, $domain, $secure, $httponly);
     }
