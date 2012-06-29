@@ -11,6 +11,8 @@
  * @package     PHP Oxygen
  */
 
+
+// For compatibility with PHP 5.3
 if(version_compare(PHP_VERSION, '5.3.0', '<') === true)
 {
     define('E_USER_DEPRECATED', 16384);
@@ -57,14 +59,20 @@ class Error
         // Special case for @ error-control operator
         if(error_reporting() === 0) return;
 
-        $conf = strtoupper(Config::get('debug', 'error_level', 'debug'));
-        $level = constant('self::'.$conf);
+        // Get error level
+        $level = constant('self::'.strtoupper(Config::get('debug', 'error_level', 'debug')));
 
+        // Get error label
         $label = isset($this->_levels[$errno]) ? $this->_levels[$errno] : $errno;
+        
+        // Replace full paths to not inform hackers
         $msg = str_replace(PROJECT_DIR.DS, '', $errstr);
         $file = str_replace(PROJECT_DIR.DS, '', $errfile); 
+        
+        // Log error
         Log::error($label.' : "'.$msg.'" in '.$file.' (ln.'.$errline.')');
 
+        // Error report is off return nothing
         if($level === self::OFF) return;    
 
         switch ($errno)
@@ -75,6 +83,8 @@ class Error
             case E_USER_WARNING:
             case E_CORE_WARNING:
             case E_COMPILE_WARNING:
+                
+                // Error level is not enough to display errors
                 if($level < self::STRICT) return;
                 
                 if(CLI_MODE)
@@ -89,7 +99,7 @@ class Error
                 }                                
 		    break;
         
-            default:                 
+            default:                                 
                 if(CLI_MODE) $this->_showCliError($label, $message, debug_backtrace());
 
                 $message = '"'.$msg.'" in <i>'.$file.'</i> (ln.'.$errline.')';
