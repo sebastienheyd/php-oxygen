@@ -15,7 +15,8 @@ class Route
 {
     private static $_instance;    
     
-    private $_routes = array();
+    private $_routes = array();  
+    private $_cacheFile;
     
     /**
      * Get instance of Router
@@ -33,6 +34,25 @@ class Route
      */
     private function __construct()
     {
+        $this->_cacheFile = WEBAPP_DIR.DS.'cache'.DS.'routes.xml';
+        
+        if(is_file($this->_cacheFile))
+        {
+            $this->_routes = simplexml_load_file($this->_cacheFile);
+        }
+        else
+        {
+            $this->buildRoutes();            
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * (re)build routes.xml cache file 
+     */
+    public function buildRoutes()
+    {
         // Retrieve all routes.xml files from modules or modules overload
         $search = Search::file('config/routes.xml')->setDepth(2,2);
         $files = array_merge($search->in(MODULES_DIR)->fetch(), $search->in(WEBAPP_MODULES_DIR)->fetch());
@@ -48,14 +68,11 @@ class Route
             // Get the last modification timestamp from all files
             foreach($files as $file) $lastModified = max($lastModified, filemtime($file));
             
-            // Get cache file
-            $cacheFile = WEBAPP_DIR.DS.'cache'.DS.'routes.xml';
-            
             // Rebuild if is too old
-            if(!is_file($cacheFile) || filemtime($cacheFile) != $lastModified) $this->_buildRouteCacheFile($files);  
+            if(!is_file($this->_cacheFile) || filemtime($this->_cacheFile) != $lastModified) $this->_buildRouteCacheFile($files);  
             
             // Load routes rules from cache file
-            $this->_routes = simplexml_load_file($cacheFile);
+            $this->_routes = simplexml_load_file($this->_cacheFile);
         }
     }
     
@@ -69,11 +86,11 @@ class Route
         // Get new instance of Uri
         $uriInst = Uri::getInstance();
 
-        // Init vars        
-        $defaultRedirect = null;        
-           
         // Remove first / from uri
         $uri = trim($uriInst->getUri(), '/');
+                
+        // Init vars        
+        $defaultRedirect = null;        
 
         // Parse routes
         foreach($this->_routes as $route)
@@ -113,19 +130,13 @@ class Route
      * @param string ...        [optional] Route args
      * @return string           Uri
      */
-    public static function byId($id)
+    public function byId($id)
     {
         $args = func_get_args();
         
         unset($args[0]);
-        
-        $cacheFile = WEBAPP_DIR.DS.'cache'.DS.'routes.xml';
-        
-        if(!is_file($cacheFile)) trigger_error('No route file');
-        
-        $routes = simplexml_load_file($cacheFile);
-        
-        $route = $routes->xpath('//route[@id="'.$id.'"]');
+               
+        $route = $this->_routes->xpath('//route[@id="'.$id.'"]');
         
         if(empty($route)) return '';
         
@@ -135,7 +146,7 @@ class Route
         
         $redirect = preg_replace('#\(.*?\)#i', '|', $rule);
         
-        if(count($args) == 0) return '/'.$redirect;
+        if(empty($args)) return '/'.$redirect;
         
         $segments = explode('/', $redirect);
         
@@ -155,9 +166,7 @@ class Route
      * @param array $files      Array of files paths to parse
      */
     private function _buildRouteCacheFile($files)
-    {
-        $cacheFile = WEBAPP_DIR.DS.'cache'.DS.'routes.xml';
-        
+    {        
         $modules = array();
 
         // Start a new XML structure
@@ -214,9 +223,9 @@ class Route
         $result->endDocument();
         
         // Get content and put contents into the cache file
-        $result->toFile($cacheFile);
+        $result->toFile($this->_cacheFile);
         
         // Set cache file modification date
-        touch($cacheFile, $lastModified);
+        touch($this->_cacheFile, $lastModified);
     }
 }
