@@ -33,7 +33,7 @@ spl_autoload_register('Autoload::load');
 
 class Autoload
 {
-    private static $_cache;
+    private static $_cache = array();
     
     public static function load($className)
     {
@@ -52,10 +52,11 @@ class Autoload
     {
         if(isset(self::$_cache[$className])) return self::$_cache[$className];
 
-        $cache = CACHE_DIR.DS.'autoload.cache';
-        $paths = array();
+        $mustCache = Config::get('cache', 'autoload');
         
-        if(is_file($cache))
+        $cache = CACHE_DIR.DS.'autoload.cache';
+        
+        if($mustCache && is_file($cache))
         {
             self::$_cache = unserialize(file_get_contents($cache));
             if(isset(self::$_cache[$className])) return self::$_cache[$className];
@@ -80,7 +81,7 @@ class Autoload
         if(is_file($fpath.$fileName))
         {
             self::$_cache[$className] = $fpath.$fileName;
-            file_put_contents($cache, serialize(self::$_cache), LOCK_EX);
+            if($mustCache) file_put_contents($cache, serialize(self::$_cache), LOCK_EX);
             return $fpath.$fileName;
         }
         
@@ -105,7 +106,7 @@ class Autoload
                 if(is_file($possibility))
                 {
                     self::$_cache[$className] = $possibility;
-                    file_put_contents($cache, serialize(self::$_cache), LOCK_EX);
+                    if($mustCache) file_put_contents($cache, serialize(self::$_cache), LOCK_EX);
                     return $possibility;
                 }
             }
@@ -118,7 +119,7 @@ class Autoload
             if(is_file($fpath.$fileName))
             {
                 self::$_cache[$className] = $fpath.$fileName;
-                file_put_contents($cache, serialize(self::$_cache), LOCK_EX);
+                if($mustCache) file_put_contents($cache, serialize(self::$_cache), LOCK_EX);
                 return $fpath.$fileName;
             }
         }       
