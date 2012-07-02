@@ -6,7 +6,7 @@ class f_test_Session extends f_test_Abstract
     public function  __construct() 
     {
         $label = 'Testing session management';
-        if(Config::getInstance()->session->type == 'database')
+        if(Config::get('session', 'type') === 'database')
         {
             $label .= ' using database (modify your config file to use file system)';
         }

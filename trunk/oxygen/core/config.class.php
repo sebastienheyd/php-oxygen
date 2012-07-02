@@ -13,51 +13,7 @@
 
 class Config
 {
-    private static $_instance;
-
-    /**
-     * Get Config instance.
-     *
-     * @return Config   Return instance of Config (singleton)
-     */
-    public static function getInstance()
-    {
-		if(!isset(self::$_instance)) self::$_instance = new self();
-		return self::$_instance;
-    }
-    
-    /**
-     * Constructor 
-     */
-    private function __construct()
-    {
-        $file = CONFIG_DIR.DS.self::getEnvironment().'.ini';
-
-        // die if no config file is found !
-        if(!is_file($file)) die(str_replace(PROJECT_DIR, '', $file).' does not exist');
-        
-        $this->_fetch(parse_ini_file($file, true));
-    }
-    
-    /**
-     * Fetch all config ini vars into current object
-     * 
-     * @param array $array 
-     */
-    private function _fetch(array $array)
-    {
-        foreach($array as $section => $values)
-        {
-            if(is_array($values))
-            {
-                $this->$section = new stdClass();
-                foreach($values as $k => $v)
-                {
-                    $this->$section->$k = $v;
-                }
-            }
-        }
-    }        
+    private static $_cache;              
     
     /**
      * Get a configuration value
@@ -68,16 +24,16 @@ class Config
      * @return defaultValue
      */
     public static function get($section, $name = null, $defaultValue = false)
-    {
-        $inst = self::getInstance();
+    {        
+        if(self::$_cache === null) self::_fetch();        
         
         if($name === null)
         {
-            if(isset($inst->$section)) $value = $inst->$section;               
+            if(isset(self::$_cache->$section)) $value = self::$_cache->$section;               
         }
         else
         {
-            if(isset($inst->$section->$name)) $value = $inst->$section->$name;     
+            if(isset(self::$_cache->$section->$name)) $value = self::$_cache->$section->$name;     
         }
         
         if(!isset($value) || empty($value) || $value == '') return $defaultValue;
@@ -96,4 +52,33 @@ class Config
         defined('APP_ENV') || define('APP_ENV', (getenv('APP_ENV') ? strtolower(getenv('APP_ENV')) : 'default'));
         return APP_ENV;
     }
+    
+    /**
+     * Fetch all config ini vars into current object
+     * 
+     * @param array $array 
+     */
+    private static function _fetch()
+    {
+        $file = CONFIG_DIR.DS.self::getEnvironment().'.ini';
+
+        // die if no config file is found !
+        if(!is_file($file)) die(str_replace(PROJECT_DIR, '', $file).' does not exist');
+        
+        $array = parse_ini_file($file, true);
+        
+        self::$_cache = new stdClass();
+        
+        foreach($array as $section => $values)
+        {
+            if(is_array($values))
+            {
+                self::$_cache->$section = new stdClass();
+                foreach($values as $k => $v)
+                {
+                    self::$_cache->$section->$k = $v;
+                }
+            }
+        }
+    }     
 }
