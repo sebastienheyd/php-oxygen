@@ -28,15 +28,102 @@ spl_autoload_extensions('.class.php,.php');
 spl_autoload_register();
 
 // or load from autoload method
-spl_autoload_register('autoload');
+spl_autoload_register('Autoload::load');
 
-/**
- * Magic __autoload method
- * See : http://www.php.net/autoload
- * 
- * @param string $class_name    The class name to get
- */
-function autoload($className)
+
+class Autoload
 {
-    if($path = class_file_path($className)) require_once($path);
+    private static $_cache;
+    
+    public static function load($className)
+    {
+        if($path = self::getClassPath($className)) require_once($path);
+    }
+    
+    /**
+     * Get correct file to include from a class name
+     * Used by __autoload()
+     * 
+     * @param string $className     Input class name
+     * @param string $ext           [optional] Class file extension to use. Default is 'class.php'
+     * @return string|false         Return a path or false if no file is found
+     */
+    private static function getClassPath($className, $ext = 'class.php')
+    {
+        if(isset(self::$_cache[$className])) return self::$_cache[$className];
+
+        $cache = CACHE_DIR.DS.'autoload.cache';
+        $paths = array();
+        
+        if(is_file($cache))
+        {
+            self::$_cache = unserialize(file_get_contents($cache));
+            if(isset(self::$_cache[$className])) return self::$_cache[$className];
+        }
+
+        $r = array('f' => HOOKS_DIR, 'm' => WEBAPP_MODULES_DIR);
+        $path = explode('_', $className);
+
+        // replace by folder
+        if(in_array($path[0], array_keys($r))) $path[0] = $r[$path[0]];
+
+        // get last path
+        $lastPath = lcfirst(end($path)).DS;
+
+        // get file name
+        $fileName = lcfirst(array_pop($path)).'.'.$ext;        
+
+        // set path in string
+        $fpath = join(DS, $path).DS;
+
+        // file is in the right folder corresponding to the name
+        if(is_file($fpath.$fileName))
+        {
+            self::$_cache[$className] = $fpath.$fileName;
+            file_put_contents($cache, serialize(self::$_cache), LOCK_EX);
+            return $fpath.$fileName;
+        }
+        
+        // file is in the framework
+        if($className[0] === 'f')
+        {            
+            $possibilities = array();
+            
+            // hooks path
+            $possibilities[] = $fpath.'core'.DS.$fileName; // f_Session => /hooks/core/session.class.php
+            $possibilities[] = $fpath.$lastPath.$fileName; // f_Session => /hooks/session/session.class.php
+            
+            // original path
+            $path[0] = FW_DIR; $fpath = join(DS, $path).DS;            
+            $possibilities[] = $fpath.$fileName;           // f_Session => /oxygen/session.class.php
+            $possibilities[] = $fpath.'core'.DS.$fileName; // f_Session => /oxygen/core/session.class.php
+            $possibilities[] = $fpath.$lastPath.$fileName; // f_Session => /oxygen/session/session.class.php
+
+            // testing possibilities
+            foreach($possibilities as $possibility)
+            {                
+                if(is_file($possibility))
+                {
+                    self::$_cache[$className] = $possibility;
+                    file_put_contents($cache, serialize(self::$_cache), LOCK_EX);
+                    return $possibility;
+                }
+            }
+        }
+
+        // file is module in webapp
+        if($className[0] === 'm')
+        {
+            $path[0] = MODULES_DIR; $fpath = join(DS, $path).DS;            
+            if(is_file($fpath.$fileName))
+            {
+                self::$_cache[$className] = $fpath.$fileName;
+                file_put_contents($cache, serialize(self::$_cache), LOCK_EX);
+                return $fpath.$fileName;
+            }
+        }       
+
+        // returns false if file not found
+        return false;
+    }
 }

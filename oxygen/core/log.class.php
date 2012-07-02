@@ -61,13 +61,9 @@ class Log
         // Get config
         $config = strtolower(Config::get('debug', 'logging_handler', 'null'));     
         if(!in_array($config, $authorized)) die($config.' is not a valid logging handler');
-        
-        // Class name
-        $class = 'f_log_'.ucfirst($config);
-        if(!class_exists($class, true)) die($class.' does not exists');
-                
+                        
         // Instanciation
-        $inst =  call_user_func(array($class, 'getInstance'));        
+        $inst =  call_user_func(array('f_log_'.ucfirst($config), 'getInstance'));        
 
         if($inst === null) die('Cannot instanciate '.$class);
         return $inst;
