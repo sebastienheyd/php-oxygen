@@ -10,17 +10,20 @@
     <body>             
         <h1>Insertion / modification / suppression de données</h1>
         <p>
-            Voici les méthodes pour insérer, modifier ou supprimer des données dans la base.
+            Voici les méthodes pour insérer, modifier ou supprimer des entrées dans la base de données.
         </p>
         <h3>insert()</h3>
         <p>
             Permet d'insérer des données dans la base. 
-            La méthode prend comme argument le nom de la table et un tableau associatif ayant le nom du champ comme clé et la valeur à insérer.
+            La méthode prend comme argument le nom de la table et un tableau associatif ayant le nom du champ ou un entier comme clé et la valeur à insérer.
             Le troisième argument optionnel est le nom de la configuration à utiliser pour se connecter à la base de données.
         </p>
         <php>
             // INSERT INTO `customers` (`customerName`, `contactFirstName`) VALUES ('PHP Oxygen', 'Sébastien')
             Db::insert('customers', array('customerName' => 'PHP Oxygen', 'contactFirstName' => 'Sébastien'), 'config2');
+            
+            // INSERT INTO `customers` VALUES ('PHP Oxygen', 'Sébastien')
+            Db::insert('customers', array('PHP Oxygen', 'Sébastien'));
         </php> 
         
         <h3>update()</h3>
