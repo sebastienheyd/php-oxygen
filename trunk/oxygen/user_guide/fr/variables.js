@@ -7,7 +7,8 @@ var menu = '\
     <ul class="menuList">\n\
         <li class="menuLabel"><span class="menuTitle">Installation</span>\n\
             <ul>\n\
-                <li><a href="#">Installation</a></li>\n\
+                <li><a href="'+basepath+lang+'/installation/required.html">Pré-requis</a></li>\n\
+                <li><a href="'+basepath+lang+'/installation/installation.html">Installation</a></li>\n\
                 <li><a href="#">Configuration</a></li>\n\
                 <li><a href="#">Mise à jour</a></li>\n\
             </ul>\n\
