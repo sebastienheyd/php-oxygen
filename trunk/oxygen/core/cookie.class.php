@@ -47,12 +47,12 @@ class Cookie
             if(!isset($_COOKIE[$name])) return $default;
             $value = $_COOKIE[$name];
         }
-                    
-        // decode cookie content        
-        list($check, $value) = explode('~~', Security::decode($value));
 
-        // name saved in cookie is not the same
-        if($check !== $name)
+        // decode cookie content        
+        list($hash, $value) = explode('~~', $value);
+
+        // hash is not correct
+        if(!Security::check($value, $hash))
         {
             Cookie::delete($name);
             return $default;
@@ -91,17 +91,16 @@ class Cookie
         
         if(is_string($value) && $value !== '')
         {
-            // encrypt the content
-            $value = Security::encode($name.'~~'.$value);
+            $value = Security::hash($value).'~~'.$value;
             if ( strlen( $value ) > ( 4 * 1024 ) ) throw new OverflowException("The cookie $name exceeds the maximum cookie size. Some data may be lost");            
         }
-        
+
         // set https if available
         if($secure === null) $secure = isset($_SERVER["HTTPS"]);
         
         // for immediate effect, sets in $_COOKIE too
-        $_COOKIE[$name] = $value;        
-        return setrawcookie($name, $value, time() + $lifetime, $path, $domain, $secure, $httponly);
+        $_COOKIE[$name] = $value;
+        return setcookie($name, $value, time() + $lifetime, $path, $domain, $secure, $httponly);
     }
     
     /**

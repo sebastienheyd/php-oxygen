@@ -18,7 +18,8 @@ class f_i18n_Xliff
     /* @var $_xml SimpleXMLElement */
     private $_xml;
     private $_file;
-    
+    private $_cache;
+        
     /**
      * Main constructor
      * 
@@ -27,16 +28,16 @@ class f_i18n_Xliff
     private function __construct($file)
     {
         $this->_file = $file;
+               
         if(file_exists($file))
         {    
             $this->_xml = simplexml_load_file($file);
             $namespaces = $this->_xml->getDocNamespaces();
             $this->_xml->registerXPathNamespace('ns', $namespaces['']);
         }
-
-        if(!is_dir(dirname($this->_file)))
+        else
         {
-            mkdir(dirname($this->_file));
+            if(!is_dir(dirname($this->_file))) mkdir(dirname($this->_file));            
         }
     }
     
@@ -64,8 +65,14 @@ class f_i18n_Xliff
      */
     public function translate($string, $args = array(), $srcLang = 'en', $origin = 'default', $addToFile = true)
     {        
+        // loading from memory
+        $cid = md5($string.serialize($args).$srcLang);
+        if(isset($this->_cache[$cid])) return $this->_cache[$cid];
+        
+        // XML is not initialized, create a new one
         if($this->_xml === null) $this->_createFile($string, $srcLang, $origin);
         
+        // search in XML with Xpath
         $t = $this->_xml->xpath('//ns:file[@source-language="'.$srcLang.'"][@original="'.$origin.'"]//ns:trans-unit/ns:source[.="'.$string.'"]/../ns:target');                   
             
         if(empty($t))
@@ -73,11 +80,8 @@ class f_i18n_Xliff
             $t = $this->_xml->xpath('//ns:file[@source-language="'.$srcLang.'"]//ns:trans-unit/ns:source[.="'.$string.'"]/../ns:target');
             $target = !empty($t) ? (string) end($t) : null;
             
-            if($addToFile)
-            {
-                // add to file
-                $this->_addToFile($string, $srcLang, $origin, $target);         
-            }
+            // add to file
+            if($addToFile) $this->_addToFile($string, $srcLang, $origin, $target);
             
             $res = $target !== null ? $target : $string;                
         }    
@@ -86,16 +90,18 @@ class f_i18n_Xliff
             $res = (string) end($t);
         }
         
-        if($res == '') $res = $string;
+        if($res === '') $res = $string;
 
-        if(!empty($args))
+        if(empty($args))
         {
-            foreach($args as $k => $v)
-            {
-                $res = str_replace("%$k%", $v, $res);
-            }
+            $this->_cache[$cid] = $res;
+            return $res;
         }
+        
+        foreach($args as $k => $v) $res = str_replace("%$k%", $v, $res);
 
+        $this->_cache[$cid] = $res;
+        
         return $res;             
     }
     

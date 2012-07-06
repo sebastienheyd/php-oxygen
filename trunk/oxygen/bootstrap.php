@@ -25,10 +25,12 @@ if (version_compare(PHP_VERSION, '5.2.0', '<') === true)
 // Set the default umask to define rights on paths
 umask(0002);
 
+chdir('..');
+
 // Constants definitions
 define('DS', DIRECTORY_SEPARATOR);
-define('PROJECT_DIR', realpath(dirname(__FILE__).DS.'..'));
-define('FW_DIR', dirname(__FILE__));
+define('PROJECT_DIR', getcwd());
+define('FW_DIR', PROJECT_DIR.DS.'oxygen');
 define('MODULES_DIR', PROJECT_DIR.DS.'module');
 define('WEBAPP_DIR', PROJECT_DIR.DS.'webapp');
 define('HOOKS_DIR', WEBAPP_DIR.DS.'hooks');

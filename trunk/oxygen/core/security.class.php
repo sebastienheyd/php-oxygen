@@ -12,7 +12,7 @@
  */
 
 class Security
-{       
+{
     /**
      * Return the unique key for the application or generate a new one and write it in webapp/config/.key
      * 
@@ -40,19 +40,37 @@ class Security
      * @param string $key       [optionnal] The key to use. Default is the application key
      * @return string           The encrypted string
      */
-    public static function encode($text, $key = null)
-    {
-        if(!function_exists('mcrypt_encrypt')) return self::xorencode($text, $key);
-        
+    public static function encrypt($text, $key = null)
+    {      
+        // Get the application key if no key is given
         if($key === null) $key = self::getKey();
         
-        $size  = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-        $iv    = mcrypt_create_iv($size, MCRYPT_RAND);
-        $crypt = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $text, MCRYPT_MODE_ECB, $iv);
+        // To avoid same encoded string for the same string
+        $text = Security::hash($text).'~~~'.$text;
         
-        return rtrim(strtr(base64_encode($crypt), '+/', '-_'), '=');
+        // Use openssl_encrypt with PHP >= 5.3.0
+        if(function_exists('openssl_encrypt') && in_array('BF-OFB', openssl_get_cipher_methods()))
+        {
+            return openssl_encrypt($text, 'BF-OFB', $key);
+        }
+        // ... or use mcrypt if available
+        else if (function_exists('mcrypt_encrypt'))
+        {
+            $size  = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+            $iv    = mcrypt_create_iv($size, MCRYPT_RAND);
+            $crypt = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $text, MCRYPT_MODE_ECB, $iv);
+            return rtrim(strtr(base64_encode($crypt), '+/', '-_'), '=');
+        }
+
+        // ... else encrypt with xor technique
+        $n = mb_strlen($text, '8bit');                
+        $m = mb_strlen($key, '8bit');
+
+        if($n !== $m) $key = mb_substr(str_repeat($key, ceil($n / $m)), 0, $n, '8bit');
+
+        return base64_encode($text ^ $key); 
     }
-    
+
     /**
      * Decrypts a string encoded with mcrypt.<br />
      * If mcrypt is not available, decrypts with xor
@@ -61,54 +79,78 @@ class Security
      * @param string $key       [optionnal] The key to use. Default is the application key
      * @return string           The decrypted string
      */    
-    public static function decode($text, $key = null)
-    {
-        if(!function_exists('mcrypt_encrypt')) return self::xordecode($text, $key);
-        
+    public static function decrypt($text, $key = null)
+    {        
+        // Get the application key if no key is given
         if($key === null) $key = self::getKey();
         
-        $size  = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-        $iv    = mcrypt_create_iv($size, MCRYPT_RAND);
-        $text  = base64_decode(str_pad(strtr($text, '-_', '+/'), strlen($text) % 4, '=', STR_PAD_RIGHT));
+        // Use openssl_decrypt with PHP >= 5.3.0
+        if(function_exists('openssl_decrypt') && in_array('BF-OFB', openssl_get_cipher_methods()))
+        {
+            $msg = openssl_decrypt($text, 'BF-OFB', $key);
+        }
+        // ... or use mcrypt if available
+        else if (function_exists('mcrypt_encrypt'))
+        {
+            $size  = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+            $iv    = mcrypt_create_iv($size, MCRYPT_RAND);
+            $text  = base64_decode(str_pad(strtr($text, '-_', '+/'), strlen($text) % 4, '=', STR_PAD_RIGHT));
+            $msg = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $text, MCRYPT_MODE_ECB, $iv), "\0");
+        }
+        else
+        {            
+            // ... else decrypt with xor technique
+            $n = mb_strlen($text, '8bit');                
+            $m = mb_strlen($key, '8bit');
+
+            if($n !== $m) $key = mb_substr(str_repeat($key, ceil($n / $m)), 0, $n, '8bit');
+
+            $msg = base64_decode($text) ^ $key;
+        }
+
+        // To avoid truncated encoded strings
+        list($hash, $value) = explode('~~~', $msg);       
+        if(Security::check($value, $hash)) return $value;
         
-        return rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $text, MCRYPT_MODE_ECB, $iv), "\0");
+        return false;
     }   
     
-    /**
-     * Performs text encryption with xor and returns it as a string.
-     * 
-     * @param string $text      The text to encode
-     * @param string $key       [optionnal] The key to use. If null, will use application key
-     * @return string           The encrypted string
-     */    
-    public static function xorencode($text, $key = null)
+   /**
+    * Generate a hash value
+    * 
+    * @param string $data       Message to be hashed
+    * @param integer $rounds    Number of rounds for the Blowfish algorithm
+    * @return string            The hash value
+    */
+    public static function hash($data, $rounds = 8)
     {
-        if($key === null) $key = self::getKey();
-        
-        $n = mb_strlen($text, '8bit');                
-        $m = mb_strlen($key, '8bit');
-        
-        if($n != $m) $key = mb_substr(str_repeat($key, ceil($n / $m)), 0, $n, '8bit');
-        
-        return base64_encode($text ^ $key);    
+        if(function_exists('openssl_random_pseudo_bytes'))
+        {
+            $salt = openssl_random_pseudo_bytes(16);
+        }
+        else
+        {
+            $salt = String::random(array('length' => 40));
+        }
+
+        $salt = substr(strtr(base64_encode($salt), '+', '.'), 0 , 22);
+
+        // Better use Blowfish with PHP >= 5.3.0 or if configuration is defined for retrocompatibility
+        if(CRYPT_BLOWFISH === 1 && Config::get('security','hash_force_md5') === false) return crypt(base64_encode($data), sprintf('$2a$%02d$', $rounds).$salt);            
+
+        // ... else use md5
+        if(CRYPT_MD5 === 1) return crypt(base64_encode($data), '$1$'.$salt);
     }
     
     /**
-     * Decrypts a string encoded with xor.
+     * Check if given hash is correct
      * 
-     * @param string $text      The text to decode
-     * @param string $key       [optionnal] The key to use. If null, will use application key
-     * @return string           The decrypted string
-     */     
-    public static function xordecode($text, $key = null)
+     * @param string $value     Value to check
+     * @param string $hash      Hash value
+     * @return boolean          Return true if hash corresponding to the given value
+     */
+    public static function check($value, $hash)
     {
-        if($key === null) $key = self::getKey();
-        
-        $n = mb_strlen($text, '8bit');                
-        $m = mb_strlen($key, '8bit');
-        
-        if($n != $m) $key = mb_substr(str_repeat($key, ceil($n / $m)), 0, $n, '8bit');
-        
-        return base64_decode($text) ^ $key; 
+        return crypt(base64_encode($value), $hash) === $hash;
     }    
 }

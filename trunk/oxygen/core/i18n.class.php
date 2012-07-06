@@ -24,17 +24,11 @@ class I18n
      * @param boolean $addToFile    [optional] If not found with the current language, add to xliff file ? Default is true
      * @return string               The translated string if found else the source string
      */
-    public static function translate($file, $string, $args = array(), $srcLang = 'en', $origin = 'default', $addToFile = true)
+    public static function t($file, $string, $args = array(), $srcLang = 'en', $origin = 'default', $addToFile = true)
     {
         // if current lang is different from the given string lang
-        if($srcLang != self::getLang()) return f_i18n_Xliff::getInstance($file)->translate($string, $args, $srcLang, $origin, $addToFile);                           
-        
-        // replace args in string
-        if(!empty($args))
-        {
-            foreach($args as $k => $v) $string = str_replace("%$k%", $v, $string);
-        }
-        
+        if($srcLang != self::getLang()) return f_i18n_Xliff::getInstance($file)->translate($string, $args, $srcLang, $origin, $addToFile);
+
         // return translated string
         return $string;
     }
