@@ -32,19 +32,19 @@ class f_form_Captcha
     public static function getFormTags($formId = 'hcptch')
     {        
         // build the spinner key with current time and remote address, encrypt it
-        $spinner = Security::encode(serialize(array(time(), $_SERVER['REMOTE_ADDR'])));
- 
+        $spinner = self::_generateSpinner();
+
         // put a random invisible style, to fool spambots a little bit ;-)
         $styles = array('position:absolute;left:-'.mt_rand(10000, 20000).'px;', 'display: none');        
         $style = $styles[array_rand($styles)];
         
         // build tags
-        $tags  = '<input type="hidden" name="'.$formId.'[spinner]" value="'.$spinner.'" />'."\r\n";
-        $tags .= '<span style="'.$style.'"><input type="text" name="'.$formId.'[name]" value=""/></span>'."\r\n";
+        $tags  = '<input type="hidden" name="'.$formId.'[spinner]" value="'.$spinner.'" />'.PHP_EOL;
+        $tags .= '<span style="'.$style.'"><input type="text" name="'.$formId.'[name]" value=""/></span>'.PHP_EOL;
  
         return $tags;
     }
-    
+        
     /**
      * Display the hidden captcha's tags to put in you form
      * 
@@ -69,14 +69,59 @@ class f_form_Captcha
         
         // check if all hidden fields are correctly filled
         if($values === null || !isset($values->spinner) || !isset($values->name) || $values->name != '') return false;
-        
-        // get datas from the encrypted spinner key
-        list($timestamp, $remoteAddr) = @unserialize(Security::decode($values->spinner));
-        
+                
         // check if form is posted at the right time and from the right remote address
-        if(time() - $timestamp > $timeLimit || $_SERVER['REMOTE_ADDR'] != $remoteAddr) return false;     
+        if(!self::_checkSpinner($values->spinner, $timeLimit)) return false;
         
         // everything is ok, return true
         return true;
     }
+    
+    /**
+     * Generate a spinner including session id, ip and user agent
+     * 
+     * @return string       The spinner key
+     */
+    private static function _generateSpinner()
+    {
+        return Security::encrypt(time() .'|'. Security::hash(session_id().self::_getIp().$_SERVER['HTTP_USER_AGENT']));
+    }
+    
+    /**
+     * Check the posted spinner
+     * 
+     * @param string $spinner       The spinner key
+     * @param integer $timeLimit    Submission time limit
+     * @return boolean 
+     */
+    private static function _checkSpinner($spinner, $timeLimit)
+    {
+        list($time, $hash) = explode('|', Security::decrypt($spinner));
+
+        if(time() - $time < $timeLimit && Security::check(session_id().self::_getIp().$_SERVER['HTTP_USER_AGENT'], $hash)) return true;
+        return false;
+    }
+    
+    /**
+     * Get the client IP
+     * 
+     * @return string 
+     */
+    private static function _getIp()
+    {
+        if(!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+        {
+            if(strchr($_SERVER['HTTP_X_FORWARDED_FOR'],','))
+            {
+            	$tab = explode(',',$_SERVER['HTTP_X_FORWARDED_FOR']);
+                return $tab[0];
+            }
+            else
+            {
+                return $_SERVER['HTTP_X_FORWARDED_FOR'];
+            }
+        }
+
+        return $_SERVER['REMOTE_ADDR'];
+    }    
 }

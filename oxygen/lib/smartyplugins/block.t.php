@@ -45,12 +45,12 @@ function smarty_block_t($params, $content, &$smarty, &$repeat)
             
             if($file !== false)
             {
-                $str = I18n::translate($file, $content, $params, $srcLang, end($path));
+                $str = I18n::t($file, $content, $params, $srcLang, end($path));
                 if($str != $content) return $str;
             }    
             
             $file = get_module_file($module, '/i18n/templates.'.I18n::getLang().'.xml', false);
-            return I18n::translate($file, $content, $params, $srcLang, end($path));        
+            return I18n::t($file, $content, $params, $srcLang, end($path));        
         } 
         
         return $content;

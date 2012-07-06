@@ -27,10 +27,7 @@ class UserAgent
      */
     public static function getInstance()
     {
-        if(!isset(self::$instance))
-        {
-            self::$instance = new self();
-        }
+        if(!isset(self::$instance)) self::$instance = new self();
         return self::$instance;
     }
     

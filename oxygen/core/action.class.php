@@ -133,11 +133,11 @@ abstract class Action
         
         if($file !== false)
         {
-            $str = I18n::translate($file, $string, $args, $srcLang, $class);
+            $str = I18n::t($file, $string, $args, $srcLang, $class);
             if($str != $string) return $str;
         }    
         
         $file = get_module_file($m[1], 'i18n'.DS.$domain.'.'.I18n::getLang().'.xml', false);
-        return I18n::translate($file, $string, $args, $srcLang, $class);        
+        return I18n::t($file, $string, $args, $srcLang, $class);        
     }
 }

@@ -63,6 +63,6 @@ abstract class f_form_check_Abstract
             $file = FW_DIR.DS.'form'.DS.'check'.DS.'i18n'.DS.'rules.'.I18n::getLang().'.xml';
         }
         
-        return I18n::translate($file, $string, $args, 'en', 'rules', true);
+        return I18n::t($file, $string, $args, 'en', 'rules', true);
     }
 }
