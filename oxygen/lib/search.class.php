@@ -131,7 +131,7 @@ class Search
      * 
      * @return array        An array with files/directories paths
      */
-    public function fetch($restrictToDir = PROJECT_DIR)
+    public function fetch($restrictToDir = APP_DIR)
     {
         $result = array();
         

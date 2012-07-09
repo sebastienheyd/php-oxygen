@@ -12,29 +12,10 @@
  */
 
 class Security
-{
+{    
     /**
-     * Return the unique key for the application or generate a new one and write it in webapp/config/.key
-     * 
-     * @return string
-     */
-    public static function getKey()
-    {        
-        $keyFile = WEBAPP_DIR.DS.'config'.DS.'.key';
-        
-        if(is_file($keyFile)) return file_get_contents($keyFile);
-            
-        $rand = String::random(array('length' => 32, 'special' => true));
-        
-        if(!file_put_contents($keyFile, $rand)) 
-                trigger_error('Cannot write the security key in '.WEBAPP_DIR.DS.'config', E_USER_ERROR);       
-        
-        return $rand;
-    }
-    
-    /**
-     * Performs text encryption with mcrypt and returns it as a string.<br />
-     * If mcrypt is not available, encrypts with xor
+     * Performs text encryption with openssl_encrypt and returns it as a string.<br />
+     * If openssl_encrypt is not available encrypts with mcrypt, if mcrypt is not available encrypts with xor
      * 
      * @param string $text      The text to encode
      * @param string $key       [optionnal] The key to use. Default is the application key
@@ -43,7 +24,7 @@ class Security
     public static function encrypt($text, $key = null)
     {      
         // Get the application key if no key is given
-        if($key === null) $key = self::getKey();
+        if($key === null) $key = self::_getKey();
         
         // To avoid same encoded string for the same string
         $text = Security::hash($text).'~~~'.$text;
@@ -82,7 +63,7 @@ class Security
     public static function decrypt($text, $key = null)
     {        
         // Get the application key if no key is given
-        if($key === null) $key = self::getKey();
+        if($key === null) $key = self::_getKey();
         
         // Use openssl_decrypt with PHP >= 5.3.0
         if(function_exists('openssl_decrypt') && in_array('BF-OFB', openssl_get_cipher_methods()))
@@ -116,10 +97,11 @@ class Security
     }   
     
    /**
-    * Generate a hash value
+    * Generate a hash value.<br />
+    * Will use crypt with blowfish if available else md5
     * 
     * @param string $data       Message to be hashed
-    * @param integer $rounds    Number of rounds for the Blowfish algorithm
+    * @param integer $rounds    [optionnal] Number of rounds for the Blowfish algorithm. Default is 8.
     * @return string            The hash value
     */
     public static function hash($data, $rounds = 8)
@@ -136,7 +118,8 @@ class Security
         $salt = substr(strtr(base64_encode($salt), '+', '.'), 0 , 22);
 
         // Better use Blowfish with PHP >= 5.3.0 or if configuration is defined for retrocompatibility
-        if(CRYPT_BLOWFISH === 1 && Config::get('security','hash_force_md5') === false) return crypt(base64_encode($data), sprintf('$2a$%02d$', $rounds).$salt);            
+        if(CRYPT_BLOWFISH === 1 && Config::get('general','hash_force_md5') === false) 
+                return crypt(base64_encode($data), sprintf('$2a$%02d$', $rounds).$salt);            
 
         // ... else use md5
         if(CRYPT_MD5 === 1) return crypt(base64_encode($data), '$1$'.$salt);
@@ -152,5 +135,24 @@ class Security
     public static function check($value, $hash)
     {
         return crypt(base64_encode($value), $hash) === $hash;
+    }    
+    
+    /**
+     * Return the unique key for the application or generate a new one and write it in webapp/config/.key
+     * 
+     * @return string
+     */
+    private static function _getKey()
+    {        
+        $keyFile = WEBAPP_DIR.DS.'config'.DS.'.key';
+        
+        if(is_file($keyFile)) return file_get_contents($keyFile);
+            
+        $rand = String::random(array('length' => 32, 'special' => true));
+        
+        if(!file_put_contents($keyFile, $rand)) 
+                trigger_error('Cannot write the security key in '.WEBAPP_DIR.DS.'config', E_USER_ERROR);       
+        
+        return $rand;
     }    
 }

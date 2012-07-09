@@ -66,8 +66,8 @@ class Error
         $label = isset($this->_levels[$errno]) ? $this->_levels[$errno] : $errno;
         
         // Replace full paths to not inform hackers
-        $msg = str_replace(PROJECT_DIR.DS, '', $errstr);
-        $file = str_replace(PROJECT_DIR.DS, '', $errfile); 
+        $msg = str_replace(APP_DIR.DS, '', $errstr);
+        $file = str_replace(APP_DIR.DS, '', $errfile); 
         
         // Log error
         Log::error($label.' : "'.$msg.'" in '.$file.' (ln.'.$errline.')');
@@ -135,12 +135,12 @@ class Error
         
         $class = get_class($exception);
         
-        $message = $class.' : "' . $exception->getMessage() . '" in ' . str_replace(PROJECT_DIR.DS, '', $exception->getFile()) . ' (ln.' . $exception->getLine() . ')';
+        $message = $class.' : "' . $exception->getMessage() . '" in ' . str_replace(APP_DIR.DS, '', $exception->getFile()) . ' (ln.' . $exception->getLine() . ')';
         Log::error($message);        
         
         if(CLI_MODE) $this->_showCliError($class, $message, $trace);
         
-        $message = '"'.$exception->getMessage().'" in <i>'.str_replace(PROJECT_DIR.DS, '', $exception->getFile()).'</i> (ln.'.$exception->getLine().')'; 
+        $message = '"'.$exception->getMessage().'" in <i>'.str_replace(APP_DIR.DS, '', $exception->getFile()).'</i> (ln.'.$exception->getLine().')'; 
         $this->_showError(get_class($exception), $message, $trace);                    
     }
     
@@ -277,7 +277,7 @@ class Error
             if(isset($v['line']) && isset($v['file']))
             {
                 $r['line'] = $v['line'];                    
-                $r['file'] = str_replace(PROJECT_DIR.DS, '', $v['file']);                
+                $r['file'] = str_replace(APP_DIR.DS, '', $v['file']);                
             }
 
             if(!empty($v['file']))
@@ -388,7 +388,9 @@ class Error
         
         $tpl->assign('uri', $uri);
         $tpl->assign('routeFilePath', trim(CACHE_DIR.DS.'routes.xml'));
-
+       
+        $tpl->assign('tests', self::environmentTests());
+        
         try
         {
             $tpl->setTemplate('configuration.html')->render();            
@@ -399,6 +401,79 @@ class Error
         }
         
         die();
+    }
+    
+    private static function environmentTests()
+    {
+        $tests = array();
+        
+        // PHP version
+        $test['label'] = 'PHP';
+        $test['value'] = PHP_VERSION;
+        $test['pass']  = version_compare(PHP_VERSION, '5.2.0', '>');
+        $test['info']  = version_compare(PHP_VERSION, '5.3.0', '<') ? 'PHP >= 5.3 recommanded' : null;
+        $tests[] = $test;
+        
+        // Configuration
+        $test['label'] = 'Configuration environment (APP_ENV)';
+        $test['value'] = Config::getEnvironment();
+        $test['pass']  = true;
+        $test['info']  = null;
+        $tests[] = $test;                
+        
+        // Dirs
+        $test['label'] = 'Project Directory (APP_DIR)';
+        $test['value'] = APP_DIR;
+        $test['pass']  = true;
+        $test['info']  = null;
+        $tests[] = $test;
+        
+        $t = is_writable(CACHE_DIR) && is_writable(CACHE_DIR.DS.'templates_c') && is_writable(CACHE_DIR.DS.'html');
+        $test['label'] = 'Cache Directory (CACHE_DIR)';
+        $test['value'] = CACHE_DIR;
+        $test['pass']  = $t;
+        $test['info']  = !$t ? 'Cache directory or one of his subdir is not writeable' : null;
+        $tests[] = $test;
+                
+        $t = is_writable(LOGS_DIR);
+        $test['label'] = 'Logs Directory (LOGS_DIR)';
+        $test['value'] = LOGS_DIR;
+        $test['pass']  = $t;
+        $test['info']  = !$t ? 'Logs directory is not writeable' : null;
+        $tests[] = $test;
+          
+        // required extensions
+        $exts = array('GD', 'mbstring', 'PDO');
+        foreach($exts as $ext)
+        {
+            $t = extension_loaded($ext);
+            $test['label'] = $ext;
+            $test['value'] = $t ? 'Pass' : 'Fail';
+            $test['pass']  = $t;
+            $test['info']  = !$t ? $ext.' extension is not loaded' : null;
+            $tests[] = $test;            
+        }
+        
+        // required extensions
+        $exts = array('APC', 'mcrypt');
+        foreach($exts as $ext)
+        {
+            $t = extension_loaded($ext);
+            $test['label'] = $ext.' enabled';
+            $test['value'] = $t ? 'Pass' : 'Recommanded';
+            $test['pass']  = $t;
+            $test['info']  = !$t ? $ext.' extension is recommanded' : null;
+            $tests[] = $test;            
+        }
+        
+            $t = extension_loaded('memcache') || extension_loaded('memcached');
+            $test['label'] = 'memcache(d) enabled';
+            $test['value'] = $t ? 'Pass' : 'Recommanded';
+            $test['pass']  = $t;
+            $test['info']  = !$t ? 'memcached extension is recommanded' : null;
+            $tests[] = $test;    
+        
+        return $tests;
     }
         
     

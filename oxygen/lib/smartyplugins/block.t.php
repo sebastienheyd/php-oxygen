@@ -26,7 +26,7 @@ function smarty_block_t($params, $content, &$smarty, &$repeat)
     {
         $srcLang = isset($smarty->tpl_vars['TPL_LANG']) ? $smarty->tpl_vars['TPL_LANG']->value : 'en';        
 
-        $path = explode(DS, str_replace(PROJECT_DIR.DS, '', $smarty->template_resource));
+        $path = explode(DS, str_replace(APP_DIR.DS, '', $smarty->template_resource));
         
         if(isset($smarty->smarty->module))
         {

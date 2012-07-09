@@ -135,10 +135,10 @@ class File
     /**
      * Returns content of the loaded file
      * 
-     * @param string $restrictToDir     [optional] Check if file is in this directory and / or in a subdirectory of it. Default is PROJECT_DIR
+     * @param string $restrictToDir     [optional] Check if file is in this directory and / or in a subdirectory of it. Default is APP_DIR
      * @return string   File content
      */
-    public function getContents($restrictToDir = PROJECT_DIR)
+    public function getContents($restrictToDir = APP_DIR)
     {
         $this->isInDir($restrictToDir);
         return file_get_contents($this->_file);
@@ -147,11 +147,11 @@ class File
     /**
      * Outputs the file to the navigator
      * 
-     * @param string $restrictToDir     [optional] Check if file is in this directory and / or in a subdirectory of it. Default is PROJECT_DIR
+     * @param string $restrictToDir     [optional] Check if file is in this directory and / or in a subdirectory of it. Default is APP_DIR
      * @param boolean $useCache         [optional] True to use minimized cached files for js and css
      * @return void                     Return void but output the file content to the navigator
      */
-    public function output($restrictToDir = PROJECT_DIR, $useCache = true)
+    public function output($restrictToDir = APP_DIR, $useCache = true)
     {
         $this->isInDir($restrictToDir);
                 
@@ -271,11 +271,11 @@ class File
     /**
      * Checks if file is authorized to process (checks if file is in project directory).
      * 
-     * @param string $dir   [optional] Check if file is in this directory and / or in a subdirectory of it. Default is PROJECT_DIR
+     * @param string $dir   [optional] Check if file is in this directory and / or in a subdirectory of it. Default is APP_DIR
      * @param type $error   [optional] Throw an error if true, default is true
      * @return boolean      Return true if current file is in the given directory (or in subdirectory of it)
      */
-    public function isInDir($dir = PROJECT_DIR, $error = true)
+    public function isInDir($dir = APP_DIR, $error = true)
     {
         if($dir != '/' && !strstr($this->_dirname, $dir)) 
         {
@@ -290,10 +290,10 @@ class File
      * Force the file to download
      * 
      * @param string $filename      [optional] Name of the file when downloading, default is current instanciated file name
-     * @param string $restrictToDir [optional] Check if file is in this directory and / or in a subdirectory of it. Default is PROJECT_DIR
+     * @param string $restrictToDir [optional] Check if file is in this directory and / or in a subdirectory of it. Default is APP_DIR
      * @return void                 Return nothing but send the file to the navigator and force the download
      */
-	public function forceDownload($filename = null, $restrictToDir = PROJECT_DIR)
+	public function forceDownload($filename = null, $restrictToDir = APP_DIR)
 	{
         if(!strstr($this->_dirname, $restrictToDir)) trigger_error('Security error : file is out of base directory', E_USER_ERROR);
         

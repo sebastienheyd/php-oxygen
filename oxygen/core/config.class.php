@@ -18,9 +18,9 @@ class Config
     /**
      * Get a configuration value
      * 
-     * @param string $section       Name of the configuration section to get
-     * @param string $name          Name of the parameter to get into the section. If null get section object
-     * @param mixed $defaultValue   Default value if parameter is not found
+     * @param string $section      Name of the configuration section to get
+     * @param string $name         [optionnal] Name of the parameter to get into the section. If null get section object
+     * @param mixed $defaultValue  [optionnal] Default value if parameter is not found. Default is false.
      * @return defaultValue
      */
     public static function get($section, $name = null, $defaultValue = false)
@@ -42,7 +42,8 @@ class Config
     }
     
     /**
-     * Get the current environment name. To set an environment, define the environment var APP_ENV in your apache config or into the .htaccess file.<br />
+     * Get the current environment name. <br />
+     * To set an environment, define the environment var APP_ENV in your apache config or into the .htaccess file.<br />
      * ex : SetEnv APP_ENV "development"
      * 
      * @return string   The environment name or "default" (default value) if not set.
@@ -63,7 +64,7 @@ class Config
         $file = CONFIG_DIR.DS.self::getEnvironment().'.ini';
 
         // die if no config file is found !
-        if(!is_file($file)) die(str_replace(PROJECT_DIR, '', $file).' does not exist');
+        if(!is_file($file)) die(str_replace(APP_DIR, '', $file).' does not exist');
         
         $array = parse_ini_file($file, true);
         

@@ -53,19 +53,21 @@ class f_cache_Memcache implements f_cache_Interface
     
     public function isSupported()
     {
-        if(!extension_loaded('memcache')) throw new Exception('Memcached extension is not loaded');
+        if(!extension_loaded('memcache') && !extension_loaded('memcached')) 
+           throw new Exception('Memcache(d) extension is not loaded');     
         
-        $memcache = new Memcache();
+        $memcache = extension_loaded('memcache') ? new Memcache() : new Memcached();
         
         $host = Config::get('cache', 'memcache_host', '127.0.0.1');
         $port = Config::get('cache', 'memcache_port', 11211);
         
         $memcache->addServer($host, $port);
-        $stats = $memcache->getExtendedStats();
+        
+        $stats = extension_loaded('memcache') ? $memcache->getExtendedStats() : $memcache->getStats();
         $available = (bool) $stats["$host:$port"];    
         
         $this->_memcache = $memcache->connect($host, $port);
         
-        if(!$available || !$this->_memcache) throw new Exception('Cannot connect to memcache server');
+        if(!$available || !$this->_memcache) throw new Exception('Cannot connect to memcache(d) server');
     }
 }

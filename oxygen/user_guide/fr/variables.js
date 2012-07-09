@@ -58,6 +58,7 @@ var menu = '\
                 <li><a href="'+basepath+lang+'/classes/image.html">Image</a></li>\n\
                 <li><a href="#">Request</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/search.html">Search</a></li>\n\
+                <li><a href="'+basepath+lang+'/classes/security.html">Security</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/session.html">Session</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/string.html">String</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/template.html">Template</a></li>\n\
