@@ -3,7 +3,7 @@ class f_generator_Locales
 {
     public static function parse()
     {
-        $files = f_utils_File::find(PROJECT_DIR, '*.html');
+        $files = f_utils_File::find(APP_DIR, '*.html');
 
         $translations = array();
 
@@ -17,7 +17,7 @@ class f_generator_Locales
             }
         }
 
-        $files = f_utils_File::find(PROJECT_DIR, '*.php');
+        $files = f_utils_File::find(APP_DIR, '*.php');
 
         if(count($files) > 0)
         {

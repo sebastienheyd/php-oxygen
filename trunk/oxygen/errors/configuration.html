@@ -9,33 +9,35 @@ body {
     margin:                 40px;
     font-family:            Lucida Grande, Verdana, Sans-serif;
     color:                  #333;
-    font-size:              0.8em;
-    line-height:            1em;    
+    font-size:              12px;
+    line-height:            1.3em;    
 }
 
 #content  {
     background-color:       #FFF;
     padding:                20px;
-    border-radius:          10px;
-    -moz-border-radius:     10px;
     -webkit-border-radius:  10px;
+    -moz-border-radius:     10px;
+    border-radius:          10px;
 }
 
-h1 {
+h1, h2 {
     color:                  #0066CC;
     font-weight:            bold;
-    font-size:              28px;
-    margin:                 0 0 4px 0;
-    line-height:            1.5em;
+    font-size:              2.4em;
+    line-height:            1.8em;
     display: block;
 }
 
-p {
-    margin-top: 10px;
+h2 {
+    font-size:              2em;
+    line-height:            2em;
 }
 
+p { margin-bottom: 10px; }
+
 blockquote, pre {
-    margin-top:             10px;
+    margin-bottom:          10px;
     background:             none repeat scroll 0 0 #F9F9F9;
     border:                 1px solid #D0D0D0;
     border-radius:          5px 5px 5px 5px;
@@ -49,21 +51,8 @@ img {
     margin-top:             5px;
 }
 
-td {
-    vertical-align:         top;
-}
-
-a {
-    color: #333;    
-}
-
-a:hover {
-    color: #666;
-}
-
-ul {
-    margin-top: 10px;
-}
+td { vertical-align:         top; }
+ul { margin-top: 10px; }
 
 li {
     margin-left: 30px;
@@ -71,21 +60,22 @@ li {
     line-height: 18px;
 }
 
-pre {
-    color: blue;
+table.tests td {
+    padding: 7px 15px;
 }
 
-.arg {
-    color : #009900;
+table.tests td:first-child {
+    font-weight: bold;
 }
 
-.value {
-    color: #aa7700;
-}
-
-.dtd {
-    color : #390000;
-}
+a       { color: #333; }
+a:hover { color: #666; }
+pre     { color: #00F; }
+.arg    { color: #009900; }
+.value  { color: #aa7700; }
+.error  { color: #F00; }
+.pass   { color: #119911; }
+.dtd    { color: #390000; }
 </style>
 </head>
 <body>
@@ -112,6 +102,16 @@ pre {
                     </pre>
                     
                     <p>For additional details please read the <a href="http://guide.php-oxygen.com">user guide</a></p>
+                    <h2>Environment tests</h2>
+                    <table class="tests">
+                        {foreach from=$tests item=test}
+                            <tr style="background: {cycle values="#EEE,#FFF"}">
+                                <td>{$test.label}</td>
+                                <td{if $test.pass} class="pass"{else} class="error"{/if}>{$test.value}</td>
+                                <td>{if isset($test.info)}{$test.info}{/if}</td>
+                            </tr>
+                        {/foreach}
+                    </table>
                 </td>
             </tr>
         </table>	        

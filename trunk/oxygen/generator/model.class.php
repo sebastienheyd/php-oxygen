@@ -176,7 +176,7 @@ SQL;
         $tpl->assign('vars', $this->_fields);
         $tpl->assign('fields', array_map(array($this, '_parseVars'), $this->_fields));       
         
-        file_put_contents(PROJECT_DIR.DS.'model'.DS.strtolower($this->_className).'.class.php', $tpl->get());
+        file_put_contents(APP_DIR.DS.'model'.DS.strtolower($this->_className).'.class.php', $tpl->get());
 
         return true;
     }

@@ -101,7 +101,7 @@ class Log
         {
             if(isset($trace['class']) && strstr($trace['class'], 'Log')) continue;
             if(preg_match('#'.join('|', $exclude).'#', $trace['file'])) continue;
-            return str_replace(PROJECT_DIR, '', $trace['file']).' (ln.'. $trace['line'].')';                
+            return str_replace(APP_DIR, '', $trace['file']).' (ln.'. $trace['line'].')';                
         }
     }
     

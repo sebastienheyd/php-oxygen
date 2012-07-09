@@ -19,7 +19,7 @@ set_include_path(get_include_path().PS.
                  FW_DIR.DS.'core'.PS.
                  FW_DIR.DS.'lib'.PS.
                  FW_DIR.DS.'lib'.DS.'vendor'.DS.'smarty'.DS.'sysplugins'.PS.
-                 PROJECT_DIR.DS.'model');
+                 APP_DIR.DS.'model');
 
 // define file extensions to get
 spl_autoload_extensions('.class.php,.php');

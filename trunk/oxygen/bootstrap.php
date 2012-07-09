@@ -29,12 +29,12 @@ chdir('..');
 
 // Constants definitions
 define('DS', DIRECTORY_SEPARATOR);
-define('PROJECT_DIR', getcwd());
-define('FW_DIR', PROJECT_DIR.DS.'oxygen');
-define('MODULES_DIR', PROJECT_DIR.DS.'module');
-define('WEBAPP_DIR', PROJECT_DIR.DS.'webapp');
+define('APP_DIR', getcwd());
+define('FW_DIR', APP_DIR.DS.'oxygen');
+define('MODULES_DIR', APP_DIR.DS.'module');
+define('WEBAPP_DIR', APP_DIR.DS.'webapp');
 define('HOOKS_DIR', WEBAPP_DIR.DS.'hooks');
-define('WWW_DIR', PROJECT_DIR.DS.'www');
+define('WWW_DIR', APP_DIR.DS.'www');
 define('CACHE_DIR', WEBAPP_DIR.DS.'cache');
 define('WEBAPP_MODULES_DIR', WEBAPP_DIR.DS.'module');
 define('CONFIG_DIR', WEBAPP_DIR.DS.'config');
@@ -58,7 +58,8 @@ set_exception_handler(array(new Error(),'exceptionHandler'));
 register_shutdown_function(array(new Error(), 'shutdownHandler'));
 
 // Get default timezone
-if(ini_get('date.timezone') === '') date_default_timezone_set('Europe/Paris');
+if(ini_get('date.timezone') === '' || Config::get('general', 'timezone', true)) 
+        date_default_timezone_set(Config::get('general', 'timezone', 'Europe/Paris'));
 
 // Are the url ended by a prefix (ex: .html)
 define('HTTP_PREFIX', Config::get('route', 'prefix', ''));
@@ -67,6 +68,7 @@ try
 {
     // Init the session
     Session::getInstance();
+    
     // Set the default localization
     I18n::setLocale('en_US');    
 }
