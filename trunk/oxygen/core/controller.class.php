@@ -58,7 +58,7 @@ class Controller
             // Get rerouted uri or current uri
             $uri = Route::getInstance()->parseUrl();
 
-            if(!$uri->isDefined() && Config::get('route', 'routed_only') == '1' && $uri->getUri() != '/') 
+            if(!$uri->isDefined() && Config::get('route', 'routed_only') == '1' && $uri->getUri(false) != '/') 
             {
                 $this->_loadAsset();
                 Error::show404 ();        
@@ -104,7 +104,7 @@ class Controller
 	 */
 	private function _parseFromRequest(Uri $uri)
 	{
-        Log::debug('{Controller->_parseFromRequest()} '.$uri->getUri());
+        Log::debug('{Controller->_parseFromRequest()} '.$uri->getUri(false));
         
         // no parametrer has been directly set by setModule and setAction
         if($this->_action === null && $this->_module === null)
@@ -140,7 +140,7 @@ class Controller
      */
     private function _parseFromUri(Uri $uri)
     {
-        Log::debug('{Controller->_parseFromUri()} '.$uri->getUri());        
+        Log::debug('{Controller->_parseFromUri()} '.$uri->getUri(false));        
 
         if($uri->nbSegments() === 0) Error::showConfigurationError();
         
@@ -158,7 +158,7 @@ class Controller
      */
     private function _loadAsset()
     {
-        $uri = Uri::getInstance()->getUri(true);
+        $uri = Uri::getInstance()->getUri();
         $segments = explode('/', trim($uri, '/'));
         
         if(!empty($segments))

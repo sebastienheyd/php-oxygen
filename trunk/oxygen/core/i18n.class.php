@@ -134,17 +134,61 @@ class I18n
     /**
      * Returns region in full text
      * 
-     * @param string $lang  [optional] ISO 639-1 code of output language, set "native" for the native language. Default is null (get the current language)
-     * @return string       Region in full text      
+     * @param string $region    [optional] ISO 3166 code of country. Default is null (get the current country)
+     * @param string $lang      [optional] ISO 639-1 code of output language. Default is null (get the current language)
+     * @return string           Region in full text      
      */
-    public static function getRegionLabel($lang = null)
+    public static function getRegionLabel($region = null, $lang = null)
     {
         if($lang === null) $lang = self::getLang();
-        $xml = simplexml_load_file(FW_DIR.DS.'i18n'.DS.'xml'.DS.'iso-3166.xml');
-        $region = $xml->xpath('/regions/region[@code="'.self::getRegion().'"]/label[@lang="'.strtolower($lang).'"]');
-        if(empty($region)) return $lang != 'en' ? self::getRegionLabel('en') : '/'; 
-        return (string) $region[0];
+        if($region === null) $region = self::getRegion();
+        
+        $dir = FW_DIR.DS.'i18n'.DS.'iso-3166';        
+        $file = $dir.DS.strtolower($lang).'.json';
+        if(!is_file($file)) $file = $dir.DS.'en.json';
+        
+        $json = json_decode(file_get_contents($file), true);
+
+        return $json[strtoupper($region)];
     }
+    
+    /**
+     * Return a select box with list of countries. Options values are ISO 3166 code of the country
+     * 
+     * @param string $lang          [optional] ISO 639-1 code of output language. Default is null (get the current language)
+     * @param string $selected      [optional] ISO 3166 code of country. Default is null (get the current country)
+     * @param string $name          [optional] Name attribute of the select element. Default is "country"
+     * @return string               <select> element  
+     */
+    public static function getCountrySelectBox($lang = null, $selected = null, $name = 'country')
+    {
+        if($lang === null) $lang = self::getLang();
+        
+        $dir = FW_DIR.DS.'i18n'.DS.'iso-3166';        
+        $file = $dir.DS.strtolower($lang).'.json';
+        if(!is_file($file)) $file = $dir.DS.'en.json';
+        
+        $json = json_decode(file_get_contents($file), true);       
+             
+        $html = XML::writer(false);
+        
+        $html->startElement('select', array('name' => $name));
+        
+        $html->writeElement('option', '---'); 
+        
+        foreach($json as $iso => $label)
+        {            
+            $attr = array();
+            $attr['value'] = $iso;
+            if($selected !== null && strtoupper($selected) === $iso) $attr['selected'] = 'selected';      
+            
+            $html->writeElement('option', $label, $attr);            
+        }
+        
+        $html->endElement();
+        return $html->outputMemory();
+    }
+    
     /**
      * Return the browser current language
      * 

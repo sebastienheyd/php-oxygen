@@ -40,8 +40,8 @@
         <p>Récupère la chaîne complète de l'uri courante. La méthode prend comme argument un booléen indiquant si elle doit retourner l'uri définie explicitement ou l'uri originale (ou uri courante). Exemple :</p>
         <php>
             // L'url est http://www.exemple.tld/demo/display/label
-            Uri::getInstance()->getUri();       // Retourne /common/display/demo/display/label (uri réécrite par la classe Router par exemple).
-            Uri::getInstance()->getUri(true);   // Retourne /demo/display/label
+            Uri::getInstance()->getUri();            // Retourne /demo/display/label
+            Uri::getInstance()->getUri(false);       // Retourne /common/display/demo/display/label (uri réécrite par la classe Router par exemple).
         </php>
         
         <h3>lastSegment()</h3>

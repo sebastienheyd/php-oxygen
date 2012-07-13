@@ -16,8 +16,8 @@ class XML
     /**
      * @return f_xml_Write 
      */
-    public static function writer()
+    public static function writer($startDocument = true)
     {
-        return f_xml_Writer::getInstance();
+        return f_xml_Writer::getInstance($startDocument);
     }
 }

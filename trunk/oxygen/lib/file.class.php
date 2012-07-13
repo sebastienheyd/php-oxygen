@@ -324,7 +324,10 @@ class File
 		header('Content-Type: application/force-download; name="'.$original.'"');
 		header("Content-Length: ".$filesize);
 		header("Content-Disposition: attachment; filename=\"".$filename."\"");
-
+        header("Expires: 0");
+        header("Cache-Control: no-cache, must-revalidate");
+        header("Pragma: no-cache");
+        
         // Read the file
 		readfile($this->_file);
         exit();

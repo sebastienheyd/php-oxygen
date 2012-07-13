@@ -87,7 +87,7 @@ class Route
         $uriInst = Uri::getInstance();
 
         // Remove first / from uri
-        $uri = trim($uriInst->getUri(), '/');
+        $uri = trim($uriInst->getUri(false), '/');
                 
         // Init vars        
         $defaultRedirect = null;        

@@ -178,7 +178,7 @@ class Uri
      * @param boolean $origin   If uri is explicitly defined return origin uri. If true uri is current uri, not the rewrited one.
      * @return string           The uri as a string
      */
-    public function getUri($origin = false)
+    public function getUri($origin = true)
     {
         if($origin && $this->_origin !== null) return $this->_origin; 
         return $this->_uri;
