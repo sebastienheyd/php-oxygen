@@ -119,7 +119,7 @@ class f_log_File implements f_log_Interface
         
         $log[] = strtoupper($type);
         $log[] = date(DATETIME_SQL);
-        $log[] = $_SERVER['REMOTE_ADDR'];
+        $log[] = $log[] = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
         $log[] = trim($msg);
         
         return join(' | ', $log).PHP_EOL;

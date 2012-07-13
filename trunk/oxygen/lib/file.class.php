@@ -111,23 +111,38 @@ class File
     }
     
     /**
-     * Returns the file size
-     * 
-     * @param boolean $unit     [optional] Show the size unit if true, default is true
-     * @param int $sizeInOctet  [optional] Display size in octets (Ko, Mo, ...) if true, else in bytes (KB, MB, ...). Default is true.
-     * @return integer|string   Return file size
+     * Returns the file size in bytes
+     * @return integer
      */
-    public function getSize($unit = false, $sizeInOctet = true)
+    public function getSize()
     {              
-        $bytes = filesize($this->_file);
-        
-        if($unit === false) return $bytes;
-
-        $symbols = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
-        
+        return filesize($this->_file);
+    }
+    
+    /**
+     * Returns the file size formatted in B, MB, GB, etc...
+     * 
+     * @param boolean $sizeInOctet  [optionnal] If true, display size in octets instead of bytes. Default is false
+     * @return string 
+     */
+    public function getFormattedSize($sizeInOctet = false)
+    {
+        return self::formatSize(filesize($this->_file), $sizeInOctet);
+    }
+    
+    /**
+     * Format bytes value to KB, MB, etc...
+     * 
+     * @param integer $bytes        Bytes value
+     * @param boolean $sizeInOctet  [optionnal] If true, display size in octets instead of bytes. Default is false
+     * @return string 
+     */
+    public static function formatSize($bytes, $sizeInOctet = false)
+    {
+        $symbols = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');        
         if($sizeInOctet === true) $symbols = array('o', 'Ko', 'Mo', 'Go', 'To', 'Po', 'Eo', 'Zo', 'Yo');
       
-        $exp = $bytes ? floor(log($bytes) / log(1024)) : 0;
+        $exp = $bytes > 0 ? floor(log($bytes) / log(1024)) : 0;
 
         return sprintf('%.2f '.$symbols[$exp], ($bytes/pow(1024, floor($exp))));
     }
