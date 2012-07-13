@@ -44,7 +44,7 @@ class Search
     public static function file()
     {
         $inst = new self('file');        
-        if(func_num_args() == 0) $inst->_glob('*.*');        
+        if(func_num_args() === 0) $inst->_glob('*.*');        
         foreach(func_get_args() as $k) $inst->_glob(trim($k));        
         return $inst;        
     }
@@ -58,7 +58,7 @@ class Search
     public static function dir()
     {
         $inst = new self('dir');        
-        if(func_num_args() == 0) $inst->glob('*');        
+        if(func_num_args() === 0) $inst->_glob('*');        
         foreach(func_get_args() as $k) $inst->_glob(trim($k));        
         return $inst;        
     }    
@@ -72,7 +72,7 @@ class Search
     public static function any()
     {
         $inst = new self('any');        
-        if(func_num_args() == 0) $inst->glob('*');        
+        if(func_num_args() === 0) $inst->_glob('*');        
         foreach(func_get_args() as $k) $inst->_glob(trim($k));        
         return $inst;        
     }    
@@ -161,7 +161,7 @@ class Search
                 if(!preg_match($excludes, $k))
                 {
                     // add file/directory to list
-                    if(($this->_type == 'file' && $v->isFile()) || ($this->_type == 'dir' && $v->isDir()) || $this->_type == 'any') $result[] = $k;                 
+                    if(($this->_type == 'file' && $v->isFile()) || ($this->_type === 'dir' && $v->isDir()) || $this->_type === 'any') $result[] = $k;                 
                 }
             }
 
