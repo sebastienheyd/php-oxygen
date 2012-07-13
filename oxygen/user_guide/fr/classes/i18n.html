@@ -45,7 +45,8 @@
             // Va retourner "Mon nom est John" si la traduction existe dans locales.fr.xlf pour le fichier i18n.php
         </php>
         <blockquote class="info">
-            Si le fichier de traduction n'existe pas il est automatiquement créé.<br /><br />Si la traduction n'existe pas dans le fichier appelé, elle est automatiquement ajoutée avec une valeur de traduction vide. 
+            Si le fichier de traduction n'existe pas il est automatiquement créé.<br /><br />
+            Si la traduction n'existe pas dans le fichier appelé, elle est automatiquement ajoutée avec une valeur de traduction vide. 
             Dans le cas où la chaîne de caractères à déjà été traduite pour un autre fichier d'origine elle sera alors reprise pour le fichier en cours.
         </blockquote>
         
@@ -53,7 +54,9 @@
         <p>Retourne la culture courante composée du code langue en minuscule et du code de la région en majuscule séparés par un underscore. Ex : fr_FR, de_CH</p>
         
         <h3>getLocaleLabel()</h3>
-        <p>Retourne la culture courante sous format texte. La fonction peut prendre en argument la langue dans laquelle le texte doit être affiché si la langue courante définie par setLocale() n'est pas celle souhaitée pour l'affichage..</p>
+        <p>
+            Retourne la culture courante sous format texte. 
+            La fonction peut prendre en argument la langue dans laquelle le texte doit être affiché si la langue courante définie par setLocale() n'est pas celle souhaitée pour l'affichage.</p>
         <php>
             I18n::getLocaleLabel();     // Retourne par exemple "English (United States)"
             I18n::getLocaleLabel('fr'); // Retourne par exemple "Anglais (Etats-Unis)"
@@ -67,7 +70,11 @@
         <p>Retourne le code ISO-639-1 (deux caractères en minuscule) de la langue courante.</p>
         
         <h3>getLangLabel()</h3>
-        <p>Retourne la langue courante au format texte. La fonction prend comme argument la langue dans laquelle sera récupéré le texte. Vous pouvez définir "native" pour afficher la langue dans son écriture native.</p>
+        <p>
+            Retourne la langue courante au format texte. 
+            La fonction prend comme argument la langue dans laquelle sera récupéré le texte. 
+            Vous pouvez définir "native" pour afficher la langue dans son écriture native.
+        </p>
         <php>
             I18n::getLangLabel();           // Retourne par exemple "Belarusian"
             I18n::getLangLabel('en');       // Retourne par exemple "Biélorusse"
@@ -78,11 +85,55 @@
         <p>Retourne le code ISO 3166 (deux caractères en majuscule) de la région courante.</p>
         
         <h3>getRegionLabel()</h3>
-        <p>Retourne la région courante au format texte. La fonction prend comme argument la langue dans laquelle sera récupéré le texte.</p>
+        <p>
+           Retourne le libellé d'une région par son code ISO 3166 (par défaut la région courante). 
+           La fonction prend comme second argument le code ISO-639-1 de la langue dans laquelle sera récupéré le texte (par défaut la langue courante).
+        </p>
         <php>
-            I18n::getRegionLabel();     // Retourne par exemple "Czech Republic"
-            I18n::getRegionLabel('en'); // Retourne par exemple "Tchèque, République"
+            I18n::getRegionLabel();             // Retourne par exemple "United States"
+            I18n::getRegionLabel(null, 'fr');   // Retourne par exemple "États-Unis"
+            I18n::getRegionLabel('DE', 'fr');   // Retourne "Allemagne"
         </php>
+        
+        <blockquote class="info">
+            PHP Oxygen est livré par défaut avec 12 fichiers de langues (ar, bn, de, en, es, fr, hi, it, ja, pt, ru, zh) au format json. 
+            Il est possible d'ajouter vos propres fichiers json dans le dossier oxygen/i18n/iso-3166.
+        </blockquote>
+        
+        <blockquote class="warning">
+            Si la langue demandée n'existe pas la langue utilisée par défaut sera l'anglais (en)
+        </blockquote>
+        
+        <h3>getCountrySelectBox()</h3>
+        <p>
+           Retourne une balise html &lt;selectbox&gt; contenant une liste des pays dans la langue souhaitée. 
+           La fonction prend comme premier argument le code ISO-639-1 de la langue dans laquelle sera affichée la selectbox. 
+           Le second argument permet de préciser le code ISO 3166 du pays sélectionné. 
+           Le dernier argument est l'attribut name de la selectbox.
+        </p>
+        <php>
+            I18n::getCountrySelectBox('fr', 'DE', 'country_box');
+            
+            /*
+            &lt;select name="country_box">
+                &lt;option>---&lt;/option>
+                ...
+                &lt;option value="DZ">Algérie&lt;/option>
+                &lt;option value="DE" selected="selected">Allemagne&lt;/option>
+                &lt;option value="AD">Andorre&lt;/option>
+                ...
+            &lt;/select>
+            */
+        </php>
+        
+        <blockquote class="info">
+            PHP Oxygen est livré par défaut avec 12 fichiers de langues (ar, bn, de, en, es, fr, hi, it, ja, pt, ru, zh) au format json. 
+            Il est possible d'ajouter vos propres fichiers json dans le dossier oxygen/i18n/iso-3166.
+        </blockquote> 
+        
+        <blockquote class="warning">
+            Si la langue demandée n'existe pas la langue utilisée par défaut sera l'anglais (en)
+        </blockquote>        
         
         <h3>getBrowserLanguage()</h3>
         <p>Retourne la langue courante du navigateur au format ISO 639-1 (2 caractères en minuscule). Par défaut retourne "en" si aucune langue n'est trouvée.</p>

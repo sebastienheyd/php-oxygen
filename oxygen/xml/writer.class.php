@@ -14,22 +14,23 @@
 class f_xml_Writer extends XMLWriter
 {
     /**
+     * @param string $startDocument          If true, starts a new UTF-8 XML ?
      * @return f_xml_Writer
      */
-    public static function getInstance()
+    public static function getInstance($startDocument = true)
     {
-        return new self();                
+        return new self($startDocument);                
     }
     
     /**
      * Main constructor 
      */
-    private function __construct()
+    private function __construct($startDocument)
     {
         $this->openMemory();
         $this->setIndent(true);
         $this->setIndentString('    ');
-        $this->startDocument('1.0', 'UTF-8');
+        if($startDocument === true) $this->startDocument('1.0', 'UTF-8');
     }
         
     /**
@@ -85,7 +86,7 @@ class f_xml_Writer extends XMLWriter
     }
     
     /**
-     * Save current buffer into a file
+     * Save current buffer into a local file
      * 
      * @param string $file      File path
      * @return integer|false    Return number of bytes written or false on failure
@@ -96,4 +97,32 @@ class f_xml_Writer extends XMLWriter
         $xml = $this->outputMemory();
         return file_put_contents($file, $xml, LOCK_EX);
     }    
+    
+    /**
+     * Force current buffer to download
+     * 
+     * @param string $fileName      [optional] Name of the file to download. Default is "output.xml"
+     */
+    public function download($fileName = 'output.xml')
+    {
+        // Clean up the output buffer
+        while (ob_get_level()) ob_end_clean();        
+        
+        // Sets name and size
+        $this->endDocument();
+        $content = $this->outputMemory();
+        $filesize = strlen($content);        
+
+        // Set headers
+		header('Content-type: text/xml');
+		header("Content-Length: ".$filesize);
+		header("Content-Disposition: attachment; filename=\"".$fileName."\"");
+        header("Expires: 0");
+        header("Cache-Control: no-cache, must-revalidate");
+        header("Pragma: no-cache"); 
+
+       
+        echo $content;
+        exit();
+    }
 }
