@@ -550,7 +550,7 @@ class Db
      */
     public static function tableExists($tableName, $config = 'db1')
 	{
-		return DB::query('SHOW TABLES LIKE '.self::quoteTable($tableName, $config), $config)->fetchCol() !== false;
+		return DB::query('SHOW TABLES LIKE "'.self::quoteTable($tableName, $config).'"', $config)->fetchCol() !== false;
 	}
     
     /**
