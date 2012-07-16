@@ -27,7 +27,7 @@ umask(0002);
 
 // Constants definitions
 define('DS', DIRECTORY_SEPARATOR);
-define('APP_DIR', realpath('..'));
+if(!defined('APP_DIR')) define('APP_DIR', realpath('..'));
 define('FW_DIR', APP_DIR.DS.'oxygen');
 define('MODULES_DIR', APP_DIR.DS.'module');
 define('WEBAPP_DIR', APP_DIR.DS.'webapp');
