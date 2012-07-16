@@ -330,9 +330,6 @@ class Controller
                 foreach($modelContent as $k => $v) $tpl->assign($k, $v);
             }
 
-            $tpl->addTemplateDir(WEBAPP_MODULES_DIR.DS.$module.DS.'template');
-            $tpl->addTemplateDir(MODULES_DIR.DS.$module.DS.'template');
-
             $tpl->render($model->cacheId);
             return true;
         }
