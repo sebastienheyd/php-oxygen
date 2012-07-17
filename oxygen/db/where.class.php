@@ -178,10 +178,8 @@ abstract class f_db_Where
     protected function _buildHaving()
     {
         $sql = '';
-        
-        $c = count($this->_having);
-        
-        if($c > 0)
+                
+        if(!empty($this->_having))
         {
             $sql .= 'HAVING ';
 
@@ -200,7 +198,7 @@ abstract class f_db_Where
 
                 }
                 
-                if($c > 1 && $k+1 < $c) $sql .= $cond['type'].' ';                    
+                if(isset($this->_having[$k+1]['type'])) $sql .= $this->_having[$k+1]['type'].' ';                
             }
         } 
         
@@ -216,8 +214,7 @@ abstract class f_db_Where
     {
         $sql = '';
         
-        $c = count($this->_where);
-        if($c > 0)
+        if(!empty($this->_where))
         {
             $sql .= 'WHERE ';
 
@@ -233,8 +230,8 @@ abstract class f_db_Where
                     if(isset($cond['cond'])) $condition = $cond['cond'];                    
                     $sql .= $condition.$cond['var'].' ';
                 }
-                
-                if($c > 1 && $k+1 < $c) $sql .= $cond['type'].' ';                   
+         
+                if(isset($this->_where[$k+1]['type'])) $sql .= $this->_where[$k+1]['type'].' ';                   
             }
         }
 
