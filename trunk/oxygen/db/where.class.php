@@ -44,7 +44,7 @@ abstract class f_db_Where
                     $this->_vars[$varName] = $v;
                 }
                 
-                $this->_where[] = array('noescape' => $k);
+                $this->_where[] = array('noescape' => $k, 'type' => $type);
                 
                 return $this;                    
             }
@@ -136,7 +136,7 @@ abstract class f_db_Where
                     $this->_vars[$varName] = $v;
                 }
                 
-                $this->_having[] = array('noescape' => $k);
+                $this->_having[] = array('noescape' => $k, 'type' => $type);
                 
                 return $this;                    
             }
