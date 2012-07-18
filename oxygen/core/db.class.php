@@ -111,6 +111,19 @@ class Db
     }
     
     /**
+     * Execute an SQL query from a file and return the number of affected rows
+     * 
+     * @param string $file      The SQL file to execute
+     * @param string $config    [optional] Database configuration to use from the current config file. Default is "db1"
+     * @return integer          The number of affected rows
+     */
+    public static function execFile($file, $config = 'db1', $restrictToDir = APP_DIR)
+    {
+        if(!strstr($file, $restrictToDir)) trigger_error('Security error : file is out of base directory', E_USER_ERROR);
+        return self::getInstance(file_get_contents($filePath))->queryExec($sql);
+    }
+    
+    /**
      * Execute an insert into a table
      * 
      * @param string $table     Table name to insert datas into

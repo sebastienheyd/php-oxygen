@@ -31,11 +31,8 @@ class File
      */
     public static function load($file)
     {        
-        if(!isset(self::$_instances[$file]))
-        {
-            if(!is_file($file) || !is_readable($file)) return false;
-            self::$_instances[$file] = new self($file);
-        }
+        if(!is_file($file) || !is_readable($file)) return false;
+        if(!isset(self::$_instances[$file])) self::$_instances[$file] = new self($file);
         return self::$_instances[$file];
     }
     
@@ -52,10 +49,7 @@ class File
 
 		$infos['_dirname'] = realpath($infos['dirname']);
 
-		foreach ($infos as $key => $info)
-		{
-			$this->{'_'.$key} = $info;
-		}
+		foreach ($infos as $key => $info) $this->{'_'.$key} = $info;
     }     
     
     /**
