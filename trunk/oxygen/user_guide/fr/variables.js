@@ -45,6 +45,8 @@ var menu = '\
         <li class="menuLabel"><span class="menuTitle">Les classes</span>\n\
             <ul>\n\
                 <li><a href="#">Cache</a></li>\n\
+                <li><a href="#">Cli</a></li>\n\
+                <li><a href="#">Config</a></li>\n\
                 <li><a href="#">Cookie</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/cron.html">Cron</a></li>\n\
                 <li><a href="#">Controller</a></li>\n\
@@ -53,16 +55,24 @@ var menu = '\
                 <li><a href="'+basepath+lang+'/classes/email.html">Email</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/error.html">Error</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/file.html">File</a></li>\n\
+                <li><a href="#">Form</a></li>\n\
                 <li><a href="#">Generator</a></li>\n\
+                <li><a href="#">Html</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/i18n.html">I18n</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/image.html">Image</a></li>\n\
+                <li><a href="#">Json</a></li>\n\
+                <li><a href="#">Log</a></li>\n\
                 <li><a href="#">Request</a></li>\n\
+                <li><a href="#">Route</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/search.html">Search</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/security.html">Security</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/session.html">Session</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/string.html">String</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/template.html">Template</a></li>\n\
+                <li><a href="#">Upload</a></li>\n\
+                <li><a href="#">Useragent</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/uri.html">Uri</a></li>\n\
+                <li><a href="#">Xml</a></li>\n\
             </ul>\n\
         </li>\n\
     </ul>\n\
@@ -71,6 +81,7 @@ var menu = '\
     <ul class="menuList">\n\
         <li class="menuLabel"><span class="menuTitle">Tutoriaux</span>\n\
             <ul>\n\
+                <li><a href="#">Authentifier un utilisateur</a></li>\n\
                 <li><a href="#">Créer une page</a></li>\n\
                 <li><a href="#">Créer un formulaire</a></li>\n\
             </ul>\n\
