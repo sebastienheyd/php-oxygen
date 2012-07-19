@@ -23,7 +23,7 @@ class Config
      * @param mixed $defaultValue  [optionnal] Default value if parameter is not found. Default is false.
      * @return defaultValue
      */
-    public static function get($section, $name = null, $defaultValue = false)
+    public static function get($section, $defaultValue = false)
     {        
         if(self::$_cache === null) self::_fetch();        
         

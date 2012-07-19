@@ -35,13 +35,13 @@ class f_log_File implements f_log_Interface
         
         $logFile = LOGS_DIR.DS.$type.'.log';    
 
-        if(is_file($logFile) && filesize($logFile) >= Config::get('debug', 'max_log_size', '10') * 1024 * 1024)
+        if(is_file($logFile) && filesize($logFile) >= Config::get('debug.max_log_size', '10') * 1024 * 1024)
 		{
 			if($this->_saveToFile($logFile, $logFile.".".date('Ymd_His').".log"))
             {
                 $files = glob($logFile.'.*');
 
-                $max_backups = Config::get('debug', 'max_log_backups', '5');
+                $max_backups = Config::get('debug.max_log_backups', '5');
                 
                 if(!empty($files) && count($files) > $max_backups)
                 {

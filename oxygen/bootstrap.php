@@ -56,11 +56,11 @@ set_exception_handler(array(new Error(),'exceptionHandler'));
 register_shutdown_function(array(new Error(), 'shutdownHandler'));
 
 // Get default timezone
-if(ini_get('date.timezone') === '' || Config::get('general', 'timezone', true)) 
-        date_default_timezone_set(Config::get('general', 'timezone', 'Europe/Paris'));
+if(ini_get('date.timezone') === '' || Config::get('general.timezone', true)) 
+        date_default_timezone_set(Config::get('general.timezone', 'Europe/Paris'));
 
 // Are the url ended by a prefix (ex: .html)
-define('HTTP_PREFIX', Config::get('route', 'prefix', ''));
+define('HTTP_PREFIX', Config::get('route.prefix', ''));
 
 try
 {

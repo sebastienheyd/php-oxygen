@@ -38,7 +38,7 @@ class Log
      */
     private function __construct()
     {
-        $level = strtoupper(Config::get('debug', 'logging_level', 'info'));
+        $level = strtoupper(Config::get('debug.logging_level', 'info'));
         
         $refl = new ReflectionClass('Log');
         $authorized = array_keys($refl->getConstants());
@@ -59,7 +59,7 @@ class Log
         $authorized = array('file', 'firephp', 'stream', 'null');
 
         // Get config
-        $config = strtolower(Config::get('debug', 'logging_handler', 'null'));     
+        $config = strtolower(Config::get('debug.logging_handler', 'null'));     
         if(!in_array($config, $authorized)) die($config.' is not a valid logging handler');
                         
         // Instanciation

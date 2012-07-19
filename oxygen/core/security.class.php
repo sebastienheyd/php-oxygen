@@ -118,7 +118,7 @@ class Security
         $salt = substr(strtr(base64_encode($salt), '+', '.'), 0 , 22);
 
         // Better use Blowfish with PHP >= 5.3.0 or if configuration is defined for retrocompatibility
-        if(CRYPT_BLOWFISH === 1 && Config::get('general','hash_force_md5') === false) 
+        if(CRYPT_BLOWFISH === 1 && Config::get('general.hash_force_md5') === false) 
                 return crypt(base64_encode($data), sprintf('$2a$%02d$', $rounds).$salt);            
 
         // ... else use md5

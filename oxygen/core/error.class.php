@@ -60,7 +60,7 @@ class Error
         if(error_reporting() === 0) return;
 
         // Get error level
-        $level = constant('self::'.strtoupper(Config::get('debug', 'error_level', 'debug')));
+        $level = constant('self::'.strtoupper(Config::get('debug.error_level', 'debug')));
 
         // Get error label
         $label = isset($this->_levels[$errno]) ? $this->_levels[$errno] : $errno;

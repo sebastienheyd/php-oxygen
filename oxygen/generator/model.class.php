@@ -89,7 +89,7 @@ class f_generator_Model
         AND c.table_name = ?
 SQL;
         
-        $referenceKeys = DB::query($sql, $this->_config)->execute(Config::get($this->_config, 'base'), $this->_tableName)->fetchAll();
+        $referenceKeys = DB::query($sql, $this->_config)->execute(Config::get($this->_config.'.base'), $this->_tableName)->fetchAll();
 
         if(!empty($referenceKeys))
         {
@@ -119,7 +119,7 @@ SQL;
         AND u.referenced_table_name = ?
 SQL;
 
-        $referencedKeys = DB::query($sql, $this->_config)->execute(array(Config::get($this->_config, 'base'), $this->_tableName))->fetchAll();
+        $referencedKeys = DB::query($sql, $this->_config)->execute(array(Config::get($this->_config.'.base'), $this->_tableName))->fetchAll();
 
         if(!empty($referencedKeys))
         {

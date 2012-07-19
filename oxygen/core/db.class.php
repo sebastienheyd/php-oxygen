@@ -671,7 +671,7 @@ class Db
      */
     public static function prefixTable($tableName, $config = 'db1')
     {
-        $prefix = Config::get($config, 'prefix', '');        
+        $prefix = Config::get($config.'.prefix', '');
         if($prefix !== '' && !preg_match('#^'.$prefix.'#', $tableName)) $tableName = $prefix.$tableName;            
         return $tableName;
     }

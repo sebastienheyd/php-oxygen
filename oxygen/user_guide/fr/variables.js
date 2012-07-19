@@ -44,6 +44,7 @@ var menu = '\
     <ul class="menuList">\n\
         <li class="menuLabel"><span class="menuTitle">Les classes</span>\n\
             <ul>\n\
+                <li><a href="#">Auth</a></li>\n\
                 <li><a href="#">Cache</a></li>\n\
                 <li><a href="#">Cli</a></li>\n\
                 <li><a href="#">Config</a></li>\n\

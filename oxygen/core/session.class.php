@@ -277,7 +277,7 @@ class Session
      */
     public function setDbHandler()
     {
-        $this->_dbConfig = Config::get('session', 'db_config');
+        $this->_dbConfig = Config::get('session.db_config');
         
         session_set_save_handler(
                 array(&$this, "dbOpen"),
