@@ -27,6 +27,8 @@ class Config
     {        
         if(self::$_cache === null) self::_fetch();        
         
+        if(strpos($section, '.') !== false) list($section, $name) = explode('.', $section);        
+        
         if($name === null)
         {
             if(isset(self::$_cache->$section)) $value = self::$_cache->$section;               
