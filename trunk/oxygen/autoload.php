@@ -52,7 +52,7 @@ class Autoload
     {
         if(isset(self::$_cache[$className])) return self::$_cache[$className];
 
-        $mustCache = Config::get('cache', 'autoload');
+        $mustCache = Config::get('cache.autoload');
         
         $cache = CACHE_DIR.DS.'autoload.cache';
         

@@ -36,7 +36,7 @@ class Route
     {
         $this->_cacheFile = WEBAPP_DIR.DS.'cache'.DS.'routes.xml';
         
-        if(is_file($this->_cacheFile) && Config::get('cache', 'routes'))
+        if(is_file($this->_cacheFile) && Config::get('cache.routes'))
         {
             $this->_routes = simplexml_load_file($this->_cacheFile);
         }

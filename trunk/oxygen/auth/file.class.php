@@ -21,7 +21,7 @@ class f_auth_File extends f_auth_Driver
     
     public function attempt($login, $password, $remember = false)
     {
-        if($hash = $this->getUser($login))
+        if($hash = $this->retrieveUser($login))
         {
             if(Security::check($password, $hash)) return $this->login($login, $remember);
         }
@@ -31,11 +31,11 @@ class f_auth_File extends f_auth_Driver
     
     protected function retrieve($login)
     {
-        if($this->getUser($login)) return $login;
+        if($this->retrieveUser($login)) return $login;
         return null;
     }
     
-    private function getUser($login)
+    private function retrieveUser($login)
     {
         $file = CONFIG_DIR.DS.'.users';
         

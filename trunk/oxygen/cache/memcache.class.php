@@ -58,8 +58,8 @@ class f_cache_Memcache implements f_cache_Interface
         
         $memcache = extension_loaded('memcache') ? new Memcache() : new Memcached();
         
-        $host = Config::get('cache', 'memcache_host', '127.0.0.1');
-        $port = Config::get('cache', 'memcache_port', 11211);
+        $host = Config::get('cache.memcache_host', '127.0.0.1');
+        $port = Config::get('cache.memcache_port', 11211);
         
         $memcache->addServer($host, $port);
         

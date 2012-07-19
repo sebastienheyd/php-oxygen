@@ -13,7 +13,7 @@
 
 class Auth
 {
-    private static $_driver;    
+    private static $_handler;    
     
     /**
      * Get the auth driver instance
@@ -22,11 +22,11 @@ class Auth
      */
     private static function getDriver()
     {
-        if(self::$_driver !== null) return self::$_driver;        
+        if(self::$_handler !== null) return self::$_handler;
         
-        $driver = 'f_auth_'.ucfirst( Config::get('auth.driver', null, 'file'));
+        $handler = 'f_auth_'.ucfirst( Config::get('auth.handler', 'file'));
         
-        return self::$_driver = new $driver();
+        return self::$_handler = new $handler();
     }
     
     /**

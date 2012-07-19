@@ -28,7 +28,7 @@ class Cache
         if(isset(self::$_class)) return self::$_class;
         
         // Check for authorized engines
-        $handler = strtolower(Config::get('cache', 'handler', 'null'));        
+        $handler = strtolower(Config::get('cache.handler', 'null'));        
         if(!in_array($handler, self::$_handlers)) trigger_error($handler.' is not a valid cache handler');
        
         // Handler class name

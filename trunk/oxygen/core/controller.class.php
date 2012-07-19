@@ -58,7 +58,7 @@ class Controller
             // Get rerouted uri or current uri
             $uri = Route::getInstance()->parseUrl();
 
-            if(!$uri->isDefined() && Config::get('route', 'routed_only') == '1' && $uri->getUri(false) != '/') 
+            if(!$uri->isDefined() && Config::get('route.routed_only') == '1' && $uri->getUri(false) != '/') 
             {
                 $this->_loadAsset();
                 Error::show404 ();        
