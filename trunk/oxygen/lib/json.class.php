@@ -24,18 +24,40 @@ class Json
     
     public static function escapeUnicode($json, $encoding = 'UTF-8')
     {
-        return preg_replace_callback('/\\\u(\w\w\w\w)/', 
-                    create_function(
-                            '$matches', 
-                            'return html_entity_decode("&#".hexdec($matches[1]).";", ENT_COMPAT, '.$encoding.');'), 
-                    $json);
+        $json = preg_replace_callback(
+                '/\\\\u(D[89ab][0-9a-f]{2})\\\\u(D[c-f][0-9a-f]{2})/i',
+                create_function('$matches', '
+                    $d = pack("H*", $matches[1].$matches[2]);
+                    return mb_convert_encoding($d, "UTF-8", "UTF-16BE");')
+                , $json);
+
+        $json = preg_replace_callback('/\\\\u([0-9a-f]{4})/i',
+            create_function('$matches', '
+                $d = pack("H*", $matches[1]);
+                return mb_convert_encoding($d, "UTF-8", "UTF-16BE");')
+            , $json);
+        
+        return $json;
+    }
+    
+    /**
+     * Encode an array into an indented JSON
+     * 
+     * @param array $array      Array to encode
+     * @param type $encoding    [optional] The encoding to use. Default is UTF-8
+     * 
+     * @return string           Indented JSON string 
+     */
+    public static function encode($array, $encoding = 'UTF-8')
+    {
+        return self::indent(json_encode($array), $encoding);
     }
     
     /**
     * Indents a flat JSON string to make it more human-readable.
     *
     * @param string $json       The original JSON string to process.
-    * @param string $encoding   [optional] The encoding to use Default is UTF-8
+    * @param string $encoding   [optional] The encoding to use. Default is UTF-8
     *
     * @return string            Indented version of the original JSON string.
     */
