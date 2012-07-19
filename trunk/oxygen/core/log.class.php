@@ -49,7 +49,7 @@ class Log
     }
     
     /**
-     * Get cache engine class instance to use
+     * Get log engine class instance to use
      * 
      * @return f_log_Driver 
      */
