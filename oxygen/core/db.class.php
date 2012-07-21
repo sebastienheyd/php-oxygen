@@ -374,17 +374,14 @@ class Db
      */
     public function execute($parameters = null)
     {             
-        if($parameters !== null)
-        {
-            $parameters = func_num_args() > 1 ? func_get_args() : $parameters;            
-            if(!is_array($parameters) && (is_string($parameters) || is_int($parameters))) $parameters = (array) $parameters;            
-        }
+        if($parameters !== null) $parameters = func_num_args() > 1 ? func_get_args() : (array) $parameters;
         
         try 
         {
             $s = microtime(true);
             $this->_query->execute($parameters);
-            if(Log::getInstance()->getLevel() >= Log::INFO) Log::sql('{Db->execute()} ['.round((microtime(true) - $s) * 1000, 2).'ms] '.$this->interpolateQuery($this->_sql, $parameters));
+            if(Log::getInstance()->getLevel() >= Log::INFO) 
+                Log::sql('{Db->execute()} ['.round((microtime(true) - $s) * 1000, 2).'ms] '.$this->interpolateQuery($this->_sql, $parameters));
         } 
         catch (PDOException $exc)
         {

@@ -29,7 +29,7 @@ class Config
         
         if(strpos($section, '.') !== false) list($section, $name) = explode('.', $section);        
         
-        if($name === null)
+        if(!isset($name))
         {
             if(isset(self::$_cache->$section)) $value = self::$_cache->$section;               
         }
