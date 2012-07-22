@@ -69,7 +69,7 @@ class Auth
      * 
      * @param string $token         The token to log in, typically a numeric ID
      * @param boolean $remember     [optional] Remember the login with a cookie ? Default is false
-     * @return type 
+     * @return boolean 
      */
     public static function login($token, $remember = false)
     {
