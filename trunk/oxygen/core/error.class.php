@@ -280,7 +280,7 @@ class Error
                 $r['file'] = str_replace(APP_DIR.DS, '', $v['file']);                
             }
 
-            if(!empty($v['file']))
+            if(!empty($v['file']) && is_file($v['file']))
             {
                 $f = file($v['file']);
                 $r['code'] = isset($f[$v['line']-1]) ? trim($f[$v['line']-1]) : '';

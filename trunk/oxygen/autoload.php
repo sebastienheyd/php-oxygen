@@ -37,7 +37,7 @@ class Autoload
     
     public static function load($className)
     {
-        if($path = self::getClassPath($className)) require_once($path);
+        if($path = self::_getClassPath($className)) require_once($path);
     }
     
     /**
@@ -48,7 +48,7 @@ class Autoload
      * @param string $ext           [optional] Class file extension to use. Default is 'class.php'
      * @return string|false         Return a path or false if no file is found
      */
-    private static function getClassPath($className, $ext = 'class.php')
+    private static function _getClassPath($className, $ext = 'class.php')
     {
         if(isset(self::$_cache[$className])) return self::$_cache[$className];
 
