@@ -50,7 +50,23 @@ class Json
      */
     public static function encode($array, $encoding = 'UTF-8')
     {
-        return self::indent(json_encode($array), $encoding);
+        return stripslashes(self::indent(json_encode($array), $encoding));
+    }
+    
+    /**
+     * Display indented json
+     * 
+     * @param array $array      Array to encode
+     * @param type $encoding    [optional] The encoding to use. Default is UTF-8
+     * 
+     * @return string           Indented JSON string 
+     */
+    public static function output($array, $encoding = 'UTF-8')
+    {
+        while (ob_get_level()) { ob_end_clean(); }
+        header('Content-type: application/json');
+        echo self::encode($array, $encoding);
+        exit();
     }
     
     /**

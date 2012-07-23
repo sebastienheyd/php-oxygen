@@ -76,6 +76,34 @@ if(!function_exists('lcfirst'))
     }
 }
 
+if(!function_exists('mb_lcfirst'))
+{
+    /**
+     * ucfirst for unicode strings
+     * 
+     * @param string $string
+     * @return string 
+     */
+    function mb_lcfirst($string, $encoding = "UTF-8")
+    {
+        return mb_strtolower(mb_substr($string, 0, 1, $encoding), $encoding) . mb_substr($string, 1, mb_strlen($string), $encoding);
+    }
+}
+
+if(!function_exists('mb_ucfirst'))
+{
+    /**
+     * ucfirst for unicode strings
+     * 
+     * @param string $string
+     * @return string 
+     */
+    function mb_ucfirst($string, $encoding = "UTF-8")
+    {
+        return mb_strtoupper(mb_substr($string, 0, 1, $encoding), $encoding) . mb_substr($string, 1, mb_strlen($string), $encoding);
+    }
+}
+
 if(!function_exists('ucfirst_last'))
 {
     /**
@@ -312,6 +340,12 @@ if(!function_exists('last'))
 
 if(!function_exists('get_module_name'))
 {
+    /**
+     * Return module name from the given class name
+     * 
+     * @param string $className
+     * @return string 
+     */
     function get_module_name($className)
     {
         preg_match('/^m_(.*?)_/', $className, $matches);
