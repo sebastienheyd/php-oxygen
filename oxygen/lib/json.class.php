@@ -43,41 +43,44 @@ class Json
     /**
      * Encode an array into an indented JSON
      * 
-     * @param array $array      Array to encode
-     * @param type $encoding    [optional] The encoding to use. Default is UTF-8
+    * @param array $array               Array to encode
+     * @param boolean $indentArrays     [optional] Must we indent arrays []. Default is true
+     * @param type $encoding            [optional] The encoding to use. Default is UTF-8
      * 
-     * @return string           Indented JSON string 
+     * @return string                   Indented JSON string 
      */
-    public static function encode($array, $encoding = 'UTF-8')
+    public static function encode($array, $indentArrays = true, $encoding = 'UTF-8')
     {
-        return stripslashes(self::indent(json_encode($array), $encoding));
+        return stripslashes(self::indent(json_encode($array), $indentArrays, $encoding));
     }
     
     /**
      * Display indented json
      * 
-     * @param array $array      Array to encode
-     * @param type $encoding    [optional] The encoding to use. Default is UTF-8
+     * @param array $array              Array to encode
+     * @param boolean $indentArrays     [optional] Must we indent arrays []. Default is true
+     * @param type $encoding            [optional] The encoding to use. Default is UTF-8
      * 
-     * @return string           Indented JSON string 
+     * @return string                   Indented JSON string 
      */
-    public static function output($array, $encoding = 'UTF-8')
+    public static function output($array, $indentArrays = true, $encoding = 'UTF-8')
     {
         while (ob_get_level()) { ob_end_clean(); }
-        header('Content-type: application/json; charset=utf-8');
-        echo self::encode($array, $encoding);
+        header('content-type: application/json; charset=utf-8');
+        echo self::encode($array, $indentArrays, $encoding);
         exit();
     }
     
     /**
     * Indents a flat JSON string to make it more human-readable.
     *
-    * @param string $json       The original JSON string to process.
-    * @param string $encoding   [optional] The encoding to use. Default is UTF-8
+    * @param string $json              The original JSON string to process.
+    * @param boolean $indentArrays     [optional] Must we indent arrays []. Default is true
+    * @param string $encoding          [optional] The encoding to use. Default is UTF-8
     *
-    * @return string            Indented version of the original JSON string.
+    * @return string                   Indented version of the original JSON string.
     */
-    public static function indent($json, $encoding = 'UTF-8') 
+    public static function indent($json, $indentArrays = true, $encoding = 'UTF-8') 
     {
         $json = self::escapeUnicode($json, $encoding);
         $json = str_replace(array(PHP_EOL, "\t"), '', trim($json));
@@ -92,8 +95,8 @@ class Json
         for ($i = 0; $i <= $strLen; $i++) 
         {
             $char = $json[$i];
-
-            if ($char === '"' && $prevChar !== '\\') 
+            
+            if ($char === '"' && $prevChar !== '\\' || (!$indentArrays && ($char === '[' || $char === ']')))
             {
                 $outOfQuotes = !$outOfQuotes;
             } 
