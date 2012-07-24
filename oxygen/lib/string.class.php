@@ -310,7 +310,7 @@ class String
      */
     public static function ucwords($string)
     {
-        return ucfirst(preg_replace('/([^a-zA-Z0-9])([a-z]{1})?/e', "'$1'.strtoupper('$2')", strtolower($string)));
+        return mb_convert_case($string, MB_CASE_TITLE, 'UTF-8');
     }
 
     /**
@@ -326,7 +326,7 @@ class String
               
         foreach ($needle as $what)
         {
-            if (($pos = strpos($haystack, $what)) !== false) return $pos;
+            if (($pos = mb_strpos($haystack, $what, 0, 'UTF-8')) !== false) return $pos;
         }
         
         return false;
