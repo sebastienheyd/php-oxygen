@@ -166,7 +166,7 @@ class UserAgent
             {
                 if(preg_match("|".preg_quote($rule)."|i", $this->_agent, $match))
                 {
-                    $this->platform = end($platform);
+                    $this->platform = $platform;
                     break;
                 }
             }            
@@ -241,15 +241,15 @@ class UserAgent
         {
             $this->isRobot = false;
             
-            $xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'robots.xml');
+            include(FW_DIR.DS.'lib'.DS.'data'.DS.'robots.php');
 
-            foreach($xml->robot as $robot)
+            foreach($robots as $rule => $robot)
             {
                 /* @var $robot SimpleXMLElement */ 
-                if (preg_match("|".preg_quote(end($robot->attributes()->rule))."|i", $this->_agent))
+                if (preg_match("|".preg_quote($rule)."|i", $this->_agent))
                 {
                     $this->isRobot = true;
-                    $this->robot = end($robot);
+                    $this->robot = $robot;
                     return true;
                 }
             }            
@@ -309,14 +309,14 @@ class UserAgent
             }
             else
             {
-                $xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'mobiles.xml');
+                include(FW_DIR.DS.'lib'.DS.'data'.DS.'devices.php');
 
-                foreach($xml->device as $device)
+                foreach($devices as $rule => $device)
                 {                
-                    if(preg_match('/'.end($device->attributes()->rule).'/i', $this->_agent))
+                    if(preg_match('/'.$rule.'/i', $this->_agent))
                     {
-                        $this->device = end($device);
-                        $this->deviceType = end($device->attributes()->type);
+                        $this->device = $device['value'];
+                        $this->deviceType = $device['type'];
                         $this->isMobile = true;
                     }
                 }
