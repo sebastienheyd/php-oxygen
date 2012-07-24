@@ -160,11 +160,11 @@ class UserAgent
         {
             $this->platform = 'undefined';
             
-            $xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'platforms.xml');
+            include(FW_DIR.DS.'lib'.DS.'data'.DS.'platforms.php');
 
-            foreach($xml->platform as $platform)
+            foreach($platforms as $rule => $platform)
             {
-                if(preg_match("|".preg_quote(end($platform->attributes()->rule))."|i", $this->_agent, $match))
+                if(preg_match("|".preg_quote($rule)."|i", $this->_agent, $match))
                 {
                     $this->platform = end($platform);
                     break;
