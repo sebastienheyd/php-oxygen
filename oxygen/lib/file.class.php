@@ -64,7 +64,7 @@ class File
     }
     
     /**
-     * Returns the mimetype base from the file extension<br />Take mimetypes from mimetypes.xml
+     * Returns the mimetype base from the file extension
      * 
      * @param string $extOrFileName     The extension or filename
      * @return string                   The mimetype
@@ -74,12 +74,8 @@ class File
         $pos = strrpos($extOrFileName, '.');
         $ext = $pos !== false ? substr($extOrFileName, $pos+1) : $extOrFileName;
         
-        $xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'mimetypes.xml');
-
-        /* @var $xml SimpleXMLElement */
-        $res = $xml->xpath('mime[@ext="'.$ext.'"]');
-        
-        if(isset($res[0])) return (string) $res[0];
+        include(FW_DIR.DS.'lib'.DS.'data'.DS.'mimetypes.php');               
+        if(isset($mimes[$ext])) return $mimes[$ext];
         
         return 'text/plain';
     }

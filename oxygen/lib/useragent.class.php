@@ -189,11 +189,11 @@ class UserAgent
             $this->browser = 'undefined';
             $this->isBrowser = false;
             
-            $xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'browsers.xml');
+            include(FW_DIR.DS.'lib'.DS.'data'.DS.'browsers.php');
 
-            foreach($xml->browser as $browser)
+            foreach($browsers as $rule => $browser)
             {
-                if(preg_match("|".preg_quote(end($browser->attributes()->rule)).".*?([0-9\.]+)|i", $this->_agent, $match))
+                if(preg_match("|".preg_quote($rule).".*?([0-9\.]+)|i", $this->_agent, $match))
                 {
                     $this->isBrowser = true;
                     $this->browser = end($browser);
