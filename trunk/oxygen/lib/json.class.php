@@ -64,7 +64,7 @@ class Json
     public static function output($array, $encoding = 'UTF-8')
     {
         while (ob_get_level()) { ob_end_clean(); }
-        header('Content-type: application/json');
+        header('Content-type: application/json; charset=utf-8');
         echo self::encode($array, $encoding);
         exit();
     }

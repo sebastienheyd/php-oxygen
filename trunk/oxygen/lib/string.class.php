@@ -44,16 +44,9 @@ class String
      */
     public static function stripAccents($string)
     {
-        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not valid UTF-8');
-        
-        $xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'accents.xml');        
-        
-        foreach($xml->unit as $u)
-        {
-            $units['/'.$u->attributes()->src.'/'] = $u;
-        }
-        
-        return preg_replace(array_keys($units), array_values($units), $string);        
+        if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not valid UTF-8');        
+        include(FW_DIR.DS.'lib'.DS.'data'.DS.'accents.php');        
+        return preg_replace(array_keys($accents), array_values($accents), $string);        
     }
 
     /**
