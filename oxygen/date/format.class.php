@@ -13,27 +13,37 @@
 
 class f_date_Format
 {
-    private static $_instance;
+    private static $_instances;
     private $_xml;
     private $_date;
+    private $_vars;
     
     /**
      * Returns dateFormat instance
      * 
      * @return f_date_Format    Return singleton instance of f_date_Format
      */
-    public static function getInstance()
+    public static function getInstance($region)
     {
-        if(!isset(self::$_instance)) self::$_instance = new self();
-        return self::$_instance;
+        if($region === null) $region = I18n::getLocale();
+        if(!isset(self::$_instances[$region])) self::$_instances[$region] = new self($region);
+        return self::$_instances[$region];
     }
     
     /**
      * f_date_Format class constructor
      */
-    private function __construct()
+    private function __construct($region)
     {
         $this->_xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'date.xml');
+        
+        list($iso639, $iso3166) = explode('-', $region);
+        $folder = FW_DIR.DS.'date'.DS.'json';
+        
+        if(is_file($folder.DS.$region.'.js')) $json = $folder.DS.$region.'.js';
+        if(is_file($folder.DS.$iso639.'.js')) $json = $folder.DS.$iso639.'.js';
+        
+        if($json === null) $json = $json = $folder.DS.'en.js';
     }
     
     /**
