@@ -34,12 +34,10 @@ class f_date_Format
      * f_date_Format class constructor
      */
     private function __construct($region)
-    {
-        //$this->_xml = simplexml_load_file(dirname(__FILE__).DS.'xml'.DS.'date.xml');
-        
-        list($iso639, $iso3166) = explode('-', $region);
+    {        
+        list($iso639, $iso3166) = preg_split('/[_-]/', $region);
         $folder = FW_DIR.DS.'date'.DS.'json';
-                
+
         if(is_file($folder.DS.$region.'.js')) $json = $folder.DS.$region.'.json';
         if($json === null && is_file($folder.DS.$iso639.'.json')) $json = $folder.DS.$iso639.'.json';        
         if($json === null) $json = $json = $folder.DS.'en.json';
@@ -237,16 +235,18 @@ class f_date_Format
      * 
      * @return array 
      */
-    public function getDiff()
+    public function getDiff($timestamp = null)
     {   
         // Init result
         $result = array();
+        
+        $d = $timestamp === null ? time() : $timestamp;
                 
         // Get days diff
-        $daysDiff = strtotime(date('d-m-Y', time())) - strtotime(date('d-m-Y', $this->_date->toTimeStamp()));        
+        $daysDiff = strtotime(date('d-m-Y', $this->_date->toTimeStamp())) - strtotime(date('d-m-Y', $d));        
         
         // Get hours diff
-        $hoursDiff = strtotime(date('H:i:s', time())) - strtotime(date('H:i:s', $this->_date->toTimeStamp()));                            
+        $hoursDiff = strtotime(date('H:i:s', $this->_date->toTimeStamp())) - strtotime(date('H:i:s', $d));                            
                 
         // Get position in time
         $position = $daysDiff >= 0 ? 'past' : 'future';        
@@ -341,9 +341,9 @@ class f_date_Format
      * @param string $separator     [optional] Separator to use between results, default is ' ' (space)
      * @return string               Difference in full-text
      */
-    public function toDiff($precision = 1, $separator = ' ')
+    public function toDiff($timestamp = null, $precision = 1, $separator = ' ', $futurePast = true)
     {
-        $diff = $this->getDiff();
+        $diff = $this->getDiff($timestamp);
 
         $diff['days'] = $diff['weeks'] * 7 + $diff['days'];        
         unset($diff['weeks']);        
@@ -360,7 +360,10 @@ class f_date_Format
             $res[] = $this->_formatDiff($value, $type);                            
         }    
         
-        return sprintf($this->_vars['relativeTime'][$diff['position']], join($separator, $res));
+        $res = join($separator, $res);
+        
+        if(!$futurePast) return $res;
+        return sprintf($this->_vars['relativeTime'][$diff['position']], $res);
     }
     
     private function _formatDiff($value, $unit)
