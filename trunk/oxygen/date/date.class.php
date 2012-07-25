@@ -33,7 +33,7 @@ class f_date_Date
         $dateTokens   = preg_split("/[\s.,:\/-]+/", $date);
 		$formatTokens = preg_split("/[\s.,:\/-]+/", $format);
 
-        if(count($dateTokens) != count($formatTokens))
+        if(count($dateTokens) !== count($formatTokens))
         {
             throw new UnexpectedValueException('Given date and format has not the same number of tokens.');
         }    
@@ -134,9 +134,9 @@ class f_date_Date
      * @param string $lang          [optional] iso-639-1 code (ex: fr, en, es, ...). Default is null. Will take I18n setted lang if null
      * @return string               Difference in full-text
      */
-    public function toDiff($precision = 1, $separator = ' ',$lang = null)
+    public function toDiff($precision = 1, $separator = ' ', $langOrRegion = null)
     {
-        return f_date_Format::getInstance()->setDate($this)->toDiff($precision, $separator, $lang);
+        return f_date_Format::getInstance($langOrRegion)->setDate($this)->toDiff($precision, $separator);
     }
     
     /**
@@ -146,9 +146,9 @@ class f_date_Date
      * @param string $lang     [optional] iso-639-1 code (ex: fr, en, es, ...). Default is null. Will take I18n setted lang if null
      * @return string          The formated date with the ouput pattern
      */
-    public function toFormat($format = 'Y-m-d H:i:s', $lang = null)
+    public function toFormat($format = 'Y-m-d H:i:s', $langOrRegion = null)
     {        
-        return f_date_Format::getInstance()->setDate($this)->toFormat($format, $lang);
+        return f_date_Format::getInstance($langOrRegion)->setDate($this)->toFormat($format);
     }
         
     /**
@@ -158,9 +158,9 @@ class f_date_Date
      * @param string $lang      [optional] iso-639-1 code (ex: fr, en, es, ...). Default is null. Will take I18n setted lang if null
      * @return string           The formated date
      */
-    public function toSmartFormat($format = 'fulltext-date-time', $lang = null)
+    public function toSmartFormat($format = 'fullDateTime', $langOrRegion = null)
     {
-        return f_date_Format::getInstance()->setDate($this)->toSmartFormat($format, $lang);
+        return f_date_Format::getInstance($langOrRegion)->setDate($this)->toSmartFormat($format);
     }
     
     /**
@@ -170,7 +170,7 @@ class f_date_Date
      */
     public function toMysql()
     {
-        return f_date_Format::getInstance()->setDate($this)->toFormat('Y-m-d H:i:s', 'en');
+        return f_date_Format::getInstance('en_US')->setDate($this)->toFormat('Y-m-d H:i:s');
     }    
     
     /**
@@ -180,7 +180,7 @@ class f_date_Date
      */
     public function toHttp()
     {
-        return f_date_Format::getInstance()->setDate($this)->toFormat('D, d M Y H:i:s', 'en');
+        return f_date_Format::getInstance('en_US')->setDate($this)->toFormat('D, d M Y H:i:s O');
     }    
     
     /**
@@ -190,7 +190,8 @@ class f_date_Date
      */
     public function toTimeStamp()
     {
-        return strtotime($this->_date);
+        if(!isset($this->timestamp)) $this->timestamp = strtotime($this->_date);
+        return $this->timestamp;
     }    	
 	
     /**
@@ -199,7 +200,8 @@ class f_date_Date
      */
 	public function getDayOfWeek()
 	{
-		return date("w", strtotime($this->_date));
+        if(!isset($this->dayOfWeek)) $this->dayOfWeek = date("w", $this->toTimeStamp());
+		return $this->dayOfWeek;
 	}	
 	
     /**
@@ -208,7 +210,8 @@ class f_date_Date
      */    
 	public function getDaysInMonth()
 	{
-		return date("t", $this->_month);
+        if(!isset($this->daysInMonth)) $this->daysInMonth = date("t", $this->_month);
+		return $this->daysInMonth;
 	}
 	
     /**
@@ -217,16 +220,18 @@ class f_date_Date
      */    
 	public function getDayOfYear()
 	{
-		return date("z", strtotime($this->_date));
+        if(!isset($this->dayOfYear)) $this->dayOfYear = date("z", $this->toTimeStamp());
+		return $this->dayOfYear;
 	}
 	
     /**
      * Returns current instanciated date year is leap
      * @return boolean
      */    
-	public function isLeapYear()
+	public function getGmtDiff()
 	{
-		return date("L", $this->_year) == 1;
+        if(!isset($this->gmtDiff)) $this->gmtDiff = date("O", $this->toTimeStamp());
+		return $this->gmtDiff;
 	}  
     
     /**

@@ -17,16 +17,17 @@
 	"relativeTime":{
 		"future":"dans %s",
 		"past":"il y a %s",
-		"s":"quelques secondes",
-		"m":"une minute",
+		"s":"1 seconde",
+		"ss":"%d secondes",
+		"m":"1 minute",
 		"mm":"%d minutes",
-		"h":"une heure",
+		"h":"1 heure",
 		"hh":"%d heures",
-		"d":"un jour",
+		"d":"1 jour",
 		"dd":"%d jours",
-		"M":"un mois",
+		"M":"1 mois",
 		"MM":"%d mois",
-		"y":"une année",
+		"y":"1 année",
 		"yy":"%d années"
 	}
 }
