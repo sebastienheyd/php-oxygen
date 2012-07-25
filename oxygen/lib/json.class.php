@@ -37,6 +37,8 @@ class Json
                 return mb_convert_encoding($d, "UTF-8", "UTF-16BE");')
             , $json);
         
+        $json = html_entity_decode($json, ENT_COMPAT, 'UTF-8');
+        
         return $json;
     }
     

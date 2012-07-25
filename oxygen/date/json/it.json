@@ -1,0 +1,33 @@
+{
+	"monthNames":["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"],
+	"monthNamesShort":["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"],
+	"dayNames":["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"],
+	"dayNamesShort":["Dom","Lun","Mar","Mer","Gio","Ven","Sab"],
+	"dayNamesMin":["Do","Lu","Ma","Me","Gi","Ve","Sa"],
+	"firstDay":1,
+	"smartFormat":{
+		"shortDate":"d/m/Y",
+		"longDate":"l d F Y",
+		"shortTime":"H.i",
+		"longTime":"H.i.s",
+		"fullDateTime":"l d F Y H.i.s",
+		"monthDay":"d F",
+		"yearMonth":"F Y"
+	},
+	"relativeTime":{
+		"future":"in %s",
+		"past":"%s fa",
+		"s":"1 secondo",
+		"ss":"%d secondi",
+		"m":"1 minuto",
+		"mm":"%d minuti",
+		"h":"1 ora",
+		"hh":"%d ore",
+		"d":"1 giorno",
+		"dd":"%d giorni",
+		"M":"1 mese",
+		"MM":"%d mesi",
+		"y":"1 anno",
+		"yy":"%d anni"
+	}
+}
