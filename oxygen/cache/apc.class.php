@@ -31,9 +31,9 @@ class f_cache_Apc implements f_cache_Interface
         return apc_fetch($id);
     }
     
-    public function save($id, $datas, $ttl = 60)
+    public function save($id, $data, $ttl = 60)
     {
-        return apc_store($id, $datas, $ttl);
+        return apc_store($id, $data, $ttl);
     }
     
     public function delete($id)

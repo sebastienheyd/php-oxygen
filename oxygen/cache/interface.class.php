@@ -14,10 +14,10 @@
 interface f_cache_Interface
 {
     /**
-	 * Fetch datas from cache
+	 * Fetch data from cache
 	 *
 	 * @param 	mixed           Unique cache identifier
-	 * @return 	mixed|false		Datas or false if none
+	 * @return 	mixed|false		Data or false if none
 	 */
     public function get($id);
     
@@ -25,12 +25,12 @@ interface f_cache_Interface
 	 * Save content into cache
 	 *
 	 * @param 	string		Unique cache identifier
-	 * @param 	mixed		Datas to store
+	 * @param 	mixed		Data to store
 	 * @param 	int			Cache lifetime in seconds
      * 
      * @return boolean  Return true on success
      */
-    public function save($id, $datas, $ttl = 60);
+    public function save($id, $data, $ttl = 60);
     
 	/**
 	 * Delete from Cache

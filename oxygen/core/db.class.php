@@ -126,10 +126,10 @@ class Db
     /**
      * Execute an insert into a table
      * 
-     * @param string $table     Table name to insert datas into
+     * @param string $table     Table name to insert data into
      * @param array $values     Associative array of column names / values
      * @param string $config    [optional] Database configuration to use from the current config file. Default is "db1"
-     * @return boolean          Return true if datas are correctly inserted                        
+     * @return boolean          Return true if data are correctly inserted                        
      */
     public static function insert($table, array $values, $config = 'db1')
     {
@@ -515,7 +515,7 @@ class Db
      * Alias of fetchAll(PDO::FETCH_CLASS). Will fetch result into an array of objects.
      * 
      * @param strinf $className         [optional] The class name to instantiate with fetched values. Default is 'stdClass'
-     * @param type $preloadConstructor  [optional] Must we preload the constructor before insert fetched datas into the class. Default is false.
+     * @param type $preloadConstructor  [optional] Must we preload the constructor before insert fetched data into the class. Default is false.
      * @return array                    Return an array of objects of the given class name
      */
     public function fetchAllObject($className = 'stdClass', $preloadConstructor = false)
