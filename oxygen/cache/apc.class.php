@@ -15,12 +15,6 @@ class f_cache_Apc implements f_cache_Interface
 {
     static $_instance;
     
-    public static function getInstance()
-    {
-        if(!isset(self::$_instance)) self::$_instance = new self();
-        return self::$_instance;   
-    }
-    
     private function __construct()
     {
         $this->isSupported();                

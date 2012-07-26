@@ -16,16 +16,7 @@ class f_cache_Memcache implements f_cache_Interface
     private static $_instance;
     
     private $_memcache;
-    
-    /**
-     * @return f_cache_Memcache 
-     */
-    public static function getInstance()
-    {
-        if(!isset(self::$_instance)) self::$_instance = new self();
-        return self::$_instance;   
-    }
-    
+        
     private function __construct()
     {             
         $this->isSupported();   
