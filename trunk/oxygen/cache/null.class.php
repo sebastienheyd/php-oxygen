@@ -26,7 +26,7 @@ class f_cache_Null implements f_cache_Interface
         return false;
     }
     
-    public function save($id, $datas, $ttl = 60)
+    public function save($id, $data, $ttl = 60)
     {
         return true;
     }

@@ -36,9 +36,9 @@ class f_cache_Memcache implements f_cache_Interface
         return $this->_memcache->get($id);
     }
     
-    public function save($id, $datas, $ttl = 60)
+    public function save($id, $data, $ttl = 60)
     {
-        return $this->_memcache->set($id, $datas, MEMCACHE_COMPRESSED, $ttl);
+        return $this->_memcache->set($id, $data, MEMCACHE_COMPRESSED, $ttl);
     }
     
     public function delete($id)

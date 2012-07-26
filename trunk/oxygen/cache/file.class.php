@@ -51,24 +51,24 @@ class f_cache_File implements f_cache_Interface
 			return false;
 		}
         
-        $datas = $cache[3];        
-        if($cache[2] === 'array' || $cache[2] === 'object') $datas = unserialize($datas);
+        $data = $cache[3];        
+        if($cache[2] === 'array' || $cache[2] === 'object') $data = unserialize($data);
         
-        $this->_cacheArr[$id] = $datas;
+        $this->_cacheArr[$id] = $data;
         
-        return $datas;
+        return $data;
     }
     
-    public function save($id, $datas, $ttl = 60)
+    public function save($id, $data, $ttl = 60)
     {         
-        $this->_cacheArr[$id] = $datas; 
+        $this->_cacheArr[$id] = $data; 
         
-        $type = gettype($datas);
+        $type = gettype($data);
         
-        if($type === 'NULL' || $type === 'resource') $datas = false;        
-        if($type === 'array' || $type === 'object') $datas = serialize($datas);
+        if($type === 'NULL' || $type === 'resource') $data = false;        
+        if($type === 'array' || $type === 'object') $data = serialize($data);
                 
-        return file_put_contents($this->_cachePath.DS.$id.'.cache', serialize(array(time(), $ttl, $type, $datas)), LOCK_EX) !== false;
+        return file_put_contents($this->_cachePath.DS.$id.'.cache', serialize(array(time(), $ttl, $type, $data)), LOCK_EX) !== false;
     }
     
     public function delete($id)

@@ -55,7 +55,7 @@ class f_db_Select extends f_db_Where
     }
 
     /**
-     * Define table to get datas from
+     * Define table to get data from
      *
      * @param string $table     The table name
      * @return f_db_Select      Current instance of f_db_Select
@@ -331,7 +331,7 @@ class f_db_Select extends f_db_Where
      * Alias of fetchAll(PDO::FETCH_CLASS). Will fetch result into an array of objects.
      * 
      * @param strinf $className         [optional] The class name to instantiate with fetched values. Default is 'stdClass'
-     * @param type $preloadConstructor  [optional] Must we preload the constructor before insert fetched datas into the class. Default is false.
+     * @param type $preloadConstructor  [optional] Must we preload the constructor before insert fetched data into the class. Default is false.
      * @param string $config            [optional] Config to use from the current config file. Default is "db1"
      * @return array                    Return an array of objects of the given class name
      */    

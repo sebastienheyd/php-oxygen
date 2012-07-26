@@ -26,7 +26,7 @@ class Session
 	 */
 	private function __construct()
 	{
-        // check if session datas must be stored in database
+        // check if session data must be stored in database
         $config = Config::get('session');
        
         if(isset($config->handler) && $config->handler === 'database')
@@ -318,7 +318,7 @@ class Session
      * Called when reading session content
      *
      * @param string $id        Id of the current session
-     * @return mixed            Return session datas
+     * @return mixed            Return session data
      */
     public function dbRead($id)
     {
@@ -327,10 +327,10 @@ class Session
     }
 
     /**
-     * Called when writing datas into session
+     * Called when writing data into session
      *
      * @param string $id        Id of the current session
-     * @param mixed $data       Datas to insert into session
+     * @param mixed $data       Data to insert into session
      * @return boolean          Return true if success
      */
     public function dbWrite($id, $data)
