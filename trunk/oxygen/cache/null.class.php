@@ -14,13 +14,7 @@
 class f_cache_Null implements f_cache_Interface
 {
     static $_instance;
-    
-    public static function getInstance()
-    {
-        if(!isset(self::$_instance)) self::$_instance = new self();
-        return self::$_instance;   
-    }
-    
+        
     public function get($id)
     {
         return false;

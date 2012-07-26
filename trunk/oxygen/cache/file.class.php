@@ -18,16 +18,7 @@ class f_cache_File implements f_cache_Interface
     private $_cachePath;
     private $_cacheArr = array();
     private $_timeToken;
-    
-    /**
-     * @return f_cache_File 
-     */
-    public static function getInstance()
-    {
-        if(!isset(self::$_instance)) self::$_instance = new self();
-        return self::$_instance;   
-    }
-    
+        
     private function __construct()
     {
         $this->_cachePath = CACHE_DIR.DS.'files';    

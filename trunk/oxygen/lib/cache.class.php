@@ -35,7 +35,7 @@ class Cache
         $class = 'f_cache_'.ucfirst($handler);
         
         // Instanciation
-        self::$_class = call_user_func(array($class, 'getInstance'));     
+        self::$_class = new $class();     
         
         // Return instance
         return self::$_class;
