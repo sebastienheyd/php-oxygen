@@ -32,7 +32,8 @@ class Cookie
      * Get cookie value(s)
      * 
      * @param string $name      Name of the cookie to get
-     * @return mixed|false
+     * @param mixed $default    [optional] Default value if cookie is not set. Default is false
+     * @return mixed            Cookie stored datas
      */
     public static function get($name, $default = false)
     {
@@ -97,7 +98,7 @@ class Cookie
 
         // set https if available
         if($secure === null) $secure = isset($_SERVER["HTTPS"]);
-        
+
         // for immediate effect, sets in $_COOKIE too
         $_COOKIE[$name] = $value;
         return setcookie($name, $value, time() + $lifetime, $path, $domain, $secure, $httponly);
