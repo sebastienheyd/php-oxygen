@@ -24,8 +24,7 @@ abstract class f_auth_Driver
     
     public function __construct()
     {
-        $this->token = Session::get(self::SESSION_NAME);
-        if($this->token === null) $this->token = $this->recall();
+        $this->token = Session::get(self::SESSION_NAME, $this->recall());
     }
      
     /**
