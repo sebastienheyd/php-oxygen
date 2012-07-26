@@ -15,33 +15,9 @@ class Session
 {
 	private static $_instance;
 
-    private $_lifeTime;
-    private $_db;
-    private $_tableName;
+    private static $_handlers = array('database', 'files', 'cookie', 'memcached');
+    
     private $_sessionActive = false;
-    private $_dbConfig;
-
-	/**
-	 * @return Session
-	 */
-	private function __construct()
-	{
-        // check if session data must be stored in database
-        $config = Config::get('session');
-       
-        if(isset($config->handler) && $config->handler === 'database')
-        {
-            $this->_db = DB::getInstance(isset($config->db_config) ? $config->db_config : 'db1');
-            $this->_tableName = Db::prefixTable(isset($config->table) ? $config->table : 'sessions');
-
-            // create table if necessary
-            if(!$this->_db->tableExists($this->_tableName, $config->db_config)) $this->_initSessionTable();
-
-            $this->_lifeTime = get_cfg_var("session.gc_maxlifetime");
-        }
-        
-        $this->start();
-	}
 
 	/**
 	 * Get instance of Session
@@ -54,6 +30,33 @@ class Session
 		return self::$_instance;
 	}
     
+	/**
+	 * @return Session
+	 */
+	private function __construct()
+	{
+        $handler = Config::get('session.handler');
+        
+        if(in_array($handler, self::$_handlers))
+        {
+            $cname = 'f_session_'.ucfirst(strtolower($handler));
+            
+            $handler = new $cname(Config::get('session.maxlifetime',get_cfg_var("session.gc_maxlifetime")));
+            
+            session_set_save_handler(
+                array($handler, "open"),
+                array($handler, "close"),
+                array($handler, "read"),
+                array($handler, "write"),
+                array($handler, "destroy"),
+                array($handler, "gc")
+            );
+        }                
+        
+        $this->start();
+	}
+    
+    
     /**
      * Shortcut to set var in session
      * 
@@ -63,21 +66,19 @@ class Session
      */
     public static function set($name, $value)
     {
-        self::getInstance()->$name = $value;
+        $_SESSION[$name] = $value;
     }
 
     /**
      * Shortcut to get value from session
      * 
      * @param string $name          Variable name to get from session
-     * @param mixed $defaultValue   [optional] Default value to return if variable does not exist in session. Default is null
+     * @param mixed $defaultValue   [optional] Default value to return if variable does not exist in session. Default is false
      * @return mixed                Session variable value or default value
      */
-    public static function get($name, $defaultValue = null)
+    public static function get($name, $defaultValue = false)
     {
-        $i = self::getInstance();        
-        if(!isset($i->$name)) return $defaultValue;        
-        return $i->$name;
+        return isset($_SESSION[$name]) ? $_SESSION[$name] : $defaultValue;
     }
     
     /**
@@ -98,11 +99,7 @@ class Session
      */
     public function start()
     {
-        if(!$this->_sessionActive)
-        {
-            if($this->_db !== null) $this->setDbHandler();
-            $this->_sessionActive = session_start();
-        }
+        if(!$this->_sessionActive) $this->_sessionActive = session_start();
         return $this->_sessionActive;
     }
 
@@ -221,6 +218,14 @@ class Session
 
         return null;
     }
+    
+    /**
+     * When destroyed, close session
+     */
+    public function __destruct()
+    {
+        session_write_close();
+    }     
 
 	/**
 	 * Free all session variables
@@ -251,116 +256,4 @@ class Session
 
         return false;
 	}
-
-// ======================================================= FOR SESSIONS IN DATABASE
-
-    /**
-     * Create session table when not exists and createauto is on
-     * 
-     * @return boolean  Return true if table was created
-     */
-    private function _initSessionTable()
-    {
-        $sql = 'CREATE TABLE `'.$this->_tableName.'` (
-           `session_id` varchar(100) NOT NULL default "",
-           `session_data` text NOT NULL,
-           `expires` int(11) NOT NULL default "0",
-            PRIMARY KEY  (`session_id`)
-            ) ENGINE = MyIsam DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci;';
-
-        return $this->_db->queryExec($sql) == 1;
-    }
-
-    /**
-     * Sets current class methods as handler for session in database
-     * @return void
-     */
-    public function setDbHandler()
-    {
-        $this->_dbConfig = Config::get('session.db_config');
-        
-        session_set_save_handler(
-                array(&$this, "dbOpen"),
-                array(&$this, "dbClose"),
-                array(&$this, "dbRead"),
-                array(&$this, "dbWrite"),
-                array(&$this, "dbDestroy"),
-                array(&$this, "dbGc")
-        );
-    }
-
-    /**
-     * Called when create new session
-     *
-     * @global string $sess_save_path
-     * @param string $save_path
-     * @param string $session_name
-     * @return boolean
-     */
-    public function dbOpen($save_path, $session_name)
-    {
-        global $sess_save_path;
-        $sess_save_path = $save_path;
-        return true;
-    }
-
-    /**
-     * Called when close session
-     *
-     * @return boolean
-     */
-    public function dbClose()
-    {
-        return true;
-    }
-
-    /**
-     * Called when reading session content
-     *
-     * @param string $id        Id of the current session
-     * @return mixed            Return session data
-     */
-    public function dbRead($id)
-    {
-        $sql = 'SELECT `session_data` FROM `'.$this->_tableName.'` WHERE `session_id` = ? AND `expires` > ?';
-        return $this->_db->prepare($sql)->execute($id, time())->fetchCol();
-    }
-
-    /**
-     * Called when writing data into session
-     *
-     * @param string $id        Id of the current session
-     * @param mixed $data       Data to insert into session
-     * @return boolean          Return true if success
-     */
-    public function dbWrite($id, $data)
-    {
-        $sql = 'REPLACE `'.$this->_tableName.'` (`session_id`,`session_data`,`expires`) VALUES(?, ?, ?)';
-        $this->_db->prepare($sql)->execute($id, $data, time() + $this->_lifeTime);
-        return true;
-    }
-
-    /**
-     * Called when destroy a session
-     *
-     * @param string $id        [optional] Id of a session. Default is null, then it get id from current session
-     * @return boolean          Return true if session is correctly destroyed in database
-     */
-    public function dbDestroy($id = null)
-    {
-        if($id === null) $id = $this->getId();
-        $res = $this->_db->prepare('DELETE FROM `'.$this->_tableName.'` WHERE `session_id`=?')->execute($id);
-        return true;
-    }
-
-    /**
-     * Clean up all expired sessions
-     *
-     * @return boolean      Return true if all expired sessions are deleted in database
-     */
-    public function dbGc()
-    {
-        $this->_db->prepare('DELETE FROM `'.$this->_tableName.'` WHERE `expires` < UNIX_TIMESTAMP();')->execute();
-        return true;
-    }
 }
