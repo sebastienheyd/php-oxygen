@@ -340,10 +340,7 @@ class UserAgent
 			$this->_languages = explode(',', $languages);            
 		}
 
-		if(empty($this->_languages))
-		{
-			$this->_languages = array('undefined');
-		}
+		if(empty($this->_languages)) $this->_languages = array('undefined');
         
         return $this->_languages;
     }
@@ -361,10 +358,7 @@ class UserAgent
 			$this->_charsets = explode(',', $charsets);
 		}
 
-		if(empty($this->_charsets))
-		{
-			$this->_charsets = array('undefined');
-		}
+		if(empty($this->_charsets)) $this->_charsets = array('undefined');
         
         return $this->_charsets;
     }
