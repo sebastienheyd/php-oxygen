@@ -205,7 +205,7 @@ class Controller
         {
             if($this->_action === null) $this->_action = 'Index';
             $className = 'm_'.$this->_module.'_action_'.$this->_action;
-            if(!class_exists($className)) trigger_error('Class '.$className.' not found !', E_USER_ERROR);
+            if(!class_exists($className)) throw new RuntimeException('Class '.$className.' not found !', E_USER_ERROR);
             if($this->_args === null) $this->_args = Uri::getInstance()->segmentsSlice(1);            
             if(!method_exists($className, self::DEFAULT_ACTION_METHOD)) trigger_error('Method '.self::DEFAULT_ACTION_METHOD.' not found in '.$className, E_USER_ERROR);            
             $this->_className = $className;
