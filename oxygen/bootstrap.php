@@ -57,9 +57,12 @@ register_shutdown_function(array(new Error(), 'shutdownHandler'));
 
 // Get default timezone
 if(ini_get('date.timezone') === '' || Config::get('general.timezone', true)) 
-        date_default_timezone_set(Config::get('general.timezone', 'Europe/Paris'));
+        date_default_timezone_set(Config::get('general.timezone', 'UTC'));
 
-// Are the url ended by a prefix (ex: .html)
+// Are the url ended by a suffix (ex: .html)
+define('HTTP_SUFFIX', Config::get('route.suffix', ''));
+
+// Are the url begining with a prefix (for subfolders)
 define('HTTP_PREFIX', Config::get('route.prefix', ''));
 
 try
@@ -68,7 +71,7 @@ try
     Session::getInstance();
     
     // Set the default localization
-    I18n::setLocale('en_US');    
+    I18n::setLocale(Config::get('general.locale', 'en_US'));
 }
 catch (Exception $e)
 {
