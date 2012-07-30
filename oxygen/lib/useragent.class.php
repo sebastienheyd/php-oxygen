@@ -190,13 +190,12 @@ class UserAgent
             $this->isBrowser = false;
             
             include(FW_DIR.DS.'lib'.DS.'data'.DS.'browsers.php');
-
             foreach($browsers as $rule => $browser)
             {
                 if(preg_match("|".preg_quote($rule).".*?([0-9\.]+)|i", $this->_agent, $match))
                 {
                     $this->isBrowser = true;
-                    $this->browser = end($browser);
+                    $this->browser = $browser;
                     $this->version = $match[1];
                     break;
                 }

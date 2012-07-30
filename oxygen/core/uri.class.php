@@ -31,7 +31,7 @@ class Uri
     public static function getInstance($uri = null)
     {
         $instanceId = $uri;
-        if($uri === null) $instanceId = 'default';       
+        if($uri === null) $instanceId = 'default';
         if(!isset(self::$_instances[$instanceId])) self::$_instances[$instanceId] = new self($uri);
         return self::$_instances[$instanceId];
     }
@@ -86,7 +86,7 @@ class Uri
         
         // get from SCRIPT_NAME
         $uri = $_SERVER['REQUEST_URI'];
-        
+
         // prevent calling index.php when routed only
         if(Config::get('route.routed_only') == '1' && preg_match('#^\/index.php#i', $uri)) Error::show404();
         
@@ -142,7 +142,7 @@ class Uri
      */
     public function segmentsSlice($offset, $length = null)
     {
-        return array_slice($this->_segments, $offset, $length);
+        return array_slice($this->_segments, $offset - 1, $length);
     }        
     
     /**
