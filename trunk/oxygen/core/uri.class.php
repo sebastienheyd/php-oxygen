@@ -18,6 +18,7 @@ class Uri
     private $_uri;
     private $_segments;
     private $_suffix;
+    private $_prefix;
     private $_defined;
     private $_host;
     private $_origin;
@@ -93,8 +94,12 @@ class Uri
         $uri = strtolower($uri);
         
         // get suffix from config
-        $this->_suffix = HTTP_PREFIX;
+        $this->_suffix = HTTP_SUFFIX;
         if($this->_suffix !== null)  $uri = str_replace($this->_suffix, '', $uri);
+        
+        // get prefix from config
+        $this->_prefix = HTTP_PREFIX;
+        if($this->_prefix !== null)  $uri = str_replace($this->_prefix, '', $uri);
 
         // split on ? to get QUERY_STRING
         $p = preg_split('#\?#i', $uri, 2);
