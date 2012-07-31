@@ -13,6 +13,8 @@
 
 class I18n
 {   
+    private static $_iso_3166;
+    
     /**
      * Translate the given string to the current i18n locale language.
      * 
@@ -143,13 +145,17 @@ class I18n
         if($lang === null) $lang = self::getLang();
         if($region === null) $region = self::getRegion();
         
-        $dir = FW_DIR.DS.'i18n'.DS.'iso-3166';        
-        $file = $dir.DS.strtolower($lang).'.json';
-        if(!is_file($file)) $file = $dir.DS.'en.json';
+        if(self::$_iso_3166 === null)
+        {
+            $dir = FW_DIR.DS.'i18n'.DS.'iso-3166';        
+            $file = $dir.DS.strtolower($lang).'.json';
+            if(!is_file($file)) $file = $dir.DS.'en.json';
+            self::$_iso_3166 = json_decode(file_get_contents($file), true);            
+        }
         
-        $json = json_decode(file_get_contents($file), true);
-
-        return $json[strtoupper($region)];
+        if(!isset(self::$_iso_3166[strtoupper($region)])) return $region;
+        
+        return self::$_iso_3166[strtoupper($region)];
     }
     
     /**
@@ -164,11 +170,13 @@ class I18n
     {
         if($lang === null) $lang = self::getLang();
         
-        $dir = FW_DIR.DS.'i18n'.DS.'iso-3166';        
-        $file = $dir.DS.strtolower($lang).'.json';
-        if(!is_file($file)) $file = $dir.DS.'en.json';
-        
-        $json = json_decode(file_get_contents($file), true);       
+        if(self::$_iso_3166 === null)
+        {
+            $dir = FW_DIR.DS.'i18n'.DS.'iso-3166';        
+            $file = $dir.DS.strtolower($lang).'.json';
+            if(!is_file($file)) $file = $dir.DS.'en.json';
+            self::$_iso_3166 = json_decode(file_get_contents($file), true);            
+        }       
              
         $html = XML::writer(false);
         
@@ -176,7 +184,7 @@ class I18n
         
         $html->writeElement('option', '---'); 
         
-        foreach($json as $iso => $label)
+        foreach(self::$_iso_3166 as $iso => $label)
         {            
             $attr = array();
             $attr['value'] = $iso;
