@@ -27,13 +27,13 @@ var menu = '\
     <ul class="menuList">\n\
         <li class="menuLabel"><span class="menuTitle">Généralités</span>\n\
             <ul>\n\
-                <li><a href="'+basepath+lang+'/general/structure.html">Structure / squelette    </a></li>\n\
+                <li><a href="'+basepath+lang+'/general/structure.html">Structure / squelette</a></li>\n\
                 <li><a href="'+basepath+lang+'/general/functions.html">Fonctions procédurales</a></li>\n\
                 <li><a href="'+basepath+lang+'/general/controllers.html">Contrôleurs</a></li>\n\
+                <li><a href="'+basepath+lang+'/general/translation.html">Traduction</a></li>\n\
                 <li><a href="#">URLS</a></li>\n\
                 <li><a href="#">Scaffolding</a></li>\n\
                 <li><a href="#">Surcharges</a></li>\n\
-                <li><a href="#">Traduction</a></li>\n\
                 <li><a href="#">Conventions</a></li>\n\
                 <li><a href="#">Documentation</a></li>\n\
             </ul>\n\

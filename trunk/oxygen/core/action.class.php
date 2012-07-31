@@ -121,22 +121,28 @@ abstract class Action
      * @param type $string      The string to translate
      * @param type $args        [optional] Associative array of elements to replace in the given string.<br />Exemple : translate('My name is %name%', array('name' => 'Jim'))
      * @param type $domain      [optional] Name of the category of message (the xml file to get, ex : errors => errors.fr.xml). Default is 'messages'
-     * @param type $srcLang     [optional] ISO 639-1 code of the source language. Default is null (will take the default lang)
      * @return string           The translated string if found, else the source string
      */
-    public function t($string, $args = array(), $domain = 'messages', $srcLang = null)
+    public function t($string, $args = array(), $domain = 'actions')
     {
-        if($srcLang === null) $srcLang = i18n::getDefaultLang();
+        $srcLang = i18n::getDefaultLang();
         
         $class = get_class($this);
-        preg_match('/^m_(.*)_action/i', $class, $m);        
+        if(preg_match('/^m_(.*)_action/i', $class, $m))
+        {
+            // Get locale file with full locale code (ex : fr_CA)
+            $file = get_module_file($m[1], 'i18n'.DS.$domain.'.'.I18n::getLocale().'.xml');
+            if($file !== false) // file exist
+            {
+                $str = I18n::t($file, $string, $args, $srcLang, $class, false);                                
+                if($str !== $string) return $str;   // There is a specific translation for full locale code, return
+            }
+
+            // Get locale file with only lang code (ex : fr)
+            $file = get_module_file($m[1], 'i18n'.DS.$domain.'.'.I18n::getLang().'.xml', false);
+            return I18n::t($file, $string, $args, $srcLang, $class);                    
+        }
         
-        // Get locale file with full locale code (ex : fr_CA)
-        $file = get_module_file($m[1], 'i18n'.DS.$domain.'.'.I18n::getLocale().'.xml');        
-        if($file !== false) return I18n::t($file, $string, $args, $srcLang, $class);
-        
-        // Get locale file with only lang code (ex : fr)
-        $file = get_module_file($m[1], 'i18n'.DS.$domain.'.'.I18n::getLang().'.xml', false);
-        return I18n::t($file, $string, $args, $srcLang, $class);        
+        return $string;
     }
 }

@@ -92,6 +92,16 @@ blockquote.idea, blockquote.trick
     color: #264409;
 }
 
+blockquote.screen
+{
+    padding: 7px;
+    font-family: "Times New Roman", serif;
+    font-style: normal;
+    color: #333;
+    background: #FFF;
+    border-radius: 0;
+}
+
 ol
 {
     font-weight: bold;

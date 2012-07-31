@@ -71,10 +71,11 @@ try
     Session::getInstance();
     
     // Set the default localization
-    I18n::setLocale(Config::get('general.locale', 'en_US'));
+    i18n::setDefaultLocale();
 }
 catch (Exception $e)
 {
+    // Nothing more to do here...
     die('Cannot start session : '.$e->getMessage());
 }
 
