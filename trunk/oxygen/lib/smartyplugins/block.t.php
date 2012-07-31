@@ -24,7 +24,7 @@ function smarty_block_t($params, $content, &$smarty, &$repeat)
 {
     if($repeat == false)
     {
-        $srcLang = isset($smarty->tpl_vars['TPL_LANG']) ? $smarty->tpl_vars['TPL_LANG']->value : 'en';        
+        $srcLang = isset($smarty->tpl_vars['TPL_LANG']) ? $smarty->tpl_vars['TPL_LANG']->value : i18n::getDefaultLang();        
 
         $path = explode(DS, str_replace(APP_DIR.DS, '', $smarty->template_resource));
         
@@ -41,13 +41,8 @@ function smarty_block_t($params, $content, &$smarty, &$repeat)
 
         if($isModule !== false)
         {
-            $file = get_module_file($module, '/i18n/templates.'.I18n::getLocale().'.xml');
-            
-            if($file !== false)
-            {
-                $str = I18n::t($file, $content, $params, $srcLang, end($path));
-                if($str != $content) return $str;
-            }    
+            $file = get_module_file($module, '/i18n/templates.'.I18n::getLocale().'.xml');            
+            if($file !== false) return I18n::t($file, $content, $params, $srcLang, end($path));
             
             $file = get_module_file($module, '/i18n/templates.'.I18n::getLang().'.xml', false);
             return I18n::t($file, $content, $params, $srcLang, end($path));        

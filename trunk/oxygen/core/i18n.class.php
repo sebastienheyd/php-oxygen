@@ -14,6 +14,8 @@
 class I18n
 {   
     private static $_iso_3166;
+    private static $_defaultLang;
+    private static $_defaultRegion;
     
     /**
      * Translate the given string to the current i18n locale language.
@@ -21,15 +23,17 @@ class I18n
      * @param string $file          The XLIFF file to parse
      * @param string $string        The string to translate
      * @param array $args           [optional] Associative array of elements to replace in the given string.<br />Exemple : translate('My name is %name%', array('name' => 'Jim'))
-     * @param type $srcLang         [optional] ISO 639-1 code of the source language. Default is 'en'
+     * @param type $srcLang         [optional] ISO 639-1 code of the source language. Default is null (will take the default lang)
      * @param string $origin        [optional] The name of the original file where is located the given string. Default is 'default'
      * @param boolean $addToFile    [optional] If not found with the current language, add to xliff file ? Default is true
      * @return string               The translated string if found else the source string
      */
-    public static function t($file, $string, $args = array(), $srcLang = 'en', $origin = 'default', $addToFile = true)
+    public static function t($file, $string, $args = array(), $srcLang = null, $origin = 'default', $addToFile = true)
     {
+        if($srcLang === null) $srcLang = self::getDefaultLang();
+        
         // if current lang is different from the given string lang
-        if($srcLang != self::getLang()) return f_i18n_Xliff::getInstance($file)->translate($string, $args, $srcLang, $origin, $addToFile);
+        if(self::getDefaultLang() != self::getLang()) return f_i18n_Xliff::getInstance($file)->translate($string, $args, $srcLang, $origin, $addToFile);
 
         // return translated string
         return $string;
@@ -70,42 +74,74 @@ class I18n
     }
     
     /**
+     * Set the default locale code to use for the current session. 
+     * Locale code will be taken from the configuration file, else it will be "en_US"
+     */
+    public static function setDefaultLocale()
+    {
+        self::setLocale(self::getDefaultLocale());
+    }
+    
+    /**
      * Get current session locale composed by ISO 639-1 code and ISO 3166-1 code separated by _ or -
      * 
-     * @example getLocale('fr_FR');
-     * @param string $default   [optional] Default value to get if no locale is set. Default is 'en_US'
-     * @return string
+     * @return string       Locale code composed by ISO 639-1 code and ISO 3166-1 code
      */
-    public static function getLocale($default = 'en_US')
+    public static function getLocale()
     {
-        return Session::get('locale', $default);
+        return Session::get('locale', self::getDefaultLocale());
     }
+    
+    /**
+     * Returns the default locale setted in config, else "en_US"
+     * 
+     * @return string       Locale code composed by ISO 639-1 code and ISO 3166-1 code
+     */
+    public static function getDefaultLocale()
+    {
+        return Config::get('general.locale', 'en_US');
+    }    
     
     /**
      * Returns current setted locale in full text
      * 
      * @example getLocaleLabel('fr') = "Français (France)"
      * 
-     * @param string $lang  [optional] ISO 639-1 code of output language, set "native" for the native language. Default is null (get the current language)
-     * @return string       The full text in format "Lang (Region)"
+     * @param string $outputLang    [optional] ISO 639-1 code of output language, set "native" for the native language. Default is null (get the current language)
+     * @return string               The full text in format "Lang (Region)"
      */
-    public static function getLocaleLabel($lang = null)
+    public static function getLocaleLabel($outputLang = null)
     {
-        if($lang === null) $lang = self::getLang();
-        return self::getLangLabel($lang).' ('.self::getRegionLabel($lang).')';        
+        if($outputLang === null) $outputLang = self::getLang();
+        return self::getLangLabel($outputLang).' ('.self::getRegionLabel($outputLang).')';        
     }
     
     /**
-     * Get current session lang in ISO 639-1
+     * Get current session lang in ISO 639-1, else returns the default lang
      * 
-     * @param string $default   [optional] Default lang if no lang is set, default is "en"
      * @return string
      */
-    public static function getLang($default = 'en')
+    public static function getLang()
     {
-        return Session::get('lang', strtolower($default));
+        return Session::get('lang', self::getDefaultLang());
     }
     
+    /**
+     * Returns the default lang setted in config, else "en"
+     * 
+     * @return string       Lang iso in ISO 639-1
+     */
+    public static function getDefaultLang()
+    {
+        if(!isset(self::$_defaultLang))
+        {
+            $locale = Config::get('general.locale', 'en_US');
+            list($lang, $region) = preg_split('/[-_]/', $locale);
+            self::$_defaultLang = strtolower($lang);            
+        }
+        return self::$_defaultLang;
+    }
+            
     /**
      * Returns current lang in full text
      * 
@@ -124,14 +160,28 @@ class I18n
     /**
      * Get current region code ISO3166-1 
      * 
-     * @param string $default   [optional] Default ISO3166-1 code if no region is setted. Default is 'US'
      * @return string 
      */
-    public static function getRegion($default = 'US')
+    public static function getRegion()
     {
-        return Session::get('region', strtoupper($default));
+        return Session::get('region', self::getDefaultRegion());
     }
     
+    /**
+     * Returns the default region setted in config, else "US"
+     * 
+     * @return string       Region iso in ISO 3166-1 
+     */
+    public static function getDefaultRegion()
+    {
+        if(!isset(self::$_defaultRegion))
+        {
+            $locale = Config::get('general.locale', 'en_US');
+            list($lang, $region) = preg_split('/[-_]/', $locale);
+            self::$_defaultRegion = strtoupper($region);
+        }
+        return self::$_defaultRegion;
+    }    
     
     /**
      * Returns region in full text
