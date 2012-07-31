@@ -58,13 +58,15 @@ class f_i18n_Xliff
      * 
      * @param string $string        The string to translate
      * @param array $args           [optional] Associative array of elements to replace in the given string.<br />Exemple : translate('My name is %name%', array('name' => 'Jim'))
-     * @param string $srcLang       [optional] ISO 639-1 code of the source language. Default is 'en'
+     * @param string $srcLang       [optional] ISO 639-1 code of the source language. Default is null (will take the default lang)
      * @param string $origin        [optional] The name of the original file where is located the given string. Default is 'default'
      * @param boolean $addToFile    [optional] If not found with the current language, add to xliff file ?
      * @return string               The translated string if found else the source string
      */
-    public function translate($string, $args = array(), $srcLang = 'en', $origin = 'default', $addToFile = true)
+    public function translate($string, $args = array(), $srcLang = null, $origin = 'default', $addToFile = true)
     {        
+        if($srcLang === null) $srcLang = i18n::getDefaultLang();
+        
         // loading from memory
         $cid = md5($string.serialize($args).$srcLang);
         if(isset($this->_cache[$cid])) return $this->_cache[$cid];
