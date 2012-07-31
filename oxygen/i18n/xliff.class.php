@@ -65,12 +65,15 @@ class f_i18n_Xliff
      */
     public function translate($string, $args = array(), $srcLang = null, $origin = 'default', $addToFile = true)
     {        
+        // XML is not initialized and we don't wan't to add string to file
+        if($this->_xml === null && !$addToFile) return $string;
+        
         if($srcLang === null) $srcLang = i18n::getDefaultLang();
         
         // loading from memory
         $cid = md5($string.serialize($args).$srcLang);
         if(isset($this->_cache[$cid])) return $this->_cache[$cid];
-        
+                
         // XML is not initialized, create a new one
         if($this->_xml === null) $this->_createFile($string, $srcLang, $origin);
         

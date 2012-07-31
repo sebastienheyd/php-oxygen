@@ -19,19 +19,39 @@
         
         <h3>get_called_class()</h3>
         <p>Permet de récupérer le nom de la classe appelée par une fonction de cette dernière.</p>
-        <blockquote class="info">Il s'agit d'une fonction de rétro-compatibilité pour PHP 5.2 de la fonction du même nom pour PHP >= 5.3. Voir sur <a href="http://php.net/manual/fr/function.get-called-class.php">http://php.net/manual/fr/function.get-called-class.php</a></blockquote>
+        <blockquote class="info">
+            Il s'agit d'une fonction de rétro-compatibilité pour PHP 5.2 de la fonction du même nom pour PHP >= 5.3. 
+            Voir sur <a href="http://php.net/manual/fr/function.get-called-class.php">http://php.net/manual/fr/function.get-called-class.php</a>
+        </blockquote>
         
         <h3>lcfirst()</h3>
         <p>Inverse de ucfirst : remplace la première lettre d'une chaine en minuscule.</p>
         <php>
-            $str = "Ceci est un exemple";
-            echo lcfirst($str);             
+            echo lcfirst("Ceci est un exemple");             
             // Affiche "ceci est un exemple";
         </php>
         <blockquote class="info">Il s'agit d'une fonction de rétro-compatibilité pour PHP 5.2 de la fonction du même nom pour PHP >= 5.3.</blockquote>
         
+        <h3>mb_lcfirst()</h3>
+        <p>Remplace la première lettre d'une chaine multibyte (utf-8) en minuscule. Cette fonction est recommandé par rapport à lcfirst().</p>
+        <php>
+            echo mb_lcfirst("Évolution");
+            // Affiche "évolution";
+        </php>
+        
+        <h3>mb_ucfirst()</h3>
+        <p>Remplace la première lettre d'une chaine multibyte (utf-8) en majuscule. Cette fonction est recommandé par rapport à ucfirst().</p>
+        <php>
+            echo mb_lcfirst("évolution");
+            // Affiche "Évolution";
+        </php>
+        
         <h3>ucfirst_last()</h3>
-        <p>Remplace la première lettre du dernier élément défini par un séparateur d'une chaine en majuscule. Ceci est utile pour les noms de classe. La fonction prends deux paramètres : le premier est la chaine elle même et le second le séparateur à utiliser (par défaut underscore _ ).</p>
+        <p>
+            Remplace la première lettre du dernier élément défini par un séparateur d'une chaine en majuscule. 
+            Ceci est utile pour les noms de classe. 
+            La fonction prends deux paramètres : le premier est la chaine elle même et le second le séparateur à utiliser (par défaut underscore _ ).
+        </p>
         <php>
             echo ucfirst_last('m_default_index');       // Affiche "m_default_Index"
             echo ucfirst_laft('m-defaut-test', '-');    // Affiche "m-default-Test"
@@ -44,21 +64,32 @@
         <p>Convertit un objet en un tableau associatif de façon récursive.</p>
         
         <h3>get_module_file()</h3>
-        <p>Récupère le chemin d'un fichier dans un module. La méthode prends en compte les fichiers dans le dossier webapp. Le troisième paramètre de la méthode est un booléen indiquant si l'on doit vérifier que le fichier existe.</p>
+        <p>
+            Récupère le chemin d'un fichier dans un module. 
+            La méthode prends en compte les fichiers dans le dossier webapp. 
+            Le troisième paramètre de la méthode est un booléen indiquant si l'on doit vérifier que le fichier existe.
+        </p>
         <php>
             get_module_file('backoffice', 'templates/main.html');
             // Retourne par exemple /home/web/project/webapp/backoffice/templates/main.html
         </php>        
         
         <h3>set_header()</h3>
-        <p>Permet de définir l'en-tête http à renvoyer au navigateur. Le premier paramètre est un entier définissant le code de l'en-tête et le second (optionnel) un texte additionnel.</p>
+        <p>
+            Permet de définir l'en-tête http à renvoyer au navigateur. 
+            Le premier paramètre est un entier définissant le code de l'en-tête et le second (optionnel) un texte additionnel.
+        </p>
         <php>
             // Exemple de header 404
             set_header('404', 'Page not found');
         </php>
         
         <h3>redirect()</h3>
-        <p>Cette fonction permet d'effectuer une redirection vers une url. Pour cela elle va utiliser la fonction header de php avec la possibilité d'utiliser une redirection par location, refresh ou javascript (par affichage d'une balise dans la page).</p>
+        <p>
+            Cette fonction permet d'effectuer une redirection vers une url. 
+            Pour cela elle va utiliser la fonction header de php avec la possibilité d'utiliser une redirection par 
+            location, refresh ou javascript (par affichage d'une balise dans la page).
+        </p>
         <p>Un troisième argument permet de définir le code http à renvoyer, par défaut 302 (Déplacé temporairement)</p>
         <blockquote class="info">
             Si l'url donnée ne débute pas par http:// ou https://, l'hôte courant est automatiquement ajouté. Exemple: "/admin" donnera "http://localhost/admin"
@@ -86,6 +117,13 @@
         <php>
             $arr = array('toto', 'tutu', 'titi', 'tata');
             $result = last($arr);  // $result = 'tata'
-        </php>        
+        </php>
+        
+        <h3>get_module_name()</h3>
+        <p>Retourne le nom du module à partir du nom d'une classe.</p>
+        <php>
+            $module = get_module_name("m_user_action_Index");
+            // $module = "user"
+        </php>
     </body>            
 </html>

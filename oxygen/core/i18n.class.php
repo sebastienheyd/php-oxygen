@@ -30,13 +30,22 @@ class I18n
      */
     public static function t($file, $string, $args = array(), $srcLang = null, $origin = 'default', $addToFile = true)
     {
+        // $srcLang is no set we get the application default lang
         if($srcLang === null) $srcLang = self::getDefaultLang();
         
-        // if current lang is different from the given string lang
-        if(self::getDefaultLang() != self::getLang()) return f_i18n_Xliff::getInstance($file)->translate($string, $args, $srcLang, $origin, $addToFile);
-
-        // return translated string
-        return $string;
+        // if current locale is equal to default locale we don't need to translate
+        if(self::getDefaultLocale() === self::getLocale())
+        {
+            // no args = no replacement = direct return
+            if(empty($args)) return $string;
+            
+            // args replacement in string
+            foreach($args as $k => $v) $string = str_replace("%$k%", $v, $string);
+            return $string;
+        }
+            
+        // Translate string and return it
+        return f_i18n_Xliff::getInstance($file)->translate($string, $args, $srcLang, $origin, $addToFile);        
     }
     
     /**
