@@ -41,6 +41,18 @@ class Autoload
     }
     
     /**
+     * Add a path to the SPL autoload include path
+     * @param string|array $path     A folder path or array of path
+     */
+    public static function addPath($path)
+    {
+        foreach((array) $path as $p)
+        {
+            set_include_path(get_include_path().PS.$p);
+        }        
+    }
+    
+    /**
      * Get correct file to include from a class name
      * Used by __autoload()
      * 
