@@ -10,7 +10,7 @@
     <body>
         <h1>Localisation d'un contrôleur (action)</h1>
         <p>
-            La traduction d'un texte dans un contrôleur se fait en utilisant la méthode t() se trouvant dans la classe héritée "Action".
+            La localisation d'un texte dans un contrôleur se fait en utilisant la méthode t() se trouvant dans la classe héritée "Action".
             Exemple
         </p>
         <php> 
@@ -31,45 +31,36 @@
             }            
         </php>
         
-        <p>A la première exécution voici ce qui s'affiche</p>
-        
-        <blockquote class="screen">
-            Ceci est un texte de démonstration / Ceci est un texte de démonstration
-        </blockquote>
-        
+        <h2>Utilisation de variables</h2>
         <p>
-            On voit que le texte n'a pas été traduit ce qui est normal car nous ne l'avons pas encore défini dans un fichier de traduction.
-            Dans cet exemple un fichier vient d'être créé automatiquement dans le dossier i18n du module demo (le nom du module est récupéré en fonction du nom de la classe).
-            Le fichier est nommé "actions.en.xml" car par défaut les traductions des contrôleurs sont identifiés comme "actions" et la langue appelée est "en" (anglais). 
-            En ouvrant le fichier on voit
+            Il est possible de fournir des variables aux chaînes à traduire en fournissant un tableau associatif à la méthode t(), exemple           
         </p>
         
-        <pre class="brush:xml">
-            &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-            &lt;xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2"&gt;
-                &lt;file source-language="fr" datatype="plaintext" original="m_default_action_Index"&gt;
-                    &lt;body&gt;
-                        &lt;trans-unit id="1"&gt;
-                            &lt;source&gt;Ceci est un texte de démonstration&lt;/source&gt;
-                            &lt;target&gt;&lt;/target&gt;
-                        &lt;/trans-unit&gt;
-                    &lt;/body&gt;
-                &lt;/file&gt;
-            &lt;/xliff&gt;
-        </pre>
+        <php>
+            echo $this->t("Bonjour mon nom est %name%", array("name" => "John"));
+        </php>
         
-        On va alors définir la traduction du texte comme ceci
+        Affichera
         
-        <xml>
-            &lt;source&gt;Ceci est un texte de démonstration&lt; /source&gt;
-            &lt;target&gt;This is a demonstration text&lt;/target&gt;
-        </xml>
+        <blockquote class="screen">Bonjour mon nom est John</blockquote>
         
-        <p>En relançant notre script on aura cette fois ci</p>
+        <h2>Emplacement des fichiers de localisation XLIFF</h2>
+        <p>
+            Les fichiers XLIFF de localisation générés automatiquement se trouvent dans le dossier i18n du même module 
+            que l'action (contrôleur). Si le dossier n'existe pas, il est automatiquement créé.
+        </p>
+        <p>
+            Par défaut, les fichiers se nomment actions.xx.xml (où xx est le code de la langue souhaité et / ou de la culture). 
+            Il est cependant possible de nommer différement les fichiers en définissant le nom souhaité comme troisième 
+            argument de la méthode t(). Exemple
+        </p>
         
-        <blockquote class="screen">
-            Ceci est un texte de démonstration / This is a demonstration text
-        </blockquote>
-        
+        <php>
+            // Dans l'exemple la langue définie par défaut est fr_FR
+            i18n::setLocale('en_US');
+            
+            // Va enregistrer le texte dans le fichier errors.en.xml
+            $this->t("Erreur : le fichier n'existe pas", array(), 'errors');
+        </php>
     </body>            
 </html>

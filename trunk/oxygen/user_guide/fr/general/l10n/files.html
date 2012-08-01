@@ -14,11 +14,17 @@
             Pour simplifier le travail des traducteurs, le choix à été fait d'utiliser des fichiers au format XLIFF.
         </p>
         
-        <h2>Génération</h2>        
+        <h2>Génération et surcharge</h2>        
         <p>
             Dans la grande majorité des cas les fichiers de localisation (ou traduction) sont générés automatiquement à la traduction. 
             Il est cependant possible d'avoir à créer soit même des fichiers de localisation pour définir des spécificités régionales pour une langue donnée.
-            <a href="../l10n.html">Voyez les exemples</a> pour plus de détails.
+        </p>
+        <p>
+            Exemple : vous définissez fr_FR comme langue par défaut. Au début de votre script vous définissez en_GB comme 
+            langue de travail, les fichiers générés auront l'extension en.xml. A partir de là vous pouvez si vous voulez 
+            faire une copie de ce fichier avec l'extension en_US.xml pour définir des traductions spécifiques à l'anglais 
+            des Etats-Unis. Pour faire simple, il s'agit d'une surcharge car si il n'y a pas de traduction spécifique PHP 
+            Oxygen prendra automatiquement le fichier de traduction par défaut pour la langue donnée.
         </p>
         
         <h2>Le format XLIFF</h2>

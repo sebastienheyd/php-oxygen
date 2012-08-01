@@ -331,6 +331,11 @@
   color: red !important;
 }
 
+.syntaxhighlighter .color4, .syntaxhighlighter .color4 a {
+  color: #DD7A61 !important;
+  background-color: #FEF5D6 !important;
+}
+
 .syntaxhighlighter .keyword {
   font-weight: normal !important;
 }
