@@ -124,23 +124,26 @@ abstract class Action
      * @return string           The translated string if found, else the source string
      */
     public function t($string, $args = array(), $domain = 'actions')
-    {
-        $srcLang = i18n::getDefaultLang();
+    {    
+        // if current locale is equal to default locale we don't need to translate
+        if(i18n::getLocale() === i18n::getDefaultLocale()) return i18n::replaceArgs($string, $args);
         
         $class = get_class($this);
         if(preg_match('/^m_(.*)_action/i', $class, $m))
         {
-            // Get locale file with full locale code (ex : fr_CA)
-            $file = get_module_file($m[1], 'i18n'.DS.$domain.'.'.I18n::getLocale().'.xml');
-            if($file !== false) // file exist
+            // Get locale file with full locale code (ex : fr_CA) for overloading
+            if($file = get_module_file($m[1], 'i18n'.DS.$domain.'.'.I18n::getLocale().'.xml'))
             {
-                $str = I18n::t($file, $string, $args, $srcLang, $class, false);                                
+                $str = I18n::t($file, $string, $args, null, $class, false);                                
                 if($str !== $string) return $str;   // There is a specific translation for full locale code, return
             }
-
-            // Get locale file with only lang code (ex : fr)
+            
+            // If default lang is equal to the current lang : return
+            if(i18n::getLang() === i18n::getDefaultLang()) return i18n::replaceArgs($string, $args);
+                
+            // Get locale file with only lang code (ex : fr) or create it
             $file = get_module_file($m[1], 'i18n'.DS.$domain.'.'.I18n::getLang().'.xml', false);
-            return I18n::t($file, $string, $args, $srcLang, $class);                    
+            return I18n::t($file, $string, $args, null, $class);                    
         }
         
         return $string;

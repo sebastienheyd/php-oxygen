@@ -30,22 +30,31 @@ class I18n
      */
     public static function t($file, $string, $args = array(), $srcLang = null, $origin = 'default', $addToFile = true)
     {
-        // $srcLang is no set we get the application default lang
-        if($srcLang === null) $srcLang = self::getDefaultLang();
-        
         // if current locale is equal to default locale we don't need to translate
-        if(self::getDefaultLocale() === self::getLocale())
-        {
-            // no args = no replacement = direct return
-            if(empty($args)) return $string;
-            
-            // args replacement in string
-            foreach($args as $k => $v) $string = str_replace("%$k%", $v, $string);
-            return $string;
-        }
+        if(self::getDefaultLocale() === self::getLocale()) return self::replaceArgs($string, $args);
+        
+        // $srcLang is no set we get the application default lang
+        if($srcLang === null) $srcLang = self::getDefaultLang();        
             
         // Translate string and return it
         return f_i18n_Xliff::getInstance($file)->translate($string, $args, $srcLang, $origin, $addToFile);        
+    }
+    
+    /**
+     * Replace keys in string by their values
+     * 
+     * @param string $string    Input string to replace keys to values
+     * @param array $args       [optional] Associative array of elements to replace in the given string.<br />Exemple : translate('My name is %name%', array('name' => 'Jim'))
+     * @return string
+     */
+    public static function replaceArgs($string, $args)
+    {
+        // no args = no replacement = direct return
+        if(empty($args)) return $string;
+
+        // args replacement in string
+        foreach($args as $k => $v) $string = str_replace("%$k%", $v, $string);
+        return $string;
     }
     
     /**
@@ -61,17 +70,17 @@ class I18n
     public static function setLocale($locale)
     {        
         // set full locale like fr_FR
-        if(preg_match('/^([a-z]{2,3})[_-]([A-Z]{2})$/i', $locale, $m))
+        if(preg_match('/^([a-z]{2,3})[_-]([A-Z]{2})$/', $locale, $m))
         {
             Session::set('locale', $m[0]);
             Session::set('lang', $m[1]);
             Session::set('region', $m[2]);
         }
-        else if(preg_match('/^([a-z]{2,3})$/i', $locale, $m)) // only set lang
+        else if(preg_match('/^([a-z]{2,3})$/', $locale, $m)) // only set lang
         {
             Session::set('lang', $m[0]);
         }
-        else if(preg_match('/^([A-Z]{2,3})$/i', $locale, $m)) // only set region
+        else if(preg_match('/^([A-Z]{2,3})$/', $locale, $m)) // only set region
         {
             Session::set('region', $m[0]);       
         }

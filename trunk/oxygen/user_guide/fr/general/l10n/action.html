@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../../'; var lang = 'fr'; var bc = {'Localisation (l10n)': '../l10n.html'};</script>         
+        <script type="text/javascript" src="../../../js/loader.js"></script>        
+    </head>
+    <body>
+        <h1>Localisation d'un contrôleur (action)</h1>
+        <p>
+            La traduction d'un texte dans un contrôleur se fait en utilisant la méthode t() se trouvant dans la classe héritée "Action".
+            Exemple
+        </p>
+        <php> 
+            // La classe hérite bien de la classe Action            
+            class m_demo_action_i18n extends Action
+            {
+                public function execute()
+                {     
+                    // Dans l'exemple la langue définie par défaut est fr_FR                
+                    echo $this->t('Ceci est un texte de démonstration').' / ';
+                    
+                    // On défini l'anglais des Etats-unis pour la suite de l'exécution
+                    i18n::setLocale('en_US');
+                    
+                    // La locale a changée le texte sera traduit
+                    echo $this->t('Ceci est un texte de démonstration');
+                }
+            }            
+        </php>
+        
+        <p>A la première exécution voici ce qui s'affiche</p>
+        
+        <blockquote class="screen">
+            Ceci est un texte de démonstration / Ceci est un texte de démonstration
+        </blockquote>
+        
+        <p>
+            On voit que le texte n'a pas été traduit ce qui est normal car nous ne l'avons pas encore défini dans un fichier de traduction.
+            Dans cet exemple un fichier vient d'être créé automatiquement dans le dossier i18n du module demo (le nom du module est récupéré en fonction du nom de la classe).
+            Le fichier est nommé "actions.en.xml" car par défaut les traductions des contrôleurs sont identifiés comme "actions" et la langue appelée est "en" (anglais). 
+            En ouvrant le fichier on voit
+        </p>
+        
+        <pre class="brush:xml">
+            &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+            &lt;xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2"&gt;
+                &lt;file source-language="fr" datatype="plaintext" original="m_default_action_Index"&gt;
+                    &lt;body&gt;
+                        &lt;trans-unit id="1"&gt;
+                            &lt;source&gt;Ceci est un texte de démonstration&lt;/source&gt;
+                            &lt;target&gt;&lt;/target&gt;
+                        &lt;/trans-unit&gt;
+                    &lt;/body&gt;
+                &lt;/file&gt;
+            &lt;/xliff&gt;
+        </pre>
+        
+        On va alors définir la traduction du texte comme ceci
+        
+        <xml>
+            &lt;source&gt;Ceci est un texte de démonstration&lt; /source&gt;
+            &lt;target&gt;This is a demonstration text&lt;/target&gt;
+        </xml>
+        
+        <p>En relançant notre script on aura cette fois ci</p>
+        
+        <blockquote class="screen">
+            Ceci est un texte de démonstration / This is a demonstration text
+        </blockquote>
+        
+    </body>            
+</html>

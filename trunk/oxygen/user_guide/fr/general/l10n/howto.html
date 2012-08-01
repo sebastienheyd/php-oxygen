@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../../'; var lang = 'fr'; var bc = {'Localisation (l10n)': '../l10n.html'};</script>      
+        <script type="text/javascript" src="../../../js/loader.js"></script>        
+    </head>
+    <body>
+        <h1>Comment localiser ?</h1>
+        <p>
+            Après avoir configuré la locale (culture) par défaut il est nécessaire d'indiquer à votre application la 
+            langue (et/ou la région) que vous voulez utiliser pendant le reste de son exécution. 
+            Pour cela il suffit d'appeler la méthode statique <a href="../classes/i18n.html">i18n::setLocale()</a>.
+        </p>                                
+        
+        <h2>i18n::setLocale()</h2>
+        
+        <p>
+            La méthode permet de changer soit la langue, soit la région, soit la locale directement. 
+            Il est nécessaire de l'appeler pour initialiser la localisation.
+        </p>
+        
+        <p>
+            Une fois la méthode appelée, tous les appels aux méthodes, balises et fonctions de localisation feront une 
+            comparaison avec la locale par défaut. Si la locale définie est différente de la locale par défaut alors 
+            les données seront adaptées à la culture définie.
+        </p>
+        
+        <h3>Exemple</h3>
+        
+        <php>
+            /** 
+             * (!) Dans cet exemple la langue définie par défaut est fr_FR                
+             */
+             
+            echo $this->t("J'aime les sucreries").' / ';
+                    
+            // On défini l'anglais pour la suite de l'exécution des scripts
+            i18n::setLocale('en');
+                    
+             // La langue a changée, le texte sera traduit en anglais
+            echo $this->t("J'aime les sucreries").' / ';
+            
+            // On défini l'anglais des &Eacute;tats-unis pour la suite de l'exécution des scripts
+            i18n::setLocale('en_US');
+                    
+             // La locale a changée, le texte sera traduit mais avec une variation pour les &Eacute;tats-unis
+            echo $this->t("J'aime les sucreries");
+            
+            // On défini la région GB, la langue est déjà l'anglais
+            i18n::setLocale('GB');
+                    
+             // La région a changée, le texte sera traduit mais avec une variation pour le Royaume Uni
+            echo $this->t("J'aime les sucreries");            
+        </php>
+        
+        Affichera par exemple 
+        
+        <blockquote class="screen">
+            J'aime les sucreries / I love sweets / I love candy / I love sweets
+        </blockquote>
+        
+        <blockquote class="trick">             
+            Il est fortement recommandé d'appeler la méthode i18n::setLocale() qu'une seule fois et le plus en amont 
+            possible dans l'exécution de vos scripts.
+        </blockquote>
+        
+        <h2>Fichiers de traduction</h2>
+        
+        <p>
+            A chaque appel d'une méthode, balise ou fonction de traduction, PHP Oxygen fera appel à un <a href="files.html">fichier de traduction</a>. 
+            Dans la grande majorité des cas ces fichiers sont autogénérés dès que l'on appelle une traduction. 
+        </p>
+        
+    </body>            
+</html>
