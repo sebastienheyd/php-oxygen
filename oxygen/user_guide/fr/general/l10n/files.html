@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../../'; var lang = 'fr'; var bc = {'Localisation (l10n)': '../l10n.html'};</script>         
+        <script type="text/javascript" src="../../../js/loader.js"></script>        
+    </head>
+    <body>
+        <h1>Fichiers de localisation</h1>
+        <p>
+            La localisation d'un texte ne peut se faire que si on a saisi son équivalent dans la langue ou culture ciblée. 
+            Pour simplifier le travail des traducteurs, le choix à été fait d'utiliser des fichiers au format XLIFF.
+        </p>
+        
+        <h2>Génération</h2>        
+        <p>
+            Dans la grande majorité des cas les fichiers de localisation (ou traduction) sont générés automatiquement à la traduction. 
+            Il est cependant possible d'avoir à créer soit même des fichiers de localisation pour définir des spécificités régionales pour une langue donnée.
+            <a href="../l10n.html">Voyez les exemples</a> pour plus de détails.
+        </p>
+        
+        <h2>Le format XLIFF</h2>
+        
+        <blockquote>
+            XML Localisation Interchange File Format, dit XLIFF, est un langage de balisage créé pour standardiser les échanges liés à la régionalisation (ou localisation). 
+            XLIFF se fonde sur la syntaxe définie par XML. Ce format a été spécifié par l'OASIS en 2002. 
+            La version actuelle de la spécification est la version v1.2 du 1er février 2008.<br /><br />
+            Source : <a href="http://fr.wikipedia.org/wiki/XLIFF">Wikipedia</a>
+        </blockquote>
+        
+        <h3>Structure de base</h3>        
+        <p>
+            Un fichier XLIFF pour PHP Oxygen utilise dans sa forme la plus minime comme ceci
+        </p>
+        
+        <pre class="brush:xml">
+            &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+            &lt;xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2"&gt;
+                &lt;file source-language="" datatype="plaintext" original=""&gt;
+                    &lt;body&gt;
+                        &lt;trans-unit id=""&gt;
+                            &lt;source&gt;&lt;/source&gt;
+                            &lt;target&gt;&lt;/target&gt;
+                        &lt;/trans-unit&gt;
+                    &lt;/body&gt;
+                &lt;/file&gt;
+            &lt;/xliff&gt;
+        </pre>
+        
+        <h4>Définition de la langue et de l'origine</h4>
+        
+        <p>
+            Pour fonctionner et pour être conforme au format XLIFF il est nécessaire de définir la langue source et également une origine. 
+            Pour cela on va compléter les arguments de la balise file, par exemple pour la langue française (fr) 
+            on veut traduire un gabarit nommé template.html, on pourra avoir
+        </p>
+        
+        <pre class="brush:xml">&lt;file source-language="fr" datatype="plaintext" original="template.html"&gt;</pre>
+        
+        <blockquote class="trick">
+            La valeur de l'argument "original" doit vous permettre de retrouver facilement où se trouvent les données d'origine. 
+            N'hésitez donc pas à définir une valeur précise comme le nom du fichier, de la classe, etc...
+        </blockquote>
+        
+        <h4>Définition d'un id et d'une traduction</h4>
+        <p>
+            Nous voila au coeur du sujet, la traduction proprement dite. Pour cela on va définir un identifiant unique par 
+            balise &lt;file&gt; comme argument d'une unité de traduction &lt;trans-unit&gt;. 
+            L'identifiant unique n'est pas utilisé pour le moment dans PHP Oxygen mais son utilisation pourrait 
+            arriver un jour.
+        </p>
+        
+        <pre class="brush:xml">
+            &lt;trans-unit id="1"&gt;
+                &lt;source&gt;&lt;/source&gt;
+                &lt;target&gt;&lt;/target&gt;
+            &lt;/trans-unit&gt;
+        </pre>        
+        
+        <p>Ensuite viens le plus important, la saisie de la phrase à traduire dans la balise &lt;source&gt;</p>
+        
+        <pre class="brush:xml">
+            &lt;trans-unit id="1"&gt;
+                &lt;source&gt;Ma phrase à traduire&lt;/source&gt;
+                &lt;target&gt;&lt;/target&gt;
+            &lt;/trans-unit&gt;
+        </pre>
+        
+        <blockquote class="warning">
+            La phrase d'origine doit être saisie sans erreur et en respectant la casse. 
+        </blockquote>
+                
+        <p>Vous l'aurez compris, la traduction se place dans la balise &lt;target&gt;</p>
+        
+        <pre class="brush:xml">
+            &lt;trans-unit id="1"&gt;
+                &lt;source&gt;Ma phrase à traduire&lt;/source&gt;
+                &lt;target&gt;My sentence to translate&lt;/target&gt;
+            &lt;/trans-unit&gt;
+        </pre>
+        
+        <blockquote class="warning">
+            Dans le cas d'utilisation de balise HTML dans vos phrases n'oubliez pas de l'entourer par une section d'échappement CDATA. 
+        </blockquote>
+        
+        <pre class="brush:xml">
+            &lt;trans-unit id="1"&gt;
+                &lt;source&gt;&lt;![CDATA[Ma phrase à traduire avec une &lt;strong&gt;balise HTML&lt;/strong>]]&gt;&lt;/source&gt;
+                &lt;target&gt;&lt;![CDATA[My sentence to translate with an &lt;strong&gt;HTML tag&lt;/strong>]]&gt;&lt;/target&gt;
+            &lt;/trans-unit&gt;
+        </pre>
+        
+    </body>            
+</html>

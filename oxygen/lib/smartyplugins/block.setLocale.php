@@ -12,7 +12,7 @@
  */
 
 /**
- * Set the current template original language to use with {t}
+ * Set the current template original locale to use with {t}
  * 
  * @param array $params     An array of parameters to give to i18n::translate()
  * @param string $content   The template or template portion content
@@ -24,18 +24,18 @@ function smarty_block_setLocale($params, $content, &$smarty, &$repeat)
 {
     if($repeat == true)
     {
-        if(isset($params['lang']) && preg_match('/^([a-zA-Z]{2})$/is', $params['lang'])) 
+        if(isset($params['locale']) && preg_match('/^([a-z]{2,3})[_-]([A-Z]{2})$/', $params['locale'])) 
         {
-            $smarty->assign('TPL_LANG', strtolower($params['lang']));
+            $smarty->assign('TPL_LOCALE', $params['locale']);
         }
         else
         {
-            throw new SmartyException('Lang is not set or not correctly formatted');
+            throw new SmartyException('Locale is not set or not correctly formatted');
         }
     }
     else
     {
-        $smarty->assign('TPL_LANG', 'en');
+        $smarty->assign('TPL_LOCALE', i18n::getDefaultLocale());
         return $content;
     }
 }

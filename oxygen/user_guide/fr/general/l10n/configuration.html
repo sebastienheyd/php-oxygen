@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../../'; var lang = 'fr'; var bc = {'Localisation (l10n)': '../l10n.html'};</script>       
+        <script type="text/javascript" src="../../../js/loader.js"></script>        
+    </head>
+    <body>
+        <h1>Configuration</h1>
+        
+        <p>
+           Avant de configurer votre application pour la localisation, il est nécessaire de bien comprendre la 
+           terminologie des codes qui vont être utilisés dans cette documentation.
+        </p>
+            
+        <table>
+            <tr>
+                <td>Langue</td>
+                <td>La langue est représentée par un code ISO 639-1 à deux lettres en minuscule.</td>
+                <td>fr, en, de, it, ...</td></tr>
+            <tr>
+                <td>Région</td>
+                <td>La région (le pays) est représenté par un code ISO 3166-1 à deux lettres en majuscule</td>
+                <td>FR, CA, DE, CH, ...</td>
+            </tr>
+            <tr>
+                <td>Locale (culture)</td>
+                <td>
+                    La locale ou culture est une concaténation du code langue et du code région séparés par un underscore. 
+                    Elle permet d'identifier les nuances qui peuvent exister pour une même langue d'un pays à l'autre. 
+                    Par exemple au Québec on dira "chez le nettoyeur" alors qu'en France on dira "au pressing". 
+                </td>
+                <td>fr_FR, fr_CH, de_DE, de_CH, ...</td></tr>
+        </table>
+
+        <p>
+            Pour effectuer une localisation vous devez définir une locale par défaut pour votre application. 
+            Cette locale permettra de savoir si les textes, dates, valeurs de l'application doivent être adaptés 
+            ou non à une autre locale (en traduisant par exemple). 
+            En effet si la locale définie dans votre application est différente de la locale par défaut, 
+            l'application sait alors qu'elle doit adapter ses contenus.
+        </p>                       
+               
+        <p>
+            Pour définir la langue par défaut il suffit de définir le paramètre locale dans la section general du 
+            fichier de configuration. 
+            Par exemple pour définir le français de France :
+        </p>
+        
+        <pre>
+        [general]
+            ...
+
+            ; Default application locale (Default is "en_US")
+            locale = "fr_FR"
+
+            ...
+        </pre> 
+        
+        <blockquote class="info">Par défaut si aucune culture a été définie c'est la culture "en_US" qui sera utilisée.</blockquote>
+        
+    </body>            
+</html>
