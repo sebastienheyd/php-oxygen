@@ -8,6 +8,60 @@
         <script type="text/javascript" src="../../../js/loader.js"></script>        
     </head>
     <body>
-        <h1>Localisation d'un gabarit (template)</h1>        
+        <h1>Localisation d'un gabarit (template)</h1>
+        
+        <p>La localisation d'un gabarit affiché par la classe <a href="../../classes/template.html">Template</a> (Smarty) se fait par l'utilisation de deux balises <strong>{setLocale}</strong> et <strong>{t}</strong></p>
+        
+        <h2>Locale du gabarit</h2>
+        <p>
+            Lorsque vous travaillez sur une application il est possible que vous vous retrouviez avec des gabarits écrit dans des langues différentes.
+            Il est alors possible de définir explicitement la/les langues utilisées dans le gabarit afin que les fichiers 
+            de traduction soit correctement générés en utilisant la balise Smarty setLocale, exemple
+        </p>
+        
+        <pre class="brush:smarty">
+            {setLocale locale="fr_FR"}
+                <div>{t}Ce texte sera traduit si il n'est pas en français de France{/t}</div>
+            {/setLocale}
+
+            {setLocale locale="en_US"}
+                <div>{t}And this one will be translated if not in US english{/t}</div>
+            {/setLocale}
+        </pre>
+        
+        <blockquote class="warning">
+            Il est important de définir la locale en adéquation avec la langue du texte, sinon il sera impossible de traduire correctement.
+        </blockquote>
+        
+        <h2>Traduire une chaîne</h2>        
+        <p>Comme vous l'avez surement remarqué dans l'exemple précédent on englobe les textes à traduire par la balise Smarty {t}</p>
+        
+        <pre class="brush:smarty">
+            <p>{t}Ce texte sera traduit{/t}</p>
+            <p>Mais pas celui-ci</p>
+        </pre>
+            
+        <h3>Utilisation de variables</h3>
+        <p>
+            Il est possible de fournir des variables aux chaînes à traduire en les déclarants comme attributs de la balise {t}
+            et en encadrant la variable dans la chaîne par le caractère %, exemple
+        </p>
+        
+        <pre class="brush:smarty">
+            <p>{t name="John"}Bonjour mon nom est %name%{/t}</p>
+        </pre>
+        
+        Affichera
+        
+        <blockquote class="screen">Bonjour mon nom est John</blockquote>
+        
+        <h2>Emplacement des fichiers de localisation XLIFF</h2>      
+        
+        <p>
+            Les fichiers XLIFF de localisation générés automatiquement se trouvent dans le dossier i18n se trouvant 
+            au même niveau que le gabarit chargé par la classe Template. Si le dossier n'existe pas, il est automatiquement
+            créé.
+        </p>
+        
     </body>            
 </html>
