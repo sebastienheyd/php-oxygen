@@ -7,12 +7,12 @@
 	"firstDay":1,
 	"smartFormat":{
 		"shortDate":"d/m/Y",
-		"longDate":"l, d' de 'F' de 'Y",
+		"longDate":"l, d \\de F \\de Y",
 		"shortTime":"H:i",
 		"longTime":"H:i:s",
-		"fullDateTime":"l, d' de 'F' de 'Y H:i:s",
+		"fullDateTime":"l, d \\de F \\de Y H:i:s",
 		"monthDay":"d F",
-		"yearMonth":"F' de 'Y"
+		"yearMonth":"F \\de Y"
 	},
 	"relativeTime":{
 		"future":"en %s",

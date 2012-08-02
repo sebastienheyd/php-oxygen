@@ -29,7 +29,16 @@
             Date::fromTimeStamp(strtotime('+10 days'));
             
             // Equivalent à Date::now()
-            Date::fromTimeStamp(now());
+            Date::fromTimeStamp(time());
+        </php>
+        
+        <h3>fromString()</h3>
+        <p>Instancie l'objet Date à partir d'un texte à la manière de strtotime. Exemple :</p>
+        <php>
+            Date::fromString("+10 days");
+            
+            // Equivalent à
+            Date::fromTimeStamp(strtotime("+10 days"));
         </php>
         
         <h3>fromFormat()</h3>
@@ -67,19 +76,24 @@
             Il est possible de comparer deux instance de Date avec les opérateurs de comparaison. Exemple :
         </p>
         <php>
-            $date1 = Date::fromTimeStamp(strtotime('-10 days'));
-            $date2 = Date::now();
-            
-            $date1 < $date2 // retourne true
+            Date::fromString('-1 day') < Date::now() // retourne true
+            Date::fromString('+1 day') < Date::now() // retourne false
         </php>
            
         <h2>Conversion</h2>
         <p>La classe Date permet de reformater et de localiser les dates instanciées.</p>
         
         <blockquote class="info">
-            Les données localisées (jours de la semaine, mois, etc...) se trouvent dans le fichier date/xml/date.xml. 
-            Au moment de la rédaction de cette documentation seules les langues fr et en sont disponibles. Par défaut la langue anglaise est prise en compte.
+            Les données localisées (jours de la semaine, mois, etc...) sont situés dans des fichiers json dans le dossier 
+            oxygen/date/json. Par défaut PHP Oxygen est livré avec quelques fichiers qui s'étofferont au fil du temps 
+            mais libre à vous d'en rajouter selon vos besoins.
         </blockquote>
+        
+        <blockquote class="warning">
+            Les données localisées sont affichées en fonction de la langue du contexte définie par la méthode <a href="i18n.html">I18n::setLocale()</a>. 
+            Dans le cas ou la méthode n'est pas appelée, c'est la langue par défaut qui sera prise en compte, <a href="../general/l10n.html">voyez la 
+            rubrique localisation</a> pour plus de détails.
+        </blockquote>        
         
         <h3>toFormat()</h3>
         <p>
@@ -87,33 +101,53 @@
             La méthode va également traduire les données textuelles en fonction de la langue donnée ou par défaut par la langue du contexte I18n courant.
         </p>
         <php>
-            // Retourne "dimanche 28 février 2010"
+            // On défini l'allemand comme langue par défaut
+            i18n::setLocale('de');
+            
+            // Retourne "Sonntag 28 Februar 2010" car la langue du contexte est l'allemand
+            Date::fromMySql('2010-02-28')->toFormat('l j F Y');
+            
+            // Retourne "dimanche 28 février 2010" car on a spécifié la langue
             Date::fromMySql('2010-02-28')->toFormat('l j F Y', 'fr');            
         </php>
         
         <h3>toSmartFormat()</h3>         
         <p>
-            Permet de reformater la date en utilisant un format prédéfini. Les formats sont les suivants :
+            Permet de formater la date en utilisant un format prédéfini. Les formats sont les suivants :
         </p>
-        <ul>
-            <li><strong>day-month</strong> - exemple : "28 février"</li>
-            <li><strong>year-month-day</strong> - exemple : "28 février 2010"</li>
-            <li><strong>date-time</strong> - exemple : "28/02/2010 08:30"</li>
-            <li><strong>fulltext-date</strong> - exemple : "dimanche 28 février 2010"</li>
-            <li><strong>fulltext-date-time</strong> (defaut) - exemple : "dimanche 28 février 2010 à 08h30"</li>
-        </ul>
+        <table>
+            <tr><th>Format</td><th>Exemple en</td><th>Exemple fr</th><th>Exemple es</th></tr>
+            <tr><td>shortDate</td><td>08/15/1977</td><td>15/08/1977</td><td>15/08/1977</td></tr>
+            <tr><td>longDate</td><td>Monday, August 15, 1977</td><td>Lundi 15 Août 1977</td><td>Lunes, 15 de Agosto de 1977</td></tr>
+            <tr><td>shortTime</td><td>08:30</td><td>08:30</td><td>08:30</td></tr>
+            <tr><td>longTime</td><td>08:30:06</td><td>08:30:06</td><td>08:30:06</td></tr>
+            <tr><td>fullDateTime</td><td>Monday, August 15, 1977 08:30:06</td><td>Lundi 15 Août 1977 08:30:06</td><td>Lunes, 15 de Agosto de 1977 08:30:06</td></tr>
+            <tr><td>monthDay</td><td>August 15</td><td>15 Août</td><td>15 Agosto</td></tr>
+            <tr><td>yearMonth</td><td>August, 1977</td><td>Août 1977</td><td>Agosto de 1977</td></tr>
+        </table>
+
         <php>
-            // Retourne "dimanche 28 février 2010"
-            Date::fromMySql('2010-02-28')->toSmartFormat('fulltext-date', 'fr');
+            // On défini l'espagnol comme langue par défaut
+            i18n::setLocale('es_ES');            
+            
+            // Retourne "Lunes, 15 de Agosto de 1977 08:30:06"
+            Date::fromMySql('1977-08-15 08:30:06')->toSmartFormat('fullDateTime');
+            
+            // Retourne "Lundi 15 Août 1977 08:30:06"
+            Date::fromMySql('1977-08-15 08:30:06')->toSmartFormat('fullDateTime', 'fr');
         </php>
         
         <h3>toMysql()</h3>
         <p>
-            Retourne la date au format MySQL datetime. Cela peut être utile pour l'insertion de données dans une base de données MySQL.
+            Retourne la date au format MySQL date, timestamp ou datetime. Cela peut être utile pour l'insertion de données 
+            dans une base de données MySQL.
         </p>
-        <php>
+        <php>            
             // retourne par exemple : "2011-06-14 18:29:34"
             Date::now()->toMysql();
+            
+            // retourne par exemple : "2011-06-14"
+            Date::now()->toMysql('date');
         </php>
         
         <h3>toHttp()</h3>
@@ -127,22 +161,33 @@
         
         <h3>toDiff()</h3>
         <p>
-            Retourne le temps restant ou le temps passé depuis la date au format textuel. 
-            La méthode prend comme arguments la précision, le séparateur et la langue d'affichage ou par défaut la langue du contexte I18n. 
-            La précision permet de définir le niveau de détail à afficher.
+            Retourne le temps restant ou le temps passé depuis la date au format textuel. Voici les paramètres de la méthode, aucun est oblogatoire :
         </p>
+        
+        <table>
+            <tr><th>$argument</th><th>description</th><th>valeur acceptées</th><th>défaut</th></tr>
+            <tr><td>$precision</td><td>Niveau de précision de la réponse, plus elle est élevée plus la réponse est détaillée</td><td>1 à 6</td><td>1</td></tr>
+            <tr><td>$separator</td><td>Séparateur utilisé pour l'affichage des réponses</td><td>texte</td><td>"&nbsp;" (un espace)</td></tr>
+            <tr><td>$futurePast</td><td>Doit on retourner "dans ..." ou "il y a...". La valeur retournée est localisée</td><td>booleen</td><td>true</td></tr>
+            <tr><td>$timestamp</td><td>Un timestamp à partir duquel on veut comparer</td><td>entier</td><td>timestamp courant</td></tr>
+            <tr><td>$langOrRegion</td><td>Le code de langue ou locale à utiliser</td><td>texte</td><td>locale courante</td></tr>
+        </table>
+        
         <php>
-            // Retourne "il y a 1 semaine"
-            Date::fromTimeStamp(strtotime('-1 week -2 days'))->toDiff(1, ' ', 'fr');
+            // On défini le français comme langue par défaut
+            i18n::setLocale('fr_FR'); 
             
-            // Retourne "il y a 1 semaine et 2 jours"
-            Date::fromTimeStamp(strtotime('-1 week -2 days'))->toDiff(2, ' et ', 'fr');
+            // Retourne "il y a 9 jours"
+            Date::fromTimeStamp(strtotime('-1 week -2 days'))->toDiff();
+            
+            // Retourne "il y a 1 mois et 2 jours"
+            Date::fromTimeStamp(strtotime('-1 month -2 days'))->toDiff(2, ' et ');
             
             // Retourne "dans 1 mois"
-            Date::fromTimeStamp(strtotime('+1 month'))->toDiff(1, '', 'fr');
+            Date::fromTimeStamp(strtotime('+1 month'))->toDiff();
             
-            // Retourne "dans 3 semaines, 4 jours, 22 heures"
-            Date::fromTimeStamp(strtotime('+1 month -4 days +2 hours'))->toDiff(3, ', ', 'fr');
+            // Retourne "dans 27 jours, 2 heures"
+            Date::fromTimeStamp(strtotime('+1 month -4 days +2 hours'))->toDiff(3, ', ');
         </php>
         
         <h3>toTimeStamp()</h3>
@@ -167,17 +212,16 @@
             Date::fromFormat(date('2009-05-23 16:00:00'))->getDiff();
             
             /*
-            Array
-            (
-                [years] => 2
-                [months] => 0
-                [weeks] => 1
-                [days] => 6
-                [hours] => 13
-                [minutes] => 14
-                [seconds] => 11
-                [position] => past
-            )
+            array (
+                'position' => 'past',
+                'years' => 3,
+                'months' => 2,
+                'weeks' => 1,
+                'days' => 4,
+                'hours' => 1,
+                'minutes' => 58,
+                'seconds' => 46,
+              )
             */
         </php>
         

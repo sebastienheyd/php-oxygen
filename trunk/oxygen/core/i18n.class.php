@@ -68,19 +68,18 @@ class I18n
      * @return void
      */
     public static function setLocale($locale)
-    {        
+    {
         // set full locale like fr_FR
-        if(preg_match('/^([a-z]{2,3})[_-]([A-Z]{2})$/', $locale, $m))
+        if(preg_match('/^([a-z]{2})[_-]([A-Z]{2})$/', $locale, $m))
         {
-            Session::set('locale', $m[0]);
             Session::set('lang', $m[1]);
             Session::set('region', $m[2]);
         }
-        else if(preg_match('/^([a-z]{2,3})$/', $locale, $m)) // only set lang
+        else if(preg_match('/^([a-z]{2})$/', $locale, $m)) // only set lang
         {
             Session::set('lang', $m[0]);
         }
-        else if(preg_match('/^([A-Z]{2,3})$/', $locale, $m)) // only set region
+        else if(preg_match('/^([A-Z]{2})$/', $locale, $m)) // only set region
         {
             Session::set('region', $m[0]);       
         }
@@ -107,7 +106,7 @@ class I18n
      */
     public static function getLocale()
     {
-        return Session::get('locale', self::getDefaultLocale());
+        return Session::get('lang', self::getLang()).'_'.Session::get('region', self::getRegion());
     }
     
     /**

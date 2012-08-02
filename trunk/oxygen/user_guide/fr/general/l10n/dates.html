@@ -8,6 +8,38 @@
         <script type="text/javascript" src="../../../js/loader.js"></script>        
     </head>
     <body>
-        <h1>Localisation des dates</h1>        
+        <h1>Localisation des dates</h1>
+        
+        <p>La localisation des dates se fait de manière transparente via la <a href="../../classes/date.html">classe Date</a>.</p>
+        
+        <h2>Exemples</h2>
+        <php>
+            // On défini l'allemand comme langue par défaut
+            i18n::setLocale('de');
+            
+            // Retourne "Sonntag 28 Februar 2010" car la langue du contexte est l'allemand
+            Date::fromMySql('2010-02-28')->toFormat('l j F Y');
+            
+            // Retourne "dimanche 28 février 2010" car on a spécifié la langue
+            Date::fromMySql('2010-02-28')->toFormat('l j F Y', 'fr');
+            
+            // On défini l'espagnol comme langue par défaut
+            i18n::setLocale('es_ES');            
+            
+            // Retourne "Lunes, 15 de Agosto de 1977 08:30:06"
+            Date::fromMySql('1977-08-15 08:30:06')->toSmartFormat('fullDateTime');
+            
+            // Retourne "Lundi 15 Août 1977 08:30:06"
+            Date::fromMySql('1977-08-15 08:30:06')->toSmartFormat('fullDateTime', 'fr');
+            
+            // On défini le français comme langue par défaut
+            i18n::setLocale('fr_FR'); 
+            
+            // Retourne "il y a 9 jours"
+            Date::fromTimeStamp(strtotime('-1 week -2 days'))->toDiff();
+            
+            // Retourne "il y a 1 mois et 2 jours"
+            Date::fromTimeStamp(strtotime('-1 month -2 days'))->toDiff(2, ' et ');            
+        </php>
     </body>            
 </html>
