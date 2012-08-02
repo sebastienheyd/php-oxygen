@@ -6,11 +6,11 @@
 	"dayNamesMin":["Su","Mo","Tu","We","Th","Fr","Sa"],
 	"firstDay":1,
 	"smartFormat":{
-		"shortDate":"M/d/Y",
+		"shortDate":"m/d/Y",
 		"longDate":"l, F d, Y",
-		"shortTime":"h:i tt",
-		"longTime":"h:i:s tt",
-		"fullDateTime":"l, F d, Y h:i:s tt",
+		"shortTime":"h:i",
+		"longTime":"h:i:s",
+		"fullDateTime":"l, F d, Y h:i:s",
 		"monthDay":"F d",
 		"yearMonth":"F, Y"
 	},

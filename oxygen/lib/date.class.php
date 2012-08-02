@@ -48,6 +48,17 @@ class Date
     }
     
     /**
+     * Instanciate date from a string like strtotime
+     * 
+     * @param string $string    The input string
+     * @return f_date_Date      Return an instance of f_date_Date
+     */
+    public static function fromString($string)
+    {
+        return f_date_Date::getInstance(date('Y-m-d H:i:s', strtotime($string)));
+    }
+    
+    /**
      * Instanciate date with a user formated date
      * 
      * @param string $date      The input date

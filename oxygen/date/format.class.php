@@ -35,13 +35,24 @@ class f_date_Format
      */
     private function __construct($region)
     {        
-        list($iso639, $iso3166) = preg_split('/[_-]/', $region);
         $folder = FW_DIR.DS.'date'.DS.'json';
+        // trying to get file with full region code
+        if(is_file($folder.DS.$region.'.json')) $json = $folder.DS.$region.'.json';
 
-        if(is_file($folder.DS.$region.'.js')) $json = $folder.DS.$region.'.json';
-        if($json === null && is_file($folder.DS.$iso639.'.json')) $json = $folder.DS.$iso639.'.json';        
-        if($json === null) $json = $json = $folder.DS.'en.json';
+        // if file is not found
+        if(!isset($json))
+        {
+            // get the lang iso
+            $isos = preg_split('/[_-]/', $region);
+            
+            // trying to get file
+            if(is_file($folder.DS.$isos[0].'.json')) $json = $folder.DS.$isos[0].'.json';        
+            
+            // else get en file
+            if(!isset($json)) $json = $json = $folder.DS.'en.json';
+        }
 
+        // decode json to array
         $this->_vars = json_decode(file_get_contents($json), true);
     }
     
@@ -58,6 +69,16 @@ class f_date_Format
     }
     
     /**
+     * Returns current instanciated date timestamp
+     * 
+     * @return integer
+     */
+    public function toTimeStamp()
+    {
+        return $this->_date->toTimeStamp();
+    }
+    
+    /**
      * Return current date to a formated string value.
      * 
      * @param string $format   [optional] Output format to use. Default is 'Y-m-d H:i:s'
@@ -70,7 +91,7 @@ class f_date_Format
 		for ($i = 0 ; $i < strlen($format) ; $i++)
 		{
 			$c = substr($format, $i, 1);
-			if ($c == '\\')
+			if ($c === '\\')
 			{
 				if ($escaped) $result .= '\\';
 				$escaped = ! $escaped;
@@ -249,7 +270,7 @@ class f_date_Format
         $hoursDiff = strtotime(date('H:i:s', $this->_date->toTimeStamp())) - strtotime(date('H:i:s', $d));                            
                 
         // Get position in time
-        $position = $daysDiff >= 0 ? 'past' : 'future';        
+        $position = $daysDiff < 0 ? 'past' : 'future';        
         if($daysDiff == 0) $position = $hoursDiff >= 0 ? 'past' : 'future';
         $result['position'] = $position;
             
@@ -341,7 +362,7 @@ class f_date_Format
      * @param string $separator     [optional] Separator to use between results, default is ' ' (space)
      * @return string               Difference in full-text
      */
-    public function toDiff($timestamp = null, $precision = 1, $separator = ' ', $futurePast = true)
+    public function toDiff($precision = 1, $separator = ' ', $futurePast = true, $timestamp = null)
     {
         $diff = $this->getDiff($timestamp);
 

@@ -130,15 +130,16 @@ class f_date_Date
      * 
      * @example 1 year ago - 1 day 2 hours ago - etc...
      * 
-     * @param integer               [optional] Timestamp to compare current date with
      * @param integer $precision    [optional] Result's level precision (1 to 6). Default is 1
      * @param string $separator     [optional] Separator to use between results, default is ' ' (space)
+     * @param boolean $futurePast   [optional] Must we display "in ..." or "... ago"
+     * @param integer $timestamp    [optional] Timestamp to compare current date with
      * @param string $lang          [optional] iso-639-1 code (ex: fr, en, es, ...). Default is null. Will take I18n setted lang if null
      * @return string               Difference in full-text
      */
-    public function toDiff($timestamp = null, $precision = 1, $separator = ' ', $futurePast = true, $langOrRegion = null)
+    public function toDiff($precision = 1, $separator = ' ', $futurePast = true, $timestamp = null, $langOrRegion = null)
     {
-        return f_date_Format::getInstance($langOrRegion)->setDate($this)->toDiff($timestamp, $precision, $separator, $futurePast);
+        return f_date_Format::getInstance($langOrRegion)->setDate($this)->toDiff($precision, $separator, $futurePast, $timestamp);
     }
     
     /**
@@ -168,11 +169,23 @@ class f_date_Date
     /**
      * Returns current instanciated date in MySql datetime format
      * 
-     * @return string   Current date in MySql datetime format
+     * @param string $type      [optional] Type of output, can be "date", "timestamp" or "datetime" (default)
+     * @return string           Current date in MySql datetime format
      */
-    public function toMysql()
+    public function toMysql($type = 'datetime')
     {
-        return f_date_Format::getInstance('en_US')->setDate($this)->toFormat('Y-m-d H:i:s');
+        $date = f_date_Format::getInstance('en_US')->setDate($this);
+        
+        if($type === 'date')
+        {
+            return $date->toFormat('Y-m-d');            
+        }
+        else if($type === 'timestamp')
+        {
+            return $date->toTimeStamp();
+        }
+        
+        return $date->toFormat('Y-m-d H:i:s');      
     }    
     
     /**

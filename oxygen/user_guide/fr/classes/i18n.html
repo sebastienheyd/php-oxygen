@@ -11,7 +11,11 @@
         <h1>I18n</h1>
         <p>
            La classe I18n permet la gestion de l'internationalisation en adaptant les contenus à des langues et/ou cultures différentes.
-        </p>       
+        </p> 
+        
+        <blockquote class="warning">
+            Pour bien utiliser cette classe prenez connaissance de la <a href="../general/l10n.html">rubrique localisation</a> au préalable.
+        </blockquote>
                 
         <h2>Fonctions</h2>
         
@@ -22,9 +26,6 @@
             <li>Un code de région sur deux caractères en majuscule ( <a href="http://fr.wikipedia.org/wiki/ISO_3166-1" target="_blank">ISO 3166-1</a> )</li>
             <li>Un code composé du code langue en minuscule et du code région en majuscule séparé par un underscore, ex : fr_FR, de_CH</li>
         </ul>
-        <blockquote class="warning">
-            Par défaut la langue est "en" et la région "US", si la localisation est différente veuillez à bien déclarer la langue et la région à utiliser à l'initialisation de votre application. Sans ça la localisation risque de ne pas être appliquée dans l'ensemble des scripts.
-        </blockquote>
         <php>
             I18n::setLocale('de');      // Définit l'allemand comme langue
             I18n::setLocale('CH');      // Définit la Suisse comme région
@@ -96,12 +97,12 @@
         </php>
         
         <blockquote class="info">
-            PHP Oxygen est livré par défaut avec 12 fichiers de langues (ar, bn, de, en, es, fr, hi, it, ja, pt, ru, zh) au format json. 
-            Il est possible d'ajouter vos propres fichiers json dans le dossier oxygen/i18n/iso-3166.
+            PHP Oxygen est livré par défaut avec un certain nombre de fichiers au format json contenant les codes iso 3166 
+            et leurs équivalents localisés. Il est possible d'ajouter vos propres fichiers json dans le dossier oxygen/i18n/iso-3166.
         </blockquote>
         
         <blockquote class="warning">
-            Si la langue demandée n'existe pas la langue utilisée par défaut sera l'anglais (en)
+            Si la langue demandée n'existe pas dans les fichiers json la langue utilisée par défaut sera l'anglais (en)
         </blockquote>
         
         <h3>getCountrySelectBox()</h3>
@@ -127,12 +128,12 @@
         </php>
         
         <blockquote class="info">
-            PHP Oxygen est livré par défaut avec 12 fichiers de langues (ar, bn, de, en, es, fr, hi, it, ja, pt, ru, zh) au format json. 
-            Il est possible d'ajouter vos propres fichiers json dans le dossier oxygen/i18n/iso-3166.
-        </blockquote> 
+            PHP Oxygen est livré par défaut avec un certain nombre de fichiers au format json contenant les codes iso 3166 
+            et leurs équivalents localisés. Il est possible d'ajouter vos propres fichiers json dans le dossier oxygen/i18n/iso-3166.
+        </blockquote>
         
         <blockquote class="warning">
-            Si la langue demandée n'existe pas la langue utilisée par défaut sera l'anglais (en)
+            Si la langue demandée n'existe pas dans les fichiers json la langue utilisée par défaut sera l'anglais (en)
         </blockquote>        
         
         <h3>getBrowserLanguage()</h3>

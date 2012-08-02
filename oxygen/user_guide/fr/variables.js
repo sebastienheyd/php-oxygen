@@ -116,7 +116,7 @@ var footer = '\
 <br />\n\
 <a href="http://www.php-oxygen.com">PHP Oxygen</a>\n\
 &nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;\n\
-<span class="copyright">Copyright &copy; 2011</span>\n\
+<span class="copyright">Copyright &copy; 2011-2012</span>\n\
 &nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;\n\
 <span class="author">Sébastien HEYD</span>\n\
 </div>';
