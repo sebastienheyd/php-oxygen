@@ -380,12 +380,14 @@ class Db
         {
             $s = microtime(true);
             $this->_query->execute($parameters);
-            if(Log::getInstance()->getLevel() >= Log::INFO) 
-                Log::sql('{Db->execute()} ['.round((microtime(true) - $s) * 1000, 2).'ms] '.$this->interpolateQuery($this->_sql, $parameters));
+            Log::sql('{Db->execute()} ['.round((microtime(true) - $s) * 1000, 2).'ms] '.$this->interpolateQuery($this->_sql, $parameters));
         } 
         catch (PDOException $exc)
         {
-            $exception = new PDOException($exc->getMessage()."<br /><br />".$this->_sql.'<br /><br />'.$this->_printVars($parameters).'<br />');
+            $msg = $exc->getMessage()."<br /><br />".$this->_sql.'<br /><br />'.$this->_printVars($parameters).'<br />';
+            if(CLI_MODE) $msg = $exc->getMessage().PHP_EOL.$this->_sql.PHP_EOL.$this->_printVars($parameters);
+
+            $exception = new PDOException($msg);
             if(!$this->_hasActiveTransaction) throw $exception;
             $this->_transactionException = $exception;
             $this->_transactionSuccess = false;
@@ -408,7 +410,8 @@ class Db
     {
         if(empty($parameters)) return '';
         $txt = '';        
-        foreach($parameters as $k => $v) $txt .= $k." = '".$v."'".'<br />';        
+        $cr = CLI_MODE ? PHP_EOL : '<br />';
+        foreach($parameters as $k => $v) $txt .= $k." = '".$v."'".$cr;
         return $txt;
     }
     
