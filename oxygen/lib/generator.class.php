@@ -21,7 +21,7 @@ class Generator
      * @param string $config        [optional] Database configuration to use from the current config file. Default is "default"
      * @return boolean              Return true if generation is successful
      */
-    public static function model($tableName, $prefix = '', $config='default')
+    public static function model($tableName, $prefix = '', $config='db1')
     {
         return f_generator_Model::fromTable($tableName, $prefix, $config)->toModel();
     }

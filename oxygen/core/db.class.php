@@ -10,22 +10,19 @@
  * @author      Sébastien HEYD <sheyd@php-oxygen.com>
  * @package     PHP Oxygen
  */
-
 class Db
 {
+
     private $_query;
     private $_sql = '';
-    
     private $_connexion;
     private $_hasActiveTransaction = false;
-    private $_transactionSuccess = true;
-    private $_transactions = 0;
+    private $_transactionSuccess   = true;
+    private $_transactions         = 0;
     private $_transactionException;
-    private $_parameters;    
-
+    private $_parameters;
     private $_executed = false;
-    
-    private static $_instances;   
+    private static $_instances;
 
     /**
      * Main constructor
@@ -35,30 +32,32 @@ class Db
      * @return DB
      */
     protected function __construct($config, $throwException)
-	{
+    {
         $config = Config::get($config);
 
-        if($config === false) trigger_error('Database config '.$config.' does not exists in config file');       
-        
-        try
-		{            
-			$this->_connexion = new PDO($config->driver.':'.$config->type.'='.$config->host.';dbname='.$config->base,
-			$config->login,
-			$config->password,
-			array(PDO::ATTR_PERSISTENT => (int) $config->persist));
+        if ($config === false)
+            trigger_error('Database config ' . $config . ' does not exists in config file', E_USER_ERROR);
 
-			$this->_connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        try
+        {
+            $this->_connexion = new PDO($config->driver . ':' . $config->type . '=' . $config->host . ';dbname=' . $config->base,
+                            $config->login,
+                            $config->password,
+                            array(PDO::ATTR_PERSISTENT => (int) $config->persist));
+
+            $this->_connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             $this->_connexion->exec('SET NAMES "UTF8"');
-		}
-		catch(PDOException $e)
-		{
-            if(!$throwException) return false;
-            throw new PDOException($e->getMessage());    
-		}
+        }
+        catch (PDOException $e)
+        {
+            if (!$throwException)
+                return false;
+            throw new PDOException($e->getMessage());
+        }
         return true;
-	}
-    
+    }
+
     /**
      * Display the current query string
      * 
@@ -77,15 +76,15 @@ class Db
      * @return DB|Exception|false       Return instance of DB when connexion succeed. Return an exception or false when connexion failed.
      */
     public static function getInstance($config = 'db1', $throwException = true)
-    {           
-        if(!isset(self::$_instances[$config]))
+    {
+        if (!isset(self::$_instances[$config]))
         {
             $class = new self($config, $throwException);
             self::$_instances[$config] = $class->checkConnexion() ? $class : false;
         }
         return self::$_instances[$config];
     }
-    
+
     /**
      * Prepare a SQL query to execute
      * 
@@ -97,7 +96,7 @@ class Db
     {
         return self::getInstance($config)->prepare($sql);
     }
-    
+
     /**
      * Execute an SQL query and return the number of affected rows
      * 
@@ -109,7 +108,7 @@ class Db
     {
         return self::getInstance($config)->queryExec($sql);
     }
-    
+
     /**
      * Execute an SQL query from a file and return the number of affected rows
      * 
@@ -119,10 +118,11 @@ class Db
      */
     public static function execFile($file, $config = 'db1', $restrictToDir = APP_DIR)
     {
-        if(!strstr($file, $restrictToDir)) trigger_error('Security error : file is out of base directory', E_USER_ERROR);
+        if (!strstr($file, $restrictToDir))
+            trigger_error('Security error : file is out of base directory', E_USER_ERROR);
         return self::getInstance(file_get_contents($filePath))->queryExec($sql);
     }
-    
+
     /**
      * Execute an insert into a table
      * 
@@ -134,8 +134,8 @@ class Db
     public static function insert($table, array $values, $config = 'db1')
     {
         return f_db_Insert::getInstance($table, $values, $config)->execute();
-    }    
-    
+    }
+
     /**
      * Prepare an update query to execute
      * 
@@ -147,7 +147,7 @@ class Db
     {
         return f_db_Update::getInstance($table, $values);
     }
-    
+
     /**
      * Prepare a select query to execute
      * 
@@ -158,7 +158,7 @@ class Db
     {
         return f_db_Select::getInstance()->select(func_get_args());
     }
-    
+
     /**
      * Prepare a select * from query to execute
      * 
@@ -169,7 +169,7 @@ class Db
     {
         return f_db_Select::getInstance()->select()->from($table);
     }
-    
+
     /**
      * Prepare a delete query to execute
      * 
@@ -203,7 +203,7 @@ class Db
     {
         return self::getInstance($config)->addTransaction();
     }
-    
+
     /**
      * End a transaction. Will return true if committed and throw an exception with rollback if not
      * 
@@ -212,9 +212,10 @@ class Db
      */
     public static function endTransaction($config = 'db1')
     {
-        if(!self::commit($config)) self::throwTransactionException($config);
+        if (!self::commit($config))
+            self::throwTransactionException($config);
         return true;
-    }    
+    }
 
     /**
      * Return the status of the current transaction
@@ -225,8 +226,8 @@ class Db
     public static function transactionStatus($config = 'db1')
     {
         return self::getInstance($config)->getTransactionStatus();
-    } 
-    
+    }
+
     /**
      * Throw the last transaction exeption if exists
      * 
@@ -234,10 +235,11 @@ class Db
      */
     public static function throwTransactionException($config = 'db1')
     {
-        $exc = self::getInstance($config)->getTransactionException();        
-        if($exc === null) throw $exc;
-    } 
-    
+        $exc = self::getInstance($config)->getTransactionException();
+        if ($exc === null)
+            throw $exc;
+    }
+
     /**
      * Commit the current transaction operations
      * 
@@ -247,7 +249,7 @@ class Db
     public static function commit($config = 'db1')
     {
         return self::getInstance($config)->removeTransaction();
-    }    
+    }
 
     /**
      * Rollback the current transaction operations
@@ -258,32 +260,33 @@ class Db
     public static function rollBack($config = 'db1')
     {
         return self::getInstance($config)->revert();
-    }    
-    
+    }
+
 // ================================================= TRANSACTION NON STATIC METHODS    
-    
+
     /**
-	 * Begin a new transaction, only effective on innoDb tables
+     * Begin a new transaction, only effective on innoDb tables
      * 
      * @return boolean  Return true if transaction is added
-	 */
-	public function addTransaction()
-	{
+     */
+    public function addTransaction()
+    {
         // increase iterator
         $this->_transactions++;
-        
+
         // we already have an open transaction
-		if($this->_hasActiveTransaction) return false;
-        
+        if ($this->_hasActiveTransaction)
+            return false;
+
         // begin a new transaction
         $this->_hasActiveTransaction = $this->_connexion->beginTransaction();
         $this->_transactionSuccess = true;
         $this->_transactionException = null;
-                
+
         // return transaction status
         return $this->_hasActiveTransaction;
-	}   
-    
+    }
+
     /**
      * Return current transaction status
      * 
@@ -292,8 +295,8 @@ class Db
     public function getTransactionStatus()
     {
         return $this->_transactionSuccess;
-    }    
-    
+    }
+
     /**
      * Get the transaction exception if exists
      * 
@@ -302,40 +305,41 @@ class Db
     public function getTransactionException()
     {
         return $this->_transactionException;
-    }    
+    }
 
-	/**
-	 * Commit the query result(s) or rollback if needed automatically
+    /**
+     * Commit the query result(s) or rollback if needed automatically
      * 
      * @return boolean  Return true if commit or rollback is a success
-	 */
-	public function removeTransaction()
-	{
+     */
+    public function removeTransaction()
+    {
         // decrease iterator
         $this->_transactions--;
 
-        if($this->_transactions === 0)
+        if ($this->_transactions === 0)
         {
-            $this->_hasActiveTransaction = false;            
-            if($this->_transactionSuccess) return $this->_connexion->commit();
+            $this->_hasActiveTransaction = false;
+            if ($this->_transactionSuccess)
+                return $this->_connexion->commit();
             return !$this->_connexion->rollBack();
         }
-	}    
+    }
 
-	/**
-	 * Rollback the query result(s)
+    /**
+     * Rollback the query result(s)
      * 
      * @return void
-	 */
-	public function revert()
-	{
-        if($this->_hasActiveTransaction)
+     */
+    public function revert()
+    {
+        if ($this->_hasActiveTransaction)
         {
             $this->_connexion->rollBack();
             $this->_hasActiveTransaction = false;
-            $this->_transactions = 0;            
+            $this->_transactions = 0;
         }
-	}
+    }
 
     // ================================================= QUERY
 
@@ -344,14 +348,15 @@ class Db
      * 
      * @param string $query     The SQL query to execute
      * @return integer          The number of affected rows
-     */    
+     */
     public function queryExec($query)
     {
-        if(strncasecmp('select', $query, 6) === 0) trigger_error('You must use Db::query() to return a SELECT query values', E_USER_NOTICE);
+        if (strncasecmp('select', $query, 6) === 0)
+            trigger_error('You must use Db::query() to return a SELECT query values', E_USER_NOTICE);
         $this->_sql = $query;
         return $this->_connexion->exec($query);
     }
-    
+
     /**
      * Prepare a query to fetch
      *
@@ -365,7 +370,7 @@ class Db
         $this->_query = $this->_connexion->prepare($query);
         return $this;
     }
-    
+
     /**
      * Execute the prepared statement
      * 
@@ -373,22 +378,25 @@ class Db
      * @return DB                   Return an instance of DB
      */
     public function execute($parameters = null)
-    {             
-        if($parameters !== null) $parameters = func_num_args() > 1 ? func_get_args() : (array) $parameters;
-        
-        try 
+    {
+        if ($parameters !== null)
+            $parameters = func_num_args() > 1 ? func_get_args() : (array) $parameters;
+
+        try
         {
             $s = microtime(true);
             $this->_query->execute($parameters);
-            Log::sql('{Db->execute()} ['.round((microtime(true) - $s) * 1000, 2).'ms] '.$this->interpolateQuery($this->_sql, $parameters));
-        } 
+            Log::sql('{Db->execute()} [' . round((microtime(true) - $s) * 1000, 2) . 'ms] ' . $this->interpolateQuery($this->_sql, $parameters));
+        }
         catch (PDOException $exc)
         {
-            $msg = $exc->getMessage()."<br /><br />".$this->_sql.'<br /><br />'.$this->_printVars($parameters).'<br />';
-            if(CLI_MODE) $msg = $exc->getMessage().PHP_EOL.$this->_sql.PHP_EOL.$this->_printVars($parameters);
+            $msg = $exc->getMessage() . "<br /><br />" . $this->_sql . '<br /><br />' . $this->_printVars($parameters) . '<br />';
+            if (CLI_MODE)
+                $msg = $exc->getMessage() . PHP_EOL . $this->_sql . PHP_EOL . $this->_printVars($parameters);
 
             $exception = new PDOException($msg);
-            if(!$this->_hasActiveTransaction) throw $exception;
+            if (!$this->_hasActiveTransaction)
+                throw $exception;
             $this->_transactionException = $exception;
             $this->_transactionSuccess = false;
             return false;
@@ -396,10 +404,10 @@ class Db
 
         $this->_executed = true;
         $this->_parameters = $parameters;
-        
+
         return $this;
     }
-    
+
     /**
      * Return given query parameters in html format
      * 
@@ -408,15 +416,17 @@ class Db
      */
     private function _printVars($parameters)
     {
-        if(empty($parameters)) return '';
-        $txt = '';        
-        $cr = CLI_MODE ? PHP_EOL : '<br />';
-        foreach($parameters as $k => $v) $txt .= $k." = '".$v."'".$cr;
+        if (empty($parameters))
+            return '';
+        $txt = '';
+        $cr  = CLI_MODE ? PHP_EOL : '<br />';
+        foreach ($parameters as $k => $v)
+            $txt .= $k . " = '" . $v . "'" . $cr;
         return $txt;
     }
-    
+
     // ================================================= RESULTS    
-    
+
     /**
      * Count current query result(s)
      * 
@@ -425,8 +435,8 @@ class Db
     public function count()
     {
         return $this->_query->rowCount();
-    } 
-    
+    }
+
     /**
      * Fetch all (multiple) results with the given fetch style
      *
@@ -435,12 +445,13 @@ class Db
      * @return array                Return an array of results
      */
     public function fetchAll($fetchStyle = PDO::FETCH_ASSOC, $args = null)
-    {      
-        if(!$this->_executed) $this->execute();
-        $result = $args === null ? $this->_query->fetchAll($fetchStyle): $this->_query->fetchAll($fetchStyle, $args);
-		$this->_query->closeCursor();
+    {
+        if (!$this->_executed)
+            $this->execute();
+        $result = $args === null ? $this->_query->fetchAll($fetchStyle) : $this->_query->fetchAll($fetchStyle, $args);
+        $this->_query->closeCursor();
         $this->_executed = false;
-		return $result;
+        return $result;
     }
 
     /**
@@ -452,24 +463,25 @@ class Db
      */
     public function fetch($fetchStyle = PDO::FETCH_ASSOC, $args = null)
     {
-        if(!$this->_executed) $this->execute();
+        if (!$this->_executed)
+            $this->execute();
 
-        if($args === null)
+        if ($args === null)
         {
-            if($fetchStyle === PDO::FETCH_COLUMN)
+            if ($fetchStyle === PDO::FETCH_COLUMN)
             {
                 $this->_query->setFetchMode($fetchStyle, 0);
             }
             else
             {
-                $this->_query->setFetchMode($fetchStyle);                
+                $this->_query->setFetchMode($fetchStyle);
             }
         }
         else
         {
-            $this->_query->setFetchMode($fetchStyle, $args);   
+            $this->_query->setFetchMode($fetchStyle, $args);
         }
-        
+
         $result = $this->_query->fetch($fetchStyle);
         $this->_query->closeCursor();
         $this->_executed = false;
@@ -483,16 +495,17 @@ class Db
      * @return stdClass|object|false    Return an object containing the current query results
      */
     public function fetchObject($className = 'stdClass')
-    {        
-        if(!$this->_executed) $this->execute();
+    {
+        if (!$this->_executed)
+            $this->execute();
         $result = $this->_query->fetchObject($className);
         $this->_query->closeCursor();
         $this->_executed = false;
         return $result;
     }
-    
+
     // ================================================= ALIASES   
-    
+
     /**
      * Alias of fetch(PDO::FETCH_COLUMN).
      * 
@@ -501,8 +514,8 @@ class Db
     public function fetchCol()
     {
         return $this->fetch(PDO::FETCH_COLUMN);
-    }    
-    
+    }
+
     /**
      * Alias of fetchAll(PDO::FETCH_COLUMN, $colNum). Will fetch result by a column number
      * 
@@ -513,7 +526,7 @@ class Db
     {
         return $this->fetchAll(PDO::FETCH_COLUMN, $colNum);
     }
-    
+
     /**
      * Alias of fetchAll(PDO::FETCH_CLASS). Will fetch result into an array of objects.
      * 
@@ -523,11 +536,11 @@ class Db
      */
     public function fetchAllObject($className = 'stdClass', $preloadConstructor = false)
     {
-        return $preloadConstructor ? $this->fetchAll(PDO::FETCH_CLASS, $className) : $this->fetchAll(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, $className);
+        return $preloadConstructor ? $this->fetchAll(PDO::FETCH_CLASS, $className) : $this->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $className);
     }
-    
+
     // ================================================= SHORTCUTS    
-    
+
     /**
      * Delete all entries in a table (keep auto_increment value)
      * 
@@ -537,7 +550,7 @@ class Db
      */
     public function deleteAll($table, $config = 'db1')
     {
-        return $this->queryExec('DELETE FROM '.self::quoteTable($table, $config));
+        return $this->queryExec('DELETE FROM ' . self::quoteTable($table, $config));
     }
 
     /**
@@ -549,9 +562,9 @@ class Db
      */
     public function truncate($table, $config = 'db1')
     {
-        return $this->queryExec('TRUNCATE TABLE '.self::quoteTable($table, $config));
+        return $this->queryExec('TRUNCATE TABLE ' . self::quoteTable($table, $config));
     }
-    
+
     // ================================================= GENERAL METHODS     
 
     /**
@@ -562,10 +575,10 @@ class Db
      * @return boolean              Return true if exists
      */
     public static function tableExists($tableName, $config = 'db1')
-	{
-		return DB::query('SHOW TABLES LIKE ?', $config)->execute($tableName)->fetchCol() !== false;
-	}
-    
+    {
+        return DB::query('SHOW TABLES LIKE ?', $config)->execute($tableName)->fetchCol() !== false;
+    }
+
     /**
      * Return tables list
      * 
@@ -575,10 +588,10 @@ class Db
      */
     public static function getTablesList($prefix = '', $config = 'db1')
     {
-        $q = $prefix === '' ? 'SHOW TABLES' : 'SHOW TABLES LIKE "'.$prefix.'%"';
+        $q = $prefix === '' ? 'SHOW TABLES' : 'SHOW TABLES LIKE "' . $prefix . '%"';
         return DB::query($q, $config)->fetchAllColumn();
     }
-    
+
     /**
      * Return last inserted id
      * 
@@ -588,7 +601,7 @@ class Db
     {
         return $this->_connexion->lastInsertId();
     }
-    
+
     // ================================================= STRING MANIPULATION
 
     /**
@@ -601,7 +614,7 @@ class Db
     {
         return preg_match("/(\s|<|>|!|=|is null|is not null|like|not like)/i", trim($sql)) > 0;
     }
-    
+
     /**
      * Quote column identifier
      * 
@@ -609,46 +622,49 @@ class Db
      * @return string       Autoquoted query string
      */
     public static function quoteIdentifier($var)
-    {                   
-        if($var === null || $var == '') trigger_error ('quoteIdentifier : string is null or empty', E_USER_ERROR);
-        
+    {
+        if ($var === null || $var == '')
+            trigger_error('quoteIdentifier : string is null or empty', E_USER_ERROR);
+
         // parenthesis : return as is
-        if(preg_match('/\((.*)\)|([^a-zA-Z0-9\.`\'\\s"])/i', $var)) return $var;
-        
+        if (preg_match('/\((.*)\)|([^a-zA-Z0-9\.`\'\\s"])/i', $var))
+            return $var;
+
         // for schema
-        if(strpos($var, '.') !== false)
+        if (strpos($var, '.') !== false)
         {
             $p = explode('.', $var);
             return join('.', array_map(array(__CLASS__, 'quoteIdentifier'), $p));
-        }        
-        
+        }
+
         // remove ` in string if necessary
-        if(strpos($var, '`') !== false) return preg_replace('/`(.*)`/ise', 'self::quoteIdentifier("$1")', $var);             
-        
+        if (strpos($var, '`') !== false)
+            return preg_replace('/`(.*)`/ise', 'self::quoteIdentifier("$1")', $var);
+
         preg_match("/(.*)\s(.*)/is", $var, $matches);
-              
+
         $operator = '';
-        if(!empty($matches))
+        if (!empty($matches))
         {
-            $var = trim($matches[1]);
+            $var      = trim($matches[1]);
             $operator = trim($matches[2]);
         }
-        
+
         // var is an array set AS
-        if(is_array($var))
+        if (is_array($var))
         {
-            $var = self::quoteIdentifier($var[0]).' AS '.self::quoteIdentifier($var[1]).' ';
+            $var = self::quoteIdentifier($var[0]) . ' AS ' . self::quoteIdentifier($var[1]) . ' ';
         }
         else
         {
-            $var = $var != '*' ? '`'.$var.'` ' : '*';
+            $var = $var != '*' ? '`' . $var . '` ' : '*';
         }
-        
+
         $var .= $operator;
-        
+
         return $var;
     }
-    
+
     /**
      * Quote table identifier
      * 
@@ -657,11 +673,12 @@ class Db
      * @return string           Autoquoted query string
      */
     public static function quoteTable($tableName, $config = 'db1')
-    {       
-        if($tableName === null || $tableName === '') trigger_error ('You have an error in your SELECT request, table name is empty', E_USER_ERROR);
+    {
+        if ($tableName === null || $tableName === '')
+            trigger_error('You have an error in your SELECT request, table name is empty', E_USER_ERROR);
         return self::quoteIdentifier(self::prefixTable($tableName, $config));
-    } 
-    
+    }
+
     /**
      * Prefix table name
      * 
@@ -671,24 +688,27 @@ class Db
      */
     public static function prefixTable($tableName, $config = 'db1')
     {
-        $prefix = Config::get($config.'.prefix', '');
-        if($prefix !== '' && !preg_match('#^'.$prefix.'#', $tableName)) $tableName = $prefix.$tableName;            
+        $prefix    = Config::get($config . '.prefix', '');
+        if ($prefix !== '' && !preg_match('#^' . $prefix . '#', $tableName))
+            $tableName = $prefix . $tableName;
         return $tableName;
     }
-    
+
     /**
      * Escape string to insert
      * 
      * @param string $str   Query string to escape
      * @return string       Escaped query string
      */
-    public static function escape($str) 
+    public static function escape($str)
     {
-        if(is_array($str)) return array_map(__METHOD__, $str);
-        if(!empty($str) && is_string($str)) return '"'.str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), $str).'"';
-        return $str; 
-    } 
-    
+        if (is_array($str))
+            return array_map(__METHOD__, $str);
+        if (!empty($str) && is_string($str))
+            return '"' . str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), $str) . '"';
+        return $str;
+    }
+
     /**
      * Replace placeholders in a query with the value
      * 
@@ -696,21 +716,22 @@ class Db
      * @param array $params     Array of parameters
      * @return string           The query with placeholders replaced by values
      */
-    public static function interpolateQuery($query, $params) 
+    public static function interpolateQuery($query, $params)
     {
-        if(!is_array($params)) return $query;
-        
+        if (!is_array($params))
+            return $query;
+
         $keys = array();
 
-        foreach ($params as $key => $value) 
+        foreach ($params as $key => $value)
         {
-            $keys[] = is_string($key) ? '/:'.$key.'/' : '/[?]/';
+            $keys[]       = is_string($key) ? '/:' . $key . '/' : '/[?]/';
             $params[$key] = is_string($value) ? self::escape($value) : $value;
         }
 
         return preg_replace($keys, $params, $query, 1);
     }
-    
+
     /**
      * Return interpolated latest query string
      * 
@@ -720,5 +741,5 @@ class Db
     {
         return $this->__toString();
     }
-    
+
 }
