@@ -70,6 +70,9 @@ try
     // Init the session
     Session::getInstance();
     
+    // Init logging handler
+    Log::init();
+    
     // Set the default localization
     i18n::setDefaultLocale();
 }

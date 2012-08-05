@@ -12,22 +12,21 @@
  */
 
 class Log
-{
-    static $_instance;
-    
+{    
     const DEBUG = 40;
     const INFO  = 30;
     const WARN  = 20;
     const ERROR = 10;
     const OFF   = 0;
     
-    private $_level;
-    private $_inst;
+    private static $_level;
+    private static $_inst;
+    private static $_instance;
     
     /**
      * @return Log 
      */
-    public static function getInstance()
+    public static function init()
     {
         if(!isset(self::$_instance)) self::$_instance = new self();
         return self::$_instance;
@@ -38,14 +37,13 @@ class Log
      */
     private function __construct()
     {
-        $level = strtoupper(Config::get('debug.logging_level', 'info'));
+        $level = strtoupper(Config::get('debug.logging_level', 'off'));
         
-        $refl = new ReflectionClass('Log');
-        $authorized = array_keys($refl->getConstants());
+        $authorized = array('DEBUG', 'INFO', 'WARN', 'ERROR');
         if(!in_array($level, $authorized)) $level = 'OFF';    
         
-        $this->_level = constant("self::".$level);
-        $this->_inst = $this->_getClass();
+        self::$_level = constant("self::".$level);
+        if(self::$_level !== self::OFF) self::$_inst = $this->_getClass();
     }
     
     /**
@@ -56,46 +54,23 @@ class Log
     private function _getClass()
     {        
         // Check for authorized engines
-        $authorized = array('file', 'firephp', 'stream', 'null');
+        $authorized = array('file', 'firephp', 'stream');
 
         // Get config
-        $config = strtolower(Config::get('debug.logging_handler', 'null'));     
+        $config = strtolower(Config::get('debug.logging_handler', 'file'));     
         if(!in_array($config, $authorized)) die($config.' is not a valid logging handler');
                         
         // Instanciation
-        $inst =  call_user_func(array('f_log_'.ucfirst($config), 'getInstance'));        
-
-        if($inst === null) die('Cannot instanciate '.$class);
-        return $inst;
+        return call_user_func(array('f_log_'.ucfirst($config), 'getInstance'));
     }         
-    
-    /**
-     * Return current log level
-     * 
-     * @return integer 
-     */
-    public function getLevel()
-    {
-        return $this->_level;
-    }
-    
-    /**
-     * Return instance of the current log handler
-     * 
-     * @return f_log_Interface 
-     */
-    public function getHandler()
-    {
-        return $this->_inst;
-    }
-                       
+                               
     /**
      * Get the backtrace to get the action before calling Log classe
      * 
      * @param array $exclude    Array of pattern to exclude from file name
      * @return string           Last file and line called before logging
      */
-    public function getBacktrace($exclude = array())
+    protected static function _getBacktrace($exclude = array())
     {
         foreach(debug_backtrace() as $trace)
         {
@@ -112,8 +87,7 @@ class Log
      */    
     public static function debug($msg)
     {
-        $inst = self::getInstance();
-        if($inst->getLevel() === self::DEBUG) $inst->getHandler()->write('debug', $msg);
+        if(self::$_level === self::DEBUG) self::$_inst->write('debug', $msg);
     }     
     
     /**
@@ -123,8 +97,7 @@ class Log
      */
     public static function info($msg)
     {
-        $inst = self::getInstance();
-        if($inst->getLevel() >= self::INFO) $inst->getHandler()->write('info', $msg);
+        if(self::$_level >= self::INFO) self::$_inst->write('info', $msg);
     }     
     
     /**
@@ -134,8 +107,7 @@ class Log
      */    
     public static function warn($msg)
     {
-        $inst = self::getInstance();
-        if($inst->getLevel() >= self::WARN) $inst->getHandler()->write('warning', $msg);
+        if(self::$_level >= self::WARN) self::$_inst->write('warning', $msg);
     }     
     
     /**
@@ -145,8 +117,7 @@ class Log
      */     
     public static function error($msg)
     {
-        $inst = self::getInstance();
-        if($inst->getLevel() >= self::ERROR) $inst->getHandler()->write('error', $msg);
+        if(self::$_level >= self::ERROR) self::$_inst->write('error', $msg);
     }    
     
     /**
@@ -155,12 +126,11 @@ class Log
      * @param string $msg   The message to log
      */       
     public static function sql($msg)
-    {     
-        $inst = self::getInstance();
-        if($inst->getLevel() >= self::INFO)
+    {
+        if(self::$_level >= self::INFO)
         {            
-            if($inst->getLevel() === self::DEBUG) $inst->getHandler()->write('debug', '{Db->execute()} Call from '.$inst->getBacktrace(array('/db/')));
-            $inst->getHandler()->write('sql', $msg);
+            if(self::$_level === self::DEBUG) self::$_inst->write('debug', '{Db->execute()} Call from '.self::_getBacktrace(array('/db/')));
+            self::$_inst->write('sql', $msg);
         }
     }
 }
