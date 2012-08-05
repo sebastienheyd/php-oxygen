@@ -96,9 +96,13 @@ class f_form_Captcha
      */
     private static function _checkSpinner($spinner, $timeLimit)
     {
-        list($time, $hash) = explode('|', Security::decrypt($spinner));
+        $spinnerValue = explode('|', Security::decrypt($spinner));
 
-        if(time() - $time < $timeLimit && Security::check(session_id().self::_getIp().$_SERVER['HTTP_USER_AGENT'], $hash)) return true;
+        if(count($spinnerValue) === 2 && 
+           time() - $spinnerValue[0] < $timeLimit && 
+           Security::check(session_id().self::_getIp().$_SERVER['HTTP_USER_AGENT'], $spinnerValue[1])) 
+                return true;
+        
         return false;
     }
     
