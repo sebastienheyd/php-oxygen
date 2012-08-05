@@ -50,17 +50,20 @@ class Cookie
         }
 
         // decode cookie content        
-        list($hash, $value) = explode('~~', $value);
+        //list($value, $timestamp, $hash) = explode('~~', $value);
+        $cookieValue = explode('|', $value);        
 
         // hash is not correct
-        if(!Security::check($value, $hash))
+        if(count($cookieValue) !== 3 || !Security::check($cookieValue[0].$cookieValue[1], $cookieValue[2]))
         {
             Cookie::delete($name);
             return $default;
         }
         
+        $value = $cookieValue[0];
+        
         // if content is a serialized array
-        if($v = unserialize($value)) $value = $v;
+        if($v = @unserialize($value)) $value = $v;
 
         return $value;                          
 
@@ -92,7 +95,8 @@ class Cookie
         
         if(is_string($value) && $value !== '')
         {
-            $value = Security::hash($value).'~~'.$value;
+            $ts = time();
+            $value = $value.'|'.$ts.'|'.Security::hash($value.$ts);
             if ( strlen( $value ) > ( 4 * 1024 ) ) throw new OverflowException("The cookie $name exceeds the maximum cookie size. Some data may be lost");            
         }
 
