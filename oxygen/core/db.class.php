@@ -120,7 +120,7 @@ class Db
     {
         if (!strstr($file, $restrictToDir))
             trigger_error('Security error : file is out of base directory', E_USER_ERROR);
-        return self::getInstance(file_get_contents($filePath))->queryExec($sql);
+        return self::getInstance($config)->queryExec(file_get_contents($file));
     }
 
     /**
