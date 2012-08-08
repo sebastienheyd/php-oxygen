@@ -353,8 +353,12 @@ class Db
     {
         if (strncasecmp('select', $query, 6) === 0)
             trigger_error('You must use Db::query() to return a SELECT query values', E_USER_NOTICE);
-        $this->_sql = $query;
-        return $this->_connexion->exec($query);
+        
+        $this->_sql = null;
+        $stm = $this->_connexion->prepare($query);
+        $result = false;
+        if ($stm && $stm->execute()) $result = $stm->rowCount();
+        return $result;
     }
 
     /**
