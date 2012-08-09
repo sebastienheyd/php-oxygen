@@ -68,7 +68,7 @@ define('HTTP_PREFIX', Config::get('route.prefix', ''));
 try
 {
     // Init the session
-    Session::getInstance();
+    Session::init();
     
     // Init logging handler
     Log::init();
