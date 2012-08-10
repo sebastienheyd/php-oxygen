@@ -12,16 +12,18 @@
  */
 
 /**
- * This method will get a module/action result
+ * This method will get a module/action or module template result
  * 
  * @param array $params     
  * @param Smarty $smarty 
  */
 function smarty_function_widget($params, &$smarty)
 {
-    if(!isset($params['module']) || !isset($params['action']))
+    if(!isset($params['module']) || 
+       (!isset($params['action']) && !isset($params['template'])) ||
+       (isset($params['action']) && isset($params['template'])))
 	{
-        throw new SmartyException ('{widget} : module and action parameters must be defined');
+        throw new SmartyException ('{widget} : module and action (or template) parameters must be defined');
 	}
     
     $args = array();
@@ -30,12 +32,19 @@ function smarty_function_widget($params, &$smarty)
     {
         foreach($params as $k => $v)
         {
-            if($k != 'module' && $k != 'action')
-            {
-                $args[$k] = $v;
-            }
+            if($k !== 'module' && $k !== 'action' && $k !== 'template') $args[$k] = $v;
         }
-    }   
-
-    Controller::getInstance()->setModule($params['module'])->setAction($params['action'])->setArgs(array($args))->dispatch();
+    }
+    
+    if(isset($params['action']))
+    {
+        Controller::getInstance()->setModule($params['module'])->setAction($params['action'])->setArgs(array($args))->dispatch();        
+    }
+    else
+    {
+        if($file = get_module_file($params['module'], 'template/'.$params['template'], true))
+        {
+            return file_get_contents($file);            
+        }
+    }
 }
