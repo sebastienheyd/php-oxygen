@@ -103,6 +103,7 @@ class Session
             session_name('O2_SESSION');
             self::$_sessionActive = session_start();
             self::$_data = $_SESSION;
+            self::$_data['csrf_token'] = session_id();
             $_SESSION = array();
             session_regenerate_id(true);
         }
