@@ -10,14 +10,13 @@
  * @author      Sébastien HEYD <sheyd@php-oxygen.com>
  * @package     PHP Oxygen
  */
-
 class Request
 {
-    private static $_instance;
 
+    private static $_instance;
     public $get;
     public $post;
-    
+
     /**
      * Get f_Request instance. Singleton
      *
@@ -25,22 +24,21 @@ class Request
      */
     public static function getInstance()
     {
-        if(!isset(self::$_instance)) self::$_instance = new self();
+        if (!isset(self::$_instance))
+            self::$_instance = new self();
         return self::$_instance;
     }
-    
+
     private function __construct()
     {
-        if(isset($_GET) && !empty($_GET))
+        if (isset($_GET) && !empty($_GET))
         {
             $this->get = to_object($_GET);
-            unset($_GET);
         }
 
-        if(isset($_POST) && !empty($_POST))
+        if (isset($_POST) && !empty($_POST))
         {
-             $this->post = to_object($_POST);
-             unset($_POST);
+            $this->post = to_object($_POST);
         }
     }
 
@@ -89,4 +87,5 @@ class Request
     {
         return $this->hasPost($name) ? $this->post->$name : $default;
     }
+
 }
