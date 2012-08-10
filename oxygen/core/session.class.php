@@ -94,7 +94,7 @@ class Session
     /**
      * Start a new session
      *
-     * @return boolean      Return true if session is started
+     * @return bool      Return true if session is started
      */
     private static function _start()
     {
@@ -103,9 +103,7 @@ class Session
             session_name('O2_SESSION');
             self::$_sessionActive = session_start();
             self::$_data = $_SESSION;
-            self::$_data['csrf_token'] = session_id();
             $_SESSION = array();
-            session_regenerate_id(true);
         }
         return self::$_sessionActive;
     }
@@ -129,11 +127,21 @@ class Session
     {
         self::$_data = array();
     }
+    
+    /**
+     * Regenerate session id
+     * 
+     * @return bool
+     */
+    public static function regenerate()
+    {
+        return session_regenerate_id(true);
+    }
 
     /**
      * Destroy the current session and start a new one
      * 
-     * @return boolean  Return true if session is detroyed
+     * @return bool  Return true if session is detroyed
      */
     public static function destroy()
     {
