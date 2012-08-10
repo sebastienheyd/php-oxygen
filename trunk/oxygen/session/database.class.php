@@ -20,15 +20,12 @@ class f_session_Database implements f_session_Interface
     private $_db;
     
     public function __construct($lifetime)
-    {        
-        // check if session data must be stored in database
-        $config = Config::get('session');
-       
-        $this->_db = DB::getInstance(isset($config->db_config) ? $config->db_config : 'db1');
-        $this->_tableName = Db::prefixTable(isset($config->table) ? $config->table : 'sessions');
+    {
+        $this->_db = Config::get('session.db_config', 'db1');
+        $this->_tableName = Db::prefixTable(Config::get('session.table', 'sessions'));
 
         // create table if necessary
-        if(!$this->_db->tableExists($this->_tableName, $config->db_config)) $this->_initSessionTable();
+        if(!Db::tableExists($this->_tableName, $this->_db)) $this->_initSessionTable();
 
         $this->_lifeTime = $lifetime;
     }
@@ -48,25 +45,25 @@ class f_session_Database implements f_session_Interface
     public function read($id)
     {
         $sql = 'SELECT `session_data` FROM `'.$this->_tableName.'` WHERE `session_id` = ? AND `expires` > ?';
-        return $this->_db->prepare($sql)->execute($id, time())->fetchCol();
+        return Db::query($sql, $this->_db)->execute($id, time())->fetchCol();
     }
 
     public function write($id, $data)
     {
         $sql = 'REPLACE `'.$this->_tableName.'` (`session_id`,`session_data`,`expires`) VALUES(?, ?, ?)';
-        $this->_db->prepare($sql)->execute($id, $data, time() + $this->_lifeTime);
+        Db::query($sql, $this->_db)->execute($id, $data, time() + $this->_lifeTime);
         return true;
     }
 
     public function destroy($id)
     {
-        $res = $this->_db->prepare('DELETE FROM `'.$this->_tableName.'` WHERE `session_id`=?')->execute($id);
+        Db::query('DELETE FROM `'.$this->_tableName.'` WHERE `session_id`=?')->execute($id);
         return true;
     }
 
     public function gc($lifetime)
     {
-        $this->_db->queryExec('DELETE FROM `'.$this->_tableName.'` WHERE `expires` < UNIX_TIMESTAMP();');
+        Db::exec('DELETE FROM `'.$this->_tableName.'` WHERE `expires` < UNIX_TIMESTAMP();');
         return true;
     }
     
@@ -79,6 +76,6 @@ class f_session_Database implements f_session_Interface
             PRIMARY KEY  (`session_id`)
             ) ENGINE = MyIsam DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci;';
 
-        return $this->_db->queryExec($sql) == 1;
+        return Db::exec($sql, $this->_db) == 1;
     }    
 }
