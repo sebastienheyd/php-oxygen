@@ -182,7 +182,7 @@ class Db
     }
 
     /**
-     * Check if connexion is available
+     * Check if connexion is available$this->_sql = $query;
      * 
      * @return boolean      Return true if connexion is ready and active
      */

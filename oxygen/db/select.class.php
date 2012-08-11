@@ -19,7 +19,6 @@ class f_db_Select extends f_db_Where
     private $_order = array();    
     private $_group = array();
     private $_join;
-    private $_executed = false;
     private $_limit;
 
     /**
@@ -28,7 +27,7 @@ class f_db_Select extends f_db_Where
     public static function getInstance()
     {
         return new self();
-    }
+    }    
 
     /**
      * Begin a select query
@@ -262,7 +261,6 @@ class f_db_Select extends f_db_Where
      */
     public function execute($config = 'db1')
     {
-        $this->_executed = true;
         return DB::query($this->build($config), $config)->execute($this->_vars);
     }
     
