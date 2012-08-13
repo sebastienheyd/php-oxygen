@@ -86,8 +86,8 @@ class String
      */
     public static function truncateAtLength($string, $length, $pad = '&hellip;')
     {
-        if (mb_strlen($string, '8bit') <= $length) return $string;
-        return mb_substr($string, 0, $length, '8bit') . $pad;
+        if (mb_strlen($string, 'utf-8') <= $length) return $string;
+        return mb_substr($string, 0, $length, 'utf-8') . $pad;
     }
 
     /**
@@ -100,15 +100,15 @@ class String
      */
     public static function truncateAtWord($string, $length, $pad = '&hellip;')
     {       
-        if (mb_strlen($string, '8bit') <= $length) return $string;
+        if (mb_strlen($string, 'utf-8') <= $length) return $string;
 
-        if (false !== ($breakpoint = mb_strpos($string, ' ', $length, '8bit')))
+        if (false !== ($breakpoint = mb_strpos($string, ' ', $length, 'utf-8')))
         {
-            if ($breakpoint < mb_strlen($string, '8bit') - 1)
+            if ($breakpoint < mb_strlen($string, 'utf-8') - 1)
             {
                 while(!preg_match('/[a-zA-Z1-9]/', $string[$breakpoint])) $breakpoint--;
                 
-                return mb_substr($string, 0, $breakpoint, '8bit') . $pad;
+                return mb_substr($string, 0, $breakpoint, 'utf-8') . $pad;
             }
         }
         return $string;
@@ -124,13 +124,13 @@ class String
      */
     public static function truncateAtSentence($string, $length, $pad = '.')
     {        
-        if (mb_strlen($string, '8bit') <= $length) return $string;
+        if (mb_strlen($string, 'utf-8') <= $length) return $string;
 
-        if (false !== ($breakpoint = mb_strpos($string, '.', $length, '8bit')))
+        if (false !== ($breakpoint = mb_strpos($string, '.', $length, 'utf-8')))
         {
-            if ($breakpoint < mb_strlen($string, '8bit') - 1)
+            if ($breakpoint < mb_strlen($string, 'utf-8') - 1)
             {
-                return mb_substr($string, 0, $breakpoint, '8bit') . $pad;
+                return mb_substr($string, 0, $breakpoint, 'utf-8') . $pad;
             }
         }
         return $string;
