@@ -430,7 +430,14 @@ class Controller
      */
     public function setArgs($args)
     {
-        $this->_args = func_get_args();
+        if(is_array($args))
+        {
+            $this->_args = $args;
+        }
+        else
+        {
+            $this->_args = func_get_args();            
+        }
         return $this;
     }
 
