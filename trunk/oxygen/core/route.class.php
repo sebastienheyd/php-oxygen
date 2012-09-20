@@ -112,7 +112,7 @@ class Route
                 }
 
                 // Define rerouted uri to current instance of Uri
-                $uriInst->setUri($uri);
+                return $uriInst->setUri($uri);
             }
 
             if($rule === 'default') $defaultRedirect = (string) $route->attributes()->redirect.'/'.$uri;
