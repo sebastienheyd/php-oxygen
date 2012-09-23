@@ -10,13 +10,12 @@
  * @author      Sébastien HEYD <sheyd@php-oxygen.com>
  * @package     PHP Oxygen
  */
-
 abstract class Action
 {
-	private $_view;
+    public $view;
     public $cacheId;
-    public $cacheLifetime;
-	private $_model;
+    public $cacheLifetime = 3600;
+    public $model = array();
 
     /**
      * Magic method to call non existent class methods
@@ -31,90 +30,90 @@ abstract class Action
         {
             // return models
             case 'getModel':
-                return $this->_model;
-            break;
-        
+                return $this->model;
+                break;
+
             // alias of setModel()
             case 'addToModel':
                 $this->setModel($args[0], $args[1]);
-            break;
-        
+                break;
+
             // alias of t()
             case 'translate':
                 $this->t($args[0], $args[1], $args[2], $args[3]);
-            break;
-        
+                break;
+
             // return view current content
             case 'getView':
-                return $this->_view;
-            break;
-        
+                return $this->view;
+                break;
+
             default:
-                throw new BadMethodCallException('Method '.$method.' does not exist');
-            break;
+                throw new BadMethodCallException('Method ' . $method . ' does not exist');
+                break;
         }
     }
-    
+
     /**
      * Magic method to get non existant class property value
      * 
      * @param string $name      Name of the property to get
      * @return mixed            Return the property value
-     */  
+     */
     public function __get($name)
     {
         switch ($name)
         {
             case 'request':
                 return Request::getInstance();
-            break;
+                break;
         }
     }
-    
+
     public function hasCache($viewName, $cacheId)
     {
         preg_match('/^m_(.*)_action_(.*)/', get_class($this), $matches);
-        
-        $module = $matches[1];    
-        $l = explode('_', $matches[2]);
-        $filename = lcfirst(end($l)).ucfirst($viewName).'.html';
 
-        if($file = get_module_file($module, 'template'.DS.$filename))
-        {            
-            return Template::getInstance($file, $module)->hasCache($cacheId);           
+        $module   = $matches[1];
+        $l        = explode('_', $matches[2]);
+        $filename = lcfirst(end($l)) . ucfirst($viewName) . '.html';
+
+        if ($file = get_module_file($module, 'template' . DS . $filename))
+        {
+            return Template::getInstance($file, $module)->hasCache($cacheId);
         }
-        
+
         return false;
     }
 
-	/**
-	 * Set the view name to display
-	 *
-	 * @param string $value             Name of the view to display
+    /**
+     * Set the view name to display
+     *
+     * @param string $value             Name of the view to display
      * @param string $cacheId           [optional] Cache indentifier to use 
      * @param string $cacheLifetime     [optional] Cache lifetime 
      * @return void
-	 */
-	public function setView($viewName, $cacheId = null, $cacheLifetime = 3600)
-	{
-		$this->_view = $viewName;
+     */
+    public function setView($viewName, $cacheId = null, $cacheLifetime = 3600)
+    {
+        $this->view = $viewName;
         $this->cacheId = $cacheId;
         $this->cacheLifetime = $cacheLifetime;
-	}
-    
-	/**
-	 * Set a model to pass to view
-	 *
-	 * @param string $name      Name of the model
-	 * @param mixed $value      Value of the model
-	 * @return Action           Current instance of Action
-	 */
-	public function setModel($name, $value)
-	{
-		$this->_model[$name] = $value;
-		return $this;
-	}
-    
+    }
+
+    /**
+     * Set a model to pass to view
+     *
+     * @param string $name      Name of the model
+     * @param mixed $value      Value of the model
+     * @return Action           Current instance of Action
+     */
+    public function setModel($name, $value)
+    {
+        $this->model[$name] = $value;
+        return $this;
+    }
+
     /**
      * Translate the given string to the current i18n locale language.
      * 
@@ -124,28 +123,32 @@ abstract class Action
      * @return string           The translated string if found, else the source string
      */
     public function t($string, $args = array(), $domain = 'actions')
-    {    
+    {
         // if current locale is equal to default locale we don't need to translate
-        if(i18n::getLocale() === i18n::getDefaultLocale()) return i18n::replaceArgs($string, $args);
-        
+        if (i18n::getLocale() === i18n::getDefaultLocale())
+            return i18n::replaceArgs($string, $args);
+
         $class = get_class($this);
-        if(preg_match('/^m_(.*)_action/i', $class, $m))
+        if (preg_match('/^m_(.*)_action/i', $class, $m))
         {
             // Get locale file with full locale code (ex : fr_CA) for overloading
-            if($file = get_module_file($m[1], 'i18n'.DS.$domain.'.'.I18n::getLocale().'.xml'))
+            if ($file = get_module_file($m[1], 'i18n' . DS . $domain . '.' . I18n::getLocale() . '.xml'))
             {
-                $str = I18n::t($file, $string, $args, null, $class, false);                                
-                if($str !== $string) return $str;   // There is a specific translation for full locale code, return
+                $str = I18n::t($file, $string, $args, null, $class, false);
+                if ($str !== $string)
+                    return $str;   // There is a specific translation for full locale code, return
             }
-            
+
             // If default lang is equal to the current lang : return
-            if(i18n::getLang() === i18n::getDefaultLang()) return i18n::replaceArgs($string, $args);
-                
+            if (i18n::getLang() === i18n::getDefaultLang())
+                return i18n::replaceArgs($string, $args);
+
             // Get locale file with only lang code (ex : fr) or create it
-            $file = get_module_file($m[1], 'i18n'.DS.$domain.'.'.I18n::getLang().'.xml', false);
-            return I18n::t($file, $string, $args, null, $class);                    
+            $file = get_module_file($m[1], 'i18n' . DS . $domain . '.' . I18n::getLang() . '.xml', false);
+            return I18n::t($file, $string, $args, null, $class);
         }
-        
+
         return $string;
     }
+
 }

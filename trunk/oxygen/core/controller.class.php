@@ -20,18 +20,17 @@ class Controller
     private $_module;
     private $_action;
     private $_className;
+    private $_classInstance;
     private $_args = array();
     private $_chain;
     private $_explicit;
 
-    const DEFAULT_ACTION_METHOD        = "execute";
-    const DEFAULT_AUTHORIZATION_METHOD = "isAuthorized";
-    const DEFAULT_ERRORHANDLER_METHOD  = "errorHandler";
+    const DEFAULT_ACTION_METHOD        = 'execute';
+    const DEFAULT_AUTHORIZATION_METHOD = 'isAuthorized';
+    const DEFAULT_ERRORHANDLER_METHOD  = 'errorHandler';
+    const DEFAULT_MODULE_ACTION        = 'Index';
 
-    private function __construct()
-    {
-        
-    }
+    private function __construct() {}
 
     /**
      * Get controller instance
@@ -40,9 +39,7 @@ class Controller
      */
     public static function getInstance()
     {
-        if (!isset(self::$_instance))
-            self::$_instance = new self();
-        return self::$_instance;
+        return new self();
     }
 
     /**
@@ -52,30 +49,34 @@ class Controller
      */
     public function dispatch()
     {
-        $mv = '';
-
         ob_start();
 
+        // Module and action are not defined by setters
         if (!$this->_explicit)
         {
-            // Get rerouted uri or current uri
+            // Get uri from routes
             $uri = Route::getInstance()->parseUrl();
 
+            // No uri found, try to load asset
             if (!$uri->isDefined() && Config::get('route.routed_only') == '1' && $uri->getUri(false) != '/')
             {
                 $this->_loadAsset();
                 Error::show404();
             }
 
-            // Action and module names are not directly specified.
+            // Get module and action from route
             $this->_parseFromRequest($uri);
         }
 
         // Convert module/action to className
         $this->_getActionClassName();
 
+        // Add to chaining for logs
         $this->_addToChain();
 
+        // Initialize result
+        $mv = '';
+        
         // If action is authorized ...
         if ($this->_isAuthorized())
         {
@@ -84,19 +85,21 @@ class Controller
         }
         else
         {
-            //... process handleError()
+            //... else process handleError()
             $mv = $this->_handleError();
         }
 
-        $view = $mv;
-        if (is_object($mv))
-            $view = $this->_processView($mv);
+        // Action method result is an object, render view
+        if (is_object($mv)) $mv = $this->_processView($mv);
+        
+        // Display to browser
+        echo $mv;
 
+        // Remove action from chain for logs
         $this->_removeFromChain();
-        if (empty($this->_chain['classNames']))
-            ob_end_flush();
-
-        return $view;
+        
+        // No more actions in chain, render to browser
+        if (empty($this->_chain['classNames'])) ob_end_flush();
     }
 
 // ============================================================ REQUEST PARSING    
@@ -132,10 +135,8 @@ class Controller
         else
         {
             $nb = $uri->nbSegments();
-            if ($nb >= 1)
-                $this->_loadAsset();
-            if ($nb > 2 && empty($this->_args))
-                $this->_args = $uri->segmentsSlice(3);
+            if ($nb >= 1) $this->_loadAsset();
+            if ($nb > 2 && empty($this->_args)) $this->_args = $uri->segmentsSlice(3);
         }
     }
 
@@ -149,8 +150,7 @@ class Controller
     {
         Log::debug('{Controller->_parseFromUri()} ' . $uri->getUri(false));
 
-        if ($uri->nbSegments() === 0)
-            Error::showConfigurationError();
+        if ($uri->nbSegments() === 0) Error::showConfigurationError();
 
         // load asset if exists
         $this->_loadAsset();
@@ -211,17 +211,48 @@ class Controller
     {
         if ($this->_module !== null)
         {
-            if ($this->_action === null)
-                $this->_action = 'Index';
+            // Action is not defined, 
+            if ($this->_action === null) $this->_action = self::DEFAULT_MODULE_ACTION;
+                
+            // Build class Name
             $className = 'm_' . $this->_module . '_action_' . $this->_action;
-            if (!class_exists($className))
-                throw new RuntimeException('Class ' . $className . ' not found !', E_USER_ERROR);
-            if ($this->_args === null)
-                $this->_args = Uri::getInstance()->segmentsSlice(2);
+            
+            // Check if class exists
+            if (!class_exists($className)) throw new RuntimeException('Class ' . $className . ' not found !', E_USER_ERROR);            
+            
+            // Check if default action method exists
             if (!method_exists($className, self::DEFAULT_ACTION_METHOD))
                 trigger_error('Method ' . self::DEFAULT_ACTION_METHOD . ' not found in ' . $className, E_USER_ERROR);
+            
+            // Add args to default method
+            if ($this->_args === null) $this->_args = Uri::getInstance()->segmentsSlice(2);
+            
+            // Set class name
             $this->_className = $className;
+            
+            // Instanciate action class
+            $this->_classInstance = new $this->_className();
         }
+    }
+
+    /**
+     * Call authorisation method in the action class and retrieve the result
+     *
+     * @return boolean  Return true if action is authorized to be execute
+     */
+    private function _isAuthorized()
+    {
+        Log::debug('{Controller->_isAuthorized()} ' . $this->_className . '->' . self::DEFAULT_AUTHORIZATION_METHOD . '()');       
+        
+        // If no authorization method is found, return true by default
+        if (!method_exists($this->_classInstance, self::DEFAULT_AUTHORIZATION_METHOD)) return true;
+        
+        // If authorization method is found, return method result
+        $result = $this->_classInstance->{self::DEFAULT_AUTHORIZATION_METHOD}();
+        
+        // Check return method value
+        if(!is_bool($result)) return false;
+        return $result;
     }
 
     /**
@@ -232,25 +263,14 @@ class Controller
     private function _processAction()
     {
         Log::debug('{Controller->_processAction()} ' . $this->_className . '->' . self::DEFAULT_ACTION_METHOD . '()');
-        $class  = new $this->_className();
-        $result = call_user_func_array(array($class, self::DEFAULT_ACTION_METHOD), $this->_args);
-        return is_string($result) ? $result : $class;
+        
+        // Call default action method
+        $result = call_user_func_array(array($this->_classInstance, self::DEFAULT_ACTION_METHOD), $this->_args);
+        
+        // If method result is a string return it else return the instance
+        return is_string($result) ? $result : $this->_classInstance;
     }
-
-    /**
-     * Call authorisation method in the action class and retrieve the result
-     *
-     * @return boolean  Return true if action is authorized to be execute
-     */
-    private function _isAuthorized()
-    {
-        Log::debug('{Controller->_isAuthorized()} ' . $this->_className . '->' . self::DEFAULT_AUTHORIZATION_METHOD . '()');
-        $class = new $this->_className();
-        if (!method_exists($class, self::DEFAULT_AUTHORIZATION_METHOD))
-            return true;
-        return (boolean) $class->{self::DEFAULT_AUTHORIZATION_METHOD}();
-    }
-
+    
     /**
      * Call handleError() method in the action class
      *
@@ -259,26 +279,18 @@ class Controller
     private function _handleError()
     {
         Log::debug('{Controller->_handleError()} ' . $this->_className . '->' . self::DEFAULT_ERRORHANDLER_METHOD . '()');
-        $class   = new $this->_className();
-        if (!method_exists($class, self::DEFAULT_ERRORHANDLER_METHOD))
-            Error::show401();
-        $execute = $class->{self::DEFAULT_ERRORHANDLER_METHOD}();
-        return is_string($execute) ? $execute : $class;
+        
+        // No default error handler method in action, return a 401 error
+        if (!method_exists($this->_classInstance, self::DEFAULT_ERRORHANDLER_METHOD)) Error::show401();
+        
+        // Else execute error handler method
+        $execute = $this->_classInstance->{self::DEFAULT_ERRORHANDLER_METHOD}();
+        
+        // If method result is a string return it else return the instance
+        return is_string($execute) ? $execute : $this->_classInstance;
     }
 
 // ============================================================ VIEW PROCESSING    
-
-    /**
-     * Get view class name from called action and module
-     * 
-     * @param string $model     Model returned by processAction()
-     * @param type $viewName    View name like success, input, error, etc...
-     * @return string           Class name
-     */
-    private function _getViewClassName($model, $viewName)
-    {
-        return str_replace('action', 'view', get_class($model)) . $viewName;
-    }
 
     /**
      * Return the view content by the model name
@@ -286,38 +298,31 @@ class Controller
      * @param string $model     The model name to output
      * @return string           Return the processed view content
      */
-    private function _processView($model)
+    private function _processView(Action $model)
     {
-        $viewName = '';
+        $viewName = $model->view;
 
-        if (method_exists($model, 'setView'))
-            $viewName = ucfirst($model->getView());
+        if (!is_string($viewName) || $viewName === '') return '';
 
-        if (!is_string($viewName) || $viewName === '')
-            return '';
-
-        $className  = $this->_getViewClassName($model, $viewName);
-        $methodName = self::DEFAULT_ACTION_METHOD;
-
-        if (class_exists($className))
+        if(!$file = get_module_file($this->_module, 'template' . DS . $viewName))
         {
-            $class = new $className();
+            $viewName = lcfirst($this->_action).ucfirst($viewName).'.html';
+            $file = get_module_file($this->_module, 'template' . DS . $viewName);
         }
-        else
+  
+        if(!$file) trigger_error($model->view.' not found in module '.$this->_module, E_USER_ERROR);  
+        
+        $tpl = Template::getInstance($file, $this->_module);
+
+        $tpl->cache_lifetime = $model->cacheLifetime;
+
+        // Assign all models to template
+        if (is_array($model->model) && !empty($model->model))
         {
-            if ($this->_renderView($className, $model))
-                return '';
-            trigger_error('Cannot load file for class ' . $className, E_USER_ERROR);
+            foreach ($model->model as $k => $v) $tpl->assign($k, $v);
         }
 
-        if (!$class instanceof View)
-            trigger_error('Class ' . $className . ' does not extends View', E_USER_ERROR);
-        $class->setModel($model->getModel());
-        $class->setModule($this->_module);
-
-        $result = $class->$methodName();
-
-        return is_string($result) ? $result : ob_flush();
+        return $tpl->get($model->cacheId);
     }
 
     /**
