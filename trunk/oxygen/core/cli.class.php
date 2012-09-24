@@ -14,6 +14,9 @@
 class Cli
 {   
     private static $_instance;
+    
+    private $_argc;
+    private $_argv;
 
     /**
      * @return Cli
@@ -24,6 +27,16 @@ class Cli
         if(!isset(self::$_instance)) self::$_instance = new self();
         return self::$_instance;
     }
+    
+    /**
+     * Main constructor
+     */
+    public function __construct()
+    {
+        global $argv, $argc;
+        $this->_argv = $argv;
+        $this->_argc = $argc;
+    }    
 
     /**
      * Check if current mode is cli
@@ -136,5 +149,38 @@ class Cli
 	{
         $this->printf($label);
 		return trim(fgets(STDIN));
-	}    
+	} 
+    
+    /**
+     * Get argument from command
+     * 
+     * @return string|false       Argument value or null if none
+     */
+    public function getArg($argNum)
+    {
+        return isset($this->_argv[$argNum]) ? $this->_argv[$argNum] : false;
+    }
+    
+    /**
+     * Return all passed arguments
+     * 
+     * @return array
+     */
+    public function getArgs()
+    {
+        return $this->_argv;
+    }
+    
+    /**
+     * Check if given argument is present
+     * 
+     * @param string $arg       The argument name to check
+     * @return boolean          Return true if present
+     */
+    public function hasArg($arg)
+    {
+        // Only one argument (= script name) return false
+        if($this->_argc == 1 || !is_string($arg)) return false;
+        return array_search($arg, $this->_argv);        
+    }    
 }
