@@ -56,13 +56,13 @@ abstract class f_auth_Driver
 		return $this->user = $this->retrieve($this->token);
 	}    
     
-    public function login($token, $remember = false)
+    public function login($token, $remember = false, $cookiePath = '/')
     {
         $this->token = $token;
 
         Session::set(self::SESSION_NAME, $token);
 
-		if ($remember) Cookie::set(self::COOKIE_NAME, $token, Cookie::expire('365', 'd'));
+		if ($remember) Cookie::set(self::COOKIE_NAME, $token, Cookie::expire('365', 'd'), $cookiePath);
 
 		return true;
     }

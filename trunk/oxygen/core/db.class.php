@@ -129,7 +129,7 @@ class Db
      * @param string $table     Table name to insert data into
      * @param array $values     Associative array of column names / values
      * @param string $config    [optional] Database configuration to use from the current config file. Default is "db1"
-     * @return boolean          Return true if data are correctly inserted                        
+     * @return string           Return last inserted ID
      */
     public static function insert($table, array $values, $config = 'db1')
     {
@@ -357,7 +357,11 @@ class Db
         $this->_sql = null;
         $stm = $this->_connexion->prepare($query);
         $result = false;
-        if ($stm && $stm->execute()) $result = $stm->rowCount();
+        if ($stm && $stm->execute())
+        {
+            $result = $stm->rowCount();
+            $this->_executed = false;
+        }
         return $result;
     }
 
@@ -450,8 +454,7 @@ class Db
      */
     public function fetchAll($fetchStyle = PDO::FETCH_ASSOC, $args = null)
     {
-        if (!$this->_executed)
-            $this->execute();
+        if (!$this->_executed) $this->execute();
         $result = $args === null ? $this->_query->fetchAll($fetchStyle) : $this->_query->fetchAll($fetchStyle, $args);
         $this->_query->closeCursor();
         $this->_executed = false;
@@ -467,8 +470,7 @@ class Db
      */
     public function fetch($fetchStyle = PDO::FETCH_ASSOC, $args = null)
     {
-        if (!$this->_executed)
-            $this->execute();
+        if (!$this->_executed) $this->execute();
 
         if ($args === null)
         {
@@ -500,8 +502,7 @@ class Db
      */
     public function fetchObject($className = 'stdClass')
     {
-        if (!$this->_executed)
-            $this->execute();
+        if (!$this->_executed) $this->execute();
         $result = $this->_query->fetchObject($className);
         $this->_query->closeCursor();
         $this->_executed = false;
@@ -599,11 +600,12 @@ class Db
     /**
      * Return last inserted id
      * 
+     * @param string $name      [optional] Name of the sequence object from which the ID should be returned.
      * @return string
      */
-    public function getLastId()
+    public function getLastId($name = null)
     {
-        return $this->_connexion->lastInsertId();
+        return $this->_connexion->lastInsertId($name);
     }
 
     // ================================================= STRING MANIPULATION
