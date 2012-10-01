@@ -31,7 +31,16 @@ class f_auth_Db extends f_auth_Driver
     
     protected function retrieve($login)
     {
-        if($this->retrieveUser($login)) return $login;
+        if($this->retrieveUser($login))
+        {
+            $data = Db::select()->from(Config::get('auth.db_table', 'users'))
+                                ->where(Config::get('auth.db_login_field', 'login'), $login)
+                                ->fetch();
+            
+            unset($data[Config::get('auth.db_hash_field', 'password')]);
+            
+            return $data;
+        }
         return null;
     }
     
@@ -39,7 +48,7 @@ class f_auth_Db extends f_auth_Driver
     {
         return Db::select(Config::get('auth.db_hash_field', 'password'))
                 ->from(Config::get('auth.db_table', 'users'))
-                ->where(Config::get('auth.db_login', 'login'), $login)
+                ->where(Config::get('auth.db_login_field', 'login'), $login)
                 ->fetchCol(Config::get('auth.db_config', 'db1'));
     }
 }
