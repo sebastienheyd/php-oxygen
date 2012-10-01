@@ -81,6 +81,15 @@ class Upload
     {
         return $this->_tmp_name;
     }
+    /**
+     * Return the original file name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->_name;
+    }
     
     /**
      * Check if file is correctly uploaded
@@ -109,6 +118,16 @@ class Upload
             return preg_match($regexp, $this->_name);
         }
         return false;
+    }
+    
+    /**
+     * Check if uploaded file is an image
+     * 
+     * @return boolean
+     */    
+    public function isImage()
+    {
+        return getimagesize($this->_tmp_name) !== false;
     }
     
     /**
