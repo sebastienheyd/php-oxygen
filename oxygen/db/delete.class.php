@@ -84,11 +84,9 @@ class f_db_Delete extends f_db_Where
     {        
         $sql  = 'DELETE FROM '.$this->_from.' ';     
 
-        $sql .= $this->_buildWhere();
-        
-        $sql = trim($sql);
+        $sql .= $this->_buildWhere();        
 
-        $q = DB::query($sql, $config)->execute($this->_vars);
+        $q = DB::query(trim($sql), $config)->execute($this->_vars);
         
         return is_object($q) ? $q->count() : 0;
     }       

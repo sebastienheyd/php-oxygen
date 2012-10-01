@@ -69,11 +69,12 @@ class Auth
      * 
      * @param string $token         The token to log in, typically a numeric ID
      * @param boolean $remember     [optional] Remember the login with a cookie ? Default is false
+     * @param string $cookiePath    [optional] Set the cookie path. Default is '/'
      * @return boolean 
      */
-    public static function login($token, $remember = false)
+    public static function login($token, $remember = false, $cookiePath = '/')
     {
-        return self::getDriver()->login($token, $remember);
+        return self::getDriver()->login($token, $remember, $cookiePath);
     }
     
     /**

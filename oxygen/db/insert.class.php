@@ -13,7 +13,6 @@
 
 class f_db_Insert
 {
-    private $_db;
     private $_table;
     private $_values;
     private $_config;
@@ -40,7 +39,6 @@ class f_db_Insert
      */
     private function __construct($table, array $values, $config = 'db1')
     {
-        $this->_db = DB::getInstance($config);
         $this->_table = $table;
         $this->_values = $values;
         $this->_config = $config;
@@ -49,7 +47,7 @@ class f_db_Insert
     /**
      * Execute the insert into the given table
      * 
-     * @return boolean      Return true if insert succeed
+     * @return string      Return the inserted ID
      */
     public function execute()
     {
@@ -64,20 +62,12 @@ class f_db_Insert
             $vals[':'.$k] = $v;
         }
         
-        if(!empty($cols))
-        {
-            $sql .= '('.join(',', array_map(array('DB', 'quoteIdentifier'), $cols)).') ';
-        }       
+        if(!empty($cols)) $sql .= '('.join(',', array_map(array('DB', 'quoteIdentifier'), $cols)).') ';   
         
         $sql .= 'VALUES ('.join(', ', array_keys($vals)).')';
         
-        $q = $this->_db->prepare($sql)->execute($vals);        
+        Db::query($sql, $this->_config)->execute($vals);
         
-        if(is_object($q))
-        {
-            if($q->count() == 1) return true;
-        }
-        
-        return false;
+        return Db::getInstance($this->_config)->getLastId();
     }    
 }
