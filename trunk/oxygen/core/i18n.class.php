@@ -31,7 +31,7 @@ class I18n
     public static function t($file, $string, $args = array(), $srcLang = null, $origin = 'default', $addToFile = true)
     {
         // if current locale is equal to default locale we don't need to translate
-        if(self::getDefaultLocale() === self::getLocale()) return self::replaceArgs($string, $args);
+        if($srcLang !== null && self::getDefaultLang() === $srcLang) return self::replaceArgs($string, $args);
         
         // $srcLang is no set we get the application default lang
         if($srcLang === null) $srcLang = self::getDefaultLang();        
