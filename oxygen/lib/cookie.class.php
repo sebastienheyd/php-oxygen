@@ -82,7 +82,7 @@ class Cookie
      * 
      * @return boolean              Return true on success
      */
-    public static function set($name, $value, $lifetime = 3600, $path = null, $domain = null, $secure = null, $httponly = true)
+    public static function set($name, $value, $lifetime = 3600, $path = '/', $domain = null, $secure = null, $httponly = true)
     {
         // false value will delete the cookie so we force the value as an integer
         if($value === true || $value === false) $value = (int) $value;
