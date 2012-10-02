@@ -190,6 +190,17 @@ class Db
     {
         return $this->_connexion !== null;
     }
+    
+    /**
+     * Reset execution status
+     * 
+     * @return Db
+     */
+    public function reset()
+    {
+        $this->_executed = false;
+        return $this;
+    }
 
     // ================================================= TRANSACTION STATIC METHODS
 
