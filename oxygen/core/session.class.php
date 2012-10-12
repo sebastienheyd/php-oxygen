@@ -163,11 +163,19 @@ class Session
     }
     
     /**
+     * Save session data
+     */
+    public function save()
+    {
+        $_SESSION = self::$_data;
+    }
+    
+    /**
      * When destroyed, write in session and close it
      */
     public function __destruct()
     {
-        $_SESSION = self::$_data;
+        $this->save();
         session_write_close();
     }    
 }
