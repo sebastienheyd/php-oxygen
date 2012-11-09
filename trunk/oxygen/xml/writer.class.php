@@ -13,6 +13,8 @@
 
 class f_xml_Writer extends XMLWriter
 {
+    private $_startDocument;    
+    
     /**
      * @param string $startDocument          If true, starts a new UTF-8 XML ?
      * @return f_xml_Writer
@@ -30,6 +32,7 @@ class f_xml_Writer extends XMLWriter
         $this->openMemory();
         $this->setIndent(true);
         $this->setIndentString('    ');
+        $this->_startDocument = $startDocument;
         if($startDocument === true) $this->startDocument('1.0', 'UTF-8');
     }
         
@@ -81,7 +84,7 @@ class f_xml_Writer extends XMLWriter
     public function output()
     {
     	header('Content-type: text/xml');
-        $this->endDocument();
+        if($this->_startDocument) $this->endDocument();
         echo $this->outputMemory();
     }
     
@@ -93,7 +96,7 @@ class f_xml_Writer extends XMLWriter
      */
     public function toFile($file)
     {
-        $this->endDocument();
+        if($this->_startDocument) $this->endDocument();
         $xml = $this->outputMemory();
         return file_put_contents($file, $xml, LOCK_EX);
     }    

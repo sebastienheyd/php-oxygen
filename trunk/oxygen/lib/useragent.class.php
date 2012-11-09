@@ -295,15 +295,19 @@ class UserAgent
     public function isMobile()
     {
         if(!isset($this->isMobile))
-        {
+        {            
             $this->isMobile = false;
             
             if (isset($_SERVER['HTTP_X_WAP_PROFILE']) || isset($_SERVER['HTTP_PROFILE']))
             {
+                $this->device = 'generic';
+                $this->deviceType = 'phone';
                 $this->isMobile = true;
             }
             elseif (strpos($this->_accept, 'text/vnd.wap.wml') > 0 || strpos($this->_accept, 'application/vnd.wap.xhtml+xml') > 0)
             {
+                $this->device = 'generic';
+                $this->deviceType = 'phone';
                 $this->isMobile = true;
             }
             else
