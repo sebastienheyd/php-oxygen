@@ -30,7 +30,6 @@ spl_autoload_register();
 // or load from autoload method
 spl_autoload_register('Autoload::load');
 
-
 class Autoload
 {
     private static $_cache = array();

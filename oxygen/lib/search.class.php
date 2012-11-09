@@ -138,8 +138,8 @@ class Search
         // no folder... no search ! ;-)
         if($this->_folder === null) trigger_error('You must define a folder to find files', E_USER_ERROR);        
         
-        // folder is not in the base directory (by default the project dir)
-        if(!strstr($this->_folder, $restrictToDir)) trigger_error('Directory listing is not secure, directory is outside project directory');        
+        // folder is not in the base directory (by default the project dir) return nothing
+        if(!strstr($this->_folder, $restrictToDir)) return array();     
         
         // instanciate the iterator
         $i = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->_folder), RecursiveIteratorIterator::SELF_FIRST);        
