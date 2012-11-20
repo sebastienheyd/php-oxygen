@@ -44,7 +44,13 @@ function smarty_function_widget($params, &$smarty)
     {
         if($file = get_module_file($params['module'], 'template/'.$params['template'], true))
         {
-            return file_get_contents($file);            
+            $tpl = Template::getInstance($file);
+            
+            if(empty($args)) return $tpl->get();
+
+            foreach($args as $name => $value) $tpl->assign($name, $value);
+                           
+            return $tpl->get();        
         }
     }
 }
