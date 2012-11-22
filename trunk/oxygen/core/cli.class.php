@@ -146,10 +146,10 @@ class Cli
      * @return string           Answer of the question
      */
     public function input($label)
-	{
+    {
         $this->printf($label);
 		return trim(fgets(STDIN));
-	} 
+    } 
     
     /**
      * Get argument from command
@@ -182,5 +182,14 @@ class Cli
         // Only one argument (= script name) return false
         if($this->_argc == 1 || !is_string($arg)) return false;
         return array_search($arg, $this->_argv);        
+    }
+    
+    /**
+     * Clears the screen
+     */
+    public function clearScreen()
+    {
+        $clearscreen = chr(27)."[H".chr(27)."[2J";
+        print $clearscreen;
     }    
 }
