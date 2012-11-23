@@ -230,6 +230,8 @@ class f_db_Select extends f_db_Where
             $sql .= join(', ', array_map(array('DB', 'quoteIdentifier'), $this->_group)).' ';           
         }
         
+        $sql .= $this->_buildHaving();
+        
         $c = count($this->_order);
 
         if($c > 0)
@@ -242,13 +244,8 @@ class f_db_Select extends f_db_Where
                 if($c > 1 && $k+1 < $c) $sql .= ', ';
             }
         }
-        
-        $sql .= $this->_buildHaving();
-        
-        if(isset($this->_limit))
-        {
-            $sql .= ' LIMIT '.$this->_limit;
-        }        
+                
+        if(isset($this->_limit)) $sql .= ' LIMIT '.$this->_limit;    
 
         return trim($sql);
     }        
