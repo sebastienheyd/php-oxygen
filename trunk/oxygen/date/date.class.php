@@ -10,17 +10,17 @@
  * @author      Sébastien HEYD <sheyd@php-oxygen.com>
  * @package     PHP Oxygen
  */
-
 class f_date_Date
 {
-	private $_date;
-	private $_year;
-	private $_month;
-	private $_day;
-	private $_hour;
-	private $_minute;
-	private $_second;    
-    
+
+    private $_date;
+    private $_year;
+    private $_month;
+    private $_day;
+    private $_hour;
+    private $_minute;
+    private $_second;
+
     /**
      * Get a new date instance
      * 
@@ -30,55 +30,55 @@ class f_date_Date
      */
     public static function getInstance($date, $format = 'Y-m-d H:i:s')
     {
-        $dateTokens   = preg_split("/[\s.,:\/-]+/", $date);
-		$formatTokens = preg_split("/[\s.,:\/-]+/", $format);
+        $dateTokens = preg_split("/[\s.,:\/-]+/", $date);
+        $formatTokens = preg_split("/[\s.,:\/-]+/", $format);
 
-        if(count($dateTokens) !== count($formatTokens))
+        if (count($dateTokens) !== count($formatTokens))
         {
             throw new UnexpectedValueException('Given date and format has not the same number of tokens.');
-        }    
-        
-		$y = date('Y');
-		$m = date('m');
-		$d = date('d');
-		$h = $i = $s = '00';
+        }
 
-		foreach ($formatTokens as $j => $token)
-		{
-			switch ($token)
-			{
-				case 'Y' :
-					$y = str_pad($dateTokens[$j], 4, '0', STR_PAD_LEFT);
-					break;
-				case 'n' :
-				case 'm' :
-					$m = str_pad($dateTokens[$j], 2, '0', STR_PAD_LEFT);
-					break;
+        $y = date('Y');
+        $m = date('m');
+        $d = date('d');
+        $h = $i = $s = '00';
+
+        foreach ($formatTokens as $j => $token)
+        {
+            switch ($token)
+            {
+                case 'Y' :
+                    $y = str_pad($dateTokens[$j], 4, '0', STR_PAD_LEFT);
+                    break;
+                case 'n' :
+                case 'm' :
+                    $m = str_pad($dateTokens[$j], 2, '0', STR_PAD_LEFT);
+                    break;
                 case 'M' :
                     $months = array(1 => 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-                    $m = str_pad(array_search(ucfirst($dateTokens[$j]), $months),2, '0', STR_PAD_LEFT);
-					break;
+                    $m = str_pad(array_search(ucfirst($dateTokens[$j]), $months), 2, '0', STR_PAD_LEFT);
+                    break;
                 case 'j' :
-				case 'd' :
-					$d = str_pad($dateTokens[$j], 2, '0', STR_PAD_LEFT);
-					break;
-				case 'h' :
+                case 'd' :
+                    $d = str_pad($dateTokens[$j], 2, '0', STR_PAD_LEFT);
+                    break;
+                case 'h' :
                 case 'G' :
-				case 'H' :
-					$h= str_pad($dateTokens[$j], 2, '0', STR_PAD_LEFT);
-					break;
-				case 'i' :
-					$i = str_pad($dateTokens[$j], 2, '0', STR_PAD_LEFT);
-					break;
-				case 's' :
-					$s = str_pad($dateTokens[$j], 2, '0', STR_PAD_LEFT);
-					break;
-			}
-		}        
+                case 'H' :
+                    $h = str_pad($dateTokens[$j], 2, '0', STR_PAD_LEFT);
+                    break;
+                case 'i' :
+                    $i = str_pad($dateTokens[$j], 2, '0', STR_PAD_LEFT);
+                    break;
+                case 's' :
+                    $s = str_pad($dateTokens[$j], 2, '0', STR_PAD_LEFT);
+                    break;
+            }
+        }
 
-		return new self("$y-$m-$d $h:$i:$s");
+        return new self("$y-$m-$d $h:$i:$s");
     }
-    
+
     /**
      * Get a new date instance
      * 
@@ -92,18 +92,18 @@ class f_date_Date
         }
 
         $this->_date = $date;
-        
+
         $date = explode(' ', $date);
 
         list($this->_year, $this->_month, $this->_day) = explode('-', $date[0]);
         list($this->_hour, $this->_minute, $this->_second) = explode(':', $date[1]);
 
-        if(!checkdate($this->_month, $this->_day, $this->_year))
+        if (!checkdate($this->_month, $this->_day, $this->_year))
         {
-            throw new RangeException("Invalid date : ".$date." date does not exist");
+            throw new RangeException("Invalid date : " . $this->_date . " date does not exist");
         }
     }
-    
+
     /**
      * Default string to return on printing
      * 
@@ -113,7 +113,7 @@ class f_date_Date
     {
         return $this->_date;
     }
-    
+
     /**
      * Returns an array of values which indicates differences between current date and instanciated date.
      * 
@@ -124,7 +124,7 @@ class f_date_Date
     {
         return f_date_Format::getInstance()->setDate($this)->getDiff($timestamp);
     }
-    
+
     /**
      * Returns a string which indicates the difference between current date and instanciated date.
      * 
@@ -141,7 +141,7 @@ class f_date_Date
     {
         return f_date_Format::getInstance($langOrRegion)->setDate($this)->toDiff($precision, $separator, $futurePast, $timestamp);
     }
-    
+
     /**
      * Return current instanciated date to a formated string value.
      * 
@@ -150,10 +150,10 @@ class f_date_Date
      * @return string          The formated date with the ouput pattern
      */
     public function toFormat($format = 'Y-m-d H:i:s', $langOrRegion = null)
-    {        
+    {
         return f_date_Format::getInstance($langOrRegion)->setDate($this)->toFormat($format);
     }
-        
+
     /**
      * Returns current instanciated date to a pre-formatted string value
      * 
@@ -165,7 +165,7 @@ class f_date_Date
     {
         return f_date_Format::getInstance($langOrRegion)->setDate($this)->toSmartFormat($format);
     }
-    
+
     /**
      * Returns current instanciated date in MySql datetime format
      * 
@@ -175,19 +175,13 @@ class f_date_Date
     public function toMysql($type = 'datetime')
     {
         $date = f_date_Format::getInstance('en_US')->setDate($this);
-        
-        if($type === 'date')
-        {
-            return $date->toFormat('Y-m-d');            
-        }
-        else if($type === 'timestamp')
-        {
-            return $date->toTimeStamp();
-        }
-        
-        return $date->toFormat('Y-m-d H:i:s');      
-    }    
-    
+
+        if ($type === 'date') return $date->toFormat('Y-m-d');
+        if ($type === 'timestamp') return $date->toTimeStamp();
+
+        return $date->toFormat('Y-m-d H:i:s');
+    }
+
     /**
      * Returns current instanciated date in standard HTTP format
      * 
@@ -196,8 +190,8 @@ class f_date_Date
     public function toHttp()
     {
         return f_date_Format::getInstance('en_US')->setDate($this)->toFormat('D, d M Y H:i:s O');
-    }    
-    
+    }
+
     /**
      * Returns current instanciated date timestamp
      * 
@@ -205,101 +199,101 @@ class f_date_Date
      */
     public function toTimeStamp()
     {
-        if(!isset($this->timestamp)) $this->timestamp = strtotime($this->_date);
+        if (!isset($this->timestamp)) $this->timestamp = strtotime($this->_date);
         return $this->timestamp;
-    }    	
-	
+    }
+
     /**
      * Returns current instanciated date day of week
      * @return integer
      */
-	public function getDayOfWeek()
-	{
-        if(!isset($this->dayOfWeek)) $this->dayOfWeek = date("w", $this->toTimeStamp());
-		return $this->dayOfWeek;
-	}	
-	
+    public function getDayOfWeek()
+    {
+        if (!isset($this->dayOfWeek)) $this->dayOfWeek = date("w", $this->toTimeStamp());
+        return $this->dayOfWeek;
+    }
+
     /**
      * Returns current instanciated date day in month
      * @return integer
-     */    
-	public function getDaysInMonth()
-	{
-        if(!isset($this->daysInMonth)) $this->daysInMonth = date("t", $this->_month);
-		return $this->daysInMonth;
-	}
-	
+     */
+    public function getDaysInMonth()
+    {
+        if (!isset($this->daysInMonth)) $this->daysInMonth = date("t", $this->_month);
+        return $this->daysInMonth;
+    }
+
     /**
      * Returns current instanciated date day of year
      * @return integer
-     */    
-	public function getDayOfYear()
-	{
-        if(!isset($this->dayOfYear)) $this->dayOfYear = date("z", $this->toTimeStamp());
-		return $this->dayOfYear;
-	}
-	
+     */
+    public function getDayOfYear()
+    {
+        if (!isset($this->dayOfYear)) $this->dayOfYear = date("z", $this->toTimeStamp());
+        return $this->dayOfYear;
+    }
+
     /**
      * Returns current instanciated date year is leap
      * @return boolean
-     */    
-	public function getGmtDiff()
-	{
-        if(!isset($this->gmtDiff)) $this->gmtDiff = date("O", $this->toTimeStamp());
-		return $this->gmtDiff;
-	}  
-    
+     */
+    public function getGmtDiff()
+    {
+        if (!isset($this->gmtDiff)) $this->gmtDiff = date("O", $this->toTimeStamp());
+        return $this->gmtDiff;
+    }
+
     /**
      * Returns year of instanciated date
      * @return integer
      */
-	public function getYear()
-	{
-		return $this->_year;
-	}	
-    
+    public function getYear()
+    {
+        return $this->_year;
+    }
+
     /**
      * Returns month of instanciated date
      * @return integer
      */
     public function getMonth()
-	{
-		return $this->_month;
-	}	
-		
+    {
+        return $this->_month;
+    }
+
     /**
      * Returns day of instanciated date
      * @return integer 
      */
-	public function getDay()
-	{
-		return $this->_day;
-	}
-	
+    public function getDay()
+    {
+        return $this->_day;
+    }
+
     /**
      * Returns hour of instanciated date
      * @return integer 
-     */    
-	public function getHour()
-	{
-		return $this->_hour;
-	}	
-	
+     */
+    public function getHour()
+    {
+        return $this->_hour;
+    }
+
     /**
      * Returns minute of instanciated date
      * @return integer 
-     */    
-	public function getMinute()
-	{
-		return $this->_minute;
-	}	
-	
+     */
+    public function getMinute()
+    {
+        return $this->_minute;
+    }
+
     /**
      * Returns second of instanciated date
      * @return integer 
-     */    
-	public function getSecond()
-	{
-		return $this->_second;
-	}    
+     */
+    public function getSecond()
+    {
+        return $this->_second;
+    }
 }
