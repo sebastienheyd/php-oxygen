@@ -113,7 +113,7 @@ class f_db_Select extends f_db_Where
      * @param string $type      [optional] Type of request AND or OR. Default is 'AND'
      * @return f_db_Select      Current instance of f_db_Select
      */    
-    protected function having($key, $value = null, $type = 'AND')
+    public function having($key, $value = null, $type = 'AND')
     { 
         return parent::having($key, $value, $type);
     }    
