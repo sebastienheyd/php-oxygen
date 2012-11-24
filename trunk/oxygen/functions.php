@@ -142,7 +142,7 @@ if (!function_exists('ucfirst_last'))
 if (!function_exists('to_object'))
 {
     /**
-     * Converts an associative array to a stdClass object recursively
+     * Converts an multidimensional array to a stdClass object recursively
      *
      * @param array $array  The array to convert
      * @return stdClass     A stdClass object
