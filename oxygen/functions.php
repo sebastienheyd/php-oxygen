@@ -141,7 +141,6 @@ if (!function_exists('ucfirst_last'))
 
 if (!function_exists('to_object'))
 {
-
     /**
      * Converts an associative array to a stdClass object recursively
      *
@@ -150,20 +149,13 @@ if (!function_exists('to_object'))
      */
     function to_object(array $array)
     {
-        foreach ($array as $key => $value)
-        {
-            if (is_array($value))
-                $array[$key] = to_object($value);
-        }
-
-        return (object) $array;
+        if (is_array($array)) return (object) array_map(__FUNCTION__, $d);
+        return $array;
     }
-
 }
 
 if (!function_exists('to_array'))
 {
-
     /**
      * Converts an object to an array recursively
      *
@@ -172,15 +164,10 @@ if (!function_exists('to_array'))
      */
     function to_array($obj)
     {
-        foreach ($obj as $key => $value)
-        {
-            if (is_object($value))
-                $obj[$key] = @to_array($value);
-        }
-
-        return (array) $obj;
+        if (is_object($obj)) $obj = get_object_vars($obj);
+        if (is_array($obj)) return array_map(__FUNCTION__, $obj);
+        return $obj;
     }
-
 }
 
 if (!function_exists('get_module_file'))
