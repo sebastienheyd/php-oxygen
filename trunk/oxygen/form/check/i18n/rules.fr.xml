@@ -3,8 +3,8 @@
   <file source-language="en" datatype="plaintext" original="rules">
     <body>
       <trans-unit id="1">
-        <source>The field is required</source>
-        <target>Le champ est requis</target>
+        <source>The field %name% is required</source>
+        <target>Le champ %name% est requis</target>
       </trans-unit>
       <trans-unit id="2">
         <source>The e-mail address is not valid</source>
@@ -37,6 +37,26 @@
       <trans-unit id="9">
         <source>%name% must contain only alpha-numeric characters</source>
         <target>%name% doit contenir que des caractères alpha-numériques</target>
+      </trans-unit>
+      <trans-unit id="10">
+        <source>%name% must contain only numbers</source>
+        <target>%name% doit contenir que des caractères numériques</target>
+      </trans-unit>
+      <trans-unit id="11">
+        <source>%name% must contain an integer</source>
+        <target>%name% doit contenir un nombre entier</target>
+      </trans-unit>
+      <trans-unit id="12">
+        <source>%name% must contain a number greater than or equal to %nb%</source>
+        <target>%name% doit contenir un nombre supérieur ou égal à %nb%</target>
+      </trans-unit>
+      <trans-unit id="13">
+        <source>%name% must contain a number less than or equal to %nb%</source>
+        <target>%name% doit contenir un nombre inférieur ou égal à %nb%</target>
+      </trans-unit>
+      <trans-unit id="14">
+        <source>%name% is not in the correct format</source>
+        <target>%name% n'est pas correctement formaté</target>
       </trans-unit>
     </body>
   </file>
