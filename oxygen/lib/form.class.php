@@ -145,12 +145,13 @@ class Form
      * Get a field value
      * 
      * @param string $fieldName     The field name to get the value from
-     * @return mixed|null           The field value
+     * @param mixed $default        Default value if field is not found
+     * @return mixed                The field value
      */
-    public function getValue($fieldName)
+    public function getValue($fieldName, $default = null)
     {
         $values = $this->getValues();        
-        return isset($values->$fieldName) ?  $values->$fieldName : null;
+        return isset($values->$fieldName) ?  $values->$fieldName : $default;
     }
     
     /**
@@ -192,5 +193,28 @@ class Form
         }
         
         return $object;
+    }
+    
+    /**
+     * Get the hidden captcha tags to insert into form
+     * 
+     * @param string $fieldId       [optional] hidden captcha hidden field name (default is hcptch)
+     * @return strin                Return a tag to insert into form to secure
+     */
+    public static function getCaptchaTags($fieldId = "hcptch")
+    {
+        return f_form_Captcha::getFormTags($fieldId);
+    }
+    
+    /**
+     * Check a posted hidden captcha made with getCaptchaTags
+     * 
+     * @param string $fieldId       [optional] hidden captcha hidden field name (default is hcptch)
+     * @param int $timeLimit        [optional] submission time limit in seconds (default is 1200)
+     * @return type
+     */
+    public static function checkCaptcha($fieldId = "hcptch", $timeLimit = 1200)
+    {
+        return f_form_Captcha::checkCaptcha($fieldId, $timeLimit);
     }
 }
