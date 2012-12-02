@@ -120,6 +120,18 @@ class Upload
         return false;
     }
     
+    
+    /**
+     * Check if uploaded file has weight less than given size
+     * 
+     * @param int $size     Size in octets
+     * @return boolean
+     */
+    public function sizeIsLessThan($size)
+    {
+        return $this->_size <= $size;
+    }    
+    
     /**
      * Check if uploaded file is an image
      * 
