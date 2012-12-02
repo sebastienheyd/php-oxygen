@@ -65,12 +65,11 @@ class Form
         {
             preg_match('/\[(.*)\]/i', $rule, $matches);
 
+            if($rule !== 'required' && $this->_post->$fieldName === '') continue;
+            
             $className = 'f_form_check_'.ucfirst($rule);
             
-            if(array_key_exists($rule, $this->_rules))
-            {
-                $className = $this->_rules[$rule];
-            }
+            if(array_key_exists($rule, $this->_rules)) $className = $this->_rules[$rule];
 
             $args = null;
             if(isset($matches[0])) $className = str_replace($matches[0], '', $className);
@@ -80,10 +79,7 @@ class Form
 
             if(!$rule->check($args))
             {            
-                if(!isset($this->_errors[$fieldName]))
-                {
-                    $this->_errors[$fieldName] = $rule->getError();
-                }
+                if(!isset($this->_errors[$fieldName])) $this->_errors[$fieldName] = $rule->getError();
             }            
         }
                 
@@ -98,10 +94,7 @@ class Form
      */
     public function addRule($ruleName, $className)
     {
-        if(class_exists($className))
-        {
-            $this->_rules[$ruleName] = $className;
-        }
+        if(class_exists($className)) $this->_rules[$ruleName] = $className;
     }
     
     /**
@@ -131,13 +124,10 @@ class Form
      * 
      * @return array
      */
-    public function getValues()
+    public function getValues($asArray = false)
     {
-        if(get_magic_quotes_gpc())
-        {
-            $this->_post = to_object(array_map('stripslashes', to_array($this->_post)));
-        }
-
+        if(get_magic_quotes_gpc()) $this->_post = to_object(array_map('stripslashes', to_array($this->_post)));        
+        if($asArray) return to_array ($this->_post);       
         return $this->_post;
     }
     
