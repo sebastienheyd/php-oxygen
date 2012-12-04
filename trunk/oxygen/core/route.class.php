@@ -135,7 +135,7 @@ class Route
         $args = func_get_args();
         
         unset($args[0]);
-               
+
         $route = $this->_routes->xpath('//route[@id="'.$id.'"]');
         
         if(empty($route)) return '';
@@ -168,14 +168,14 @@ class Route
     private function _buildRouteCacheFile($files)
     {        
         $modules = array();
-
-        // Start a new XML structure
-        $result = XML::writer();
-        
-        // Start <routes>
-        $result->startElement('routes');
         
         $lastModified = 0;
+        
+        $i = 0;
+        
+        $routes = array();
+        $ruleslength = array();
+        $rules = array();
         
         foreach($files as $file)
         {
@@ -196,36 +196,59 @@ class Route
             
             $module = first($segments);       
             
-            // Module routes file has not already be parsed
+            // Module routes file has not already be parsed (when file is overloaded in webapp)
             if(!in_array($module, $modules))
             {
                 array_push($modules, $module);
                 
-                $xml = simplexml_load_file($file);                                
-                
-                $mod = $inWebapp ? 'webapp/module/'.$module.'/config/routes.xml' : 'module/'.$module.'/config/routes.xml';
-                $result->writeComment(' '.$mod.' ');
+                $xml = simplexml_load_file($file);                                                           
                 
                 // Write route rule
                 foreach($xml->xpath('//route') as $route)
                 {
-                    $result->startElement('route', array('rule' => $route->attributes()->rule, 'redirect' => $route->attributes()->redirect));                    
-                    if(isset($route->attributes()->id)) $result->writeAttribute('id', $route->attributes()->id);                    
-                    $result->endElement();
+                    $r = array();
+                    $r['rule'] = (string) $route->attributes()->rule;
+                    $r['redirect'] = (string) $route->attributes()->redirect;
+                    
+                    if(isset($route->attributes()->id)) $r['id'] = (string) $route->attributes()->id;
+                    
+                    $rules[$i] = $r['rule'];
+                    $ruleslength[$i] = strlen($r['rule']);
+                    $routes[$i] = $r;
+                    $i++;
                 }
             }
         }
         
-        // </routes>
-        $result->endElement();
-        
-        // End document    
-        $result->endDocument();
-        
-        // Get content and put contents into the cache file
-        $result->toFile($this->_cacheFile);
-        
-        // Set cache file modification date
-        touch($this->_cacheFile, $lastModified);
+        if(!empty($routes))
+        {
+            // Sort routes by length and alphabetic
+            array_multisort($ruleslength, SORT_DESC, $rules, SORT_DESC, $routes);
+            
+            // Start a new XML structure
+            $result = XML::writer();
+
+            // Start <routes>
+            $result->startElement('routes');
+            
+            foreach($routes as $route)
+            {
+                $result->startElement('route', array('rule' => $route['rule'], 'redirect' => $route['redirect']));                    
+                if(isset($route['id'])) $result->writeAttribute('id', $route['id']);                    
+                $result->endElement();
+            }
+            
+            // </routes>
+            $result->endElement();
+
+            // End document    
+            $result->endDocument();
+
+            // Get content and put contents into the cache file
+            $result->toFile($this->_cacheFile);
+
+            // Set cache file modification date
+            touch($this->_cacheFile, $lastModified);
+        }                        
     }
 }
