@@ -91,6 +91,17 @@ class Upload
         return $this->_name;
     }
     
+    
+    /**
+     * Return the original file extension
+     *
+     * @return string
+     */
+    public function getExtension()
+    {
+        return substr($this->_name, strrpos($this->_name, '.') + 1);
+    }    
+    
     /**
      * Check if file is correctly uploaded
      * 
