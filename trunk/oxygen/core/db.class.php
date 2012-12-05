@@ -453,7 +453,10 @@ class Db
      */
     public function count()
     {
-        return $this->_query->rowCount();
+        if (!$this->_executed) $this->execute();
+        $result = $this->_query->rowCount();
+        $this->_executed = false;
+        return $result;
     }
 
     /**
