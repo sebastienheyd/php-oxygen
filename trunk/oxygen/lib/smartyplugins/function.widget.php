@@ -45,6 +45,11 @@ function smarty_function_widget($params, &$smarty)
         if($file = get_module_file($params['module'], 'template/'.$params['template'], true))
         {
             $tpl = Template::getInstance($file);
+                                    
+            foreach($smarty->tpl_vars as $k => $v)
+            {
+                if($k !== 'SCRIPT_NAME' && $k !== 'smarty' && !isset($args[$k])) $args[$k] = $v->value;
+            }
             
             if(empty($args)) return $tpl->get();
 
