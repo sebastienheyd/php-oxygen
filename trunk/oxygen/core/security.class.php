@@ -29,7 +29,7 @@ class Security
         if($key === null) $key = self::_getKey();
         
         // To avoid same encoded string for the same string
-        $text = Security::hash($text).'~~~'.$text;
+        $text = self::hash($text).'~~~'.$text;
         
         // Use openssl_encrypt with PHP >= 5.3.0
         if(function_exists('openssl_encrypt') && in_array('BF-OFB', openssl_get_cipher_methods()))
@@ -93,7 +93,7 @@ class Security
 
         // To avoid truncated encoded strings
         list($hash, $value) = explode('~~~', $msg);       
-        if(Security::check($value, $hash)) return $value;
+        if(self::check($value, $hash)) return $value;
         
         return false;
     }   
