@@ -41,20 +41,17 @@ class Email
      */
     public static function to()
     {
-        if(func_num_args() == 0) throw new Exception ('No recipient defined');
+        if(func_num_args() === 0) throw new Exception ('No recipient defined');
         
-        $inst = new self();        
-        
-        $args = func_get_args();
+        $inst = new self();
  
-        if(!empty($args))
+        $args = func_get_args();
+        
+        foreach ($args as $arg)
         {
-            foreach ($args as $arg)
-            {
-                if(is_array($arg)) $arg = join(',', $arg);
-                $to = explode(',', $arg);
-                $inst->_to = array_unique(array_merge($inst->_to, array_map('trim', $to)));
-            }
+            if(is_array($arg)) $arg = join(',', $arg);
+            $to = explode(',', $arg);
+            $inst->_to = array_unique(array_merge($inst->_to, array_map('trim', $to)));
         }
  
         return $inst;
@@ -69,7 +66,7 @@ class Email
      */
     public function from($emailAddress, $name = null)
     {
-        $value = $name !== null ? '"'.$this->_b($name).'" <'.$emailAddress.'>':$emailAddress; // Strip accents 
+        $value = $name !== null ? '"'.String::stripAccents($name).'" <'.$emailAddress.'>':$emailAddress; // Strip accents 
         $this->_from = $value;
         $this->_returnPath = $emailAddress;
         return $this;
@@ -82,16 +79,15 @@ class Email
      */
     public function cc()
     {
-        if(func_num_args() > 0)
-        {
-            $args = func_get_args();
+        if(func_num_args() === 0) return $this;
 
-            foreach ($args as $arg)
-            {
-                if(is_array($arg)) $arg = join(',', $arg);
-                $cc = explode(',', $arg);
-                $this->_cc = array_unique(array_merge($this->_cc, array_map('trim', $cc)));
-            }
+        $args = func_get_args();
+        
+        foreach ($args as $arg)
+        {
+            if(is_array($arg)) $arg = join(',', $arg);
+            $cc = explode(',', $arg);
+            $this->_cc = array_unique(array_merge($this->_cc, array_map('trim', $cc)));
         }
         
         return $this;
@@ -104,17 +100,16 @@ class Email
      */
     public function bcc()
     {
-        if(func_num_args() > 0)
-        {
-            $args = func_get_args();
+        if(func_num_args() === 0) return $this;
 
-            foreach ($args as $arg)
-            {
-                if(is_array($arg)) $arg = join(',', $arg);
-                $bcc = explode(',', $arg);
-                $this->_bcc = array_unique(array_merge($this->_bcc, array_map('trim', $bcc)));
-            }          
-        }
+        $args = func_get_args();
+        
+        foreach ($args as $arg)
+        {
+            if(is_array($arg)) $arg = join(',', $arg);
+            $bcc = explode(',', $arg);
+            $this->_bcc = array_unique(array_merge($this->_bcc, array_map('trim', $bcc)));
+        }                 
         
         return $this;
     }
