@@ -57,7 +57,7 @@ register_shutdown_function(array(new Error(), 'shutdownHandler'));
 
 // Get default timezone
 if(ini_get('date.timezone') === '' || Config::get('general.timezone', true)) 
-        date_default_timezone_set(Config::get('general.timezone', 'UTC'));
+        date_default_timezone_set(Config::get('general.timezone', @date_default_timezone_get()));
 
 // Are the url ended by a suffix (ex: .html)
 define('HTTP_SUFFIX', Config::get('route.suffix', ''));
