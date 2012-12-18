@@ -246,10 +246,7 @@ class Email
         if(!empty($this->_cc))  $header .= 'Cc: '.join(',', $this->_cc).self::$line;
         if(!empty($this->_bcc)) $header .= 'Bcc: '.join(',', $this->_bcc).self::$line;        
         
-        if($this->_hasAttachment())
-        {
-            $header .= 'MIME-Version: 1.0' . self::$_line;  
-        }
+        $header .= 'MIME-Version: 1.0' . self::$_line;
         
         if ($this->_isMultiPart())
         {                      
