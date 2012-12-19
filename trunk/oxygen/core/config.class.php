@@ -10,11 +10,10 @@
  * @author      Sébastien HEYD <sheyd@php-oxygen.com>
  * @package     PHP Oxygen
  */
-
 class Config
 {
-    private static $_cache;              
-    
+    private static $_cache;
+
     /**
      * Get a configuration value
      * 
@@ -24,25 +23,30 @@ class Config
      * @return defaultValue
      */
     public static function get($section, $defaultValue = false)
-    {        
-        if(self::$_cache === null) self::_fetch();        
-        
-        if(strpos($section, '.') !== false) list($section, $name) = explode('.', $section);        
-        
-        if(!isset($name))
+    {
+        if (self::$_cache === null)
+            self::_fetch();
+
+        if (strpos($section, '.') !== false)
+            list($section, $name) = explode('.', $section);
+
+        if (!isset($name))
         {
-            if(isset(self::$_cache->$section)) $value = self::$_cache->$section;               
+            if (isset(self::$_cache->$section))
+                $value = self::$_cache->$section;
         }
         else
         {
-            if(isset(self::$_cache->$section->$name)) $value = self::$_cache->$section->$name;     
+            if (isset(self::$_cache->$section->$name))
+                $value = self::$_cache->$section->$name;
         }
-        
-        if(!isset($value) || empty($value) || $value == '') return $defaultValue;
-        
+
+        if (!isset($value) || empty($value) || $value == '')
+            return $defaultValue;
+
         return $value;
     }
-    
+
     /**
      * Get the current environment name. <br />
      * To set an environment, define the environment var APP_ENV in your apache config or into the .htaccess file.<br />
@@ -52,10 +56,37 @@ class Config
      */
     public static function getEnvironment()
     {
-        defined('APP_ENV') || define('APP_ENV', (getenv('APP_ENV') ? strtolower(getenv('APP_ENV')) : 'default'));
-        return APP_ENV;
+        // APP_ENV is defined manually
+        if (defined('APP_ENV'))
+            return APP_ENV;
+
+        // APP_ENV is defined in vhost or htaccess
+        if (getenv('APP_ENV'))
+        {
+            define('APP_ENV', getenv('APP_ENV'));
+            return APP_ENV;
+        }
+
+        // APP_ENV is defined in a file outside the project dir (for CLI MODE only)
+        if (CLI_MODE)
+        {
+            $file = realpath(APP_DIR . DS . ".." . DS . "APP_ENV");
+            $bd   = explode(':', ini_get("open_basedir"));
+
+            if (empty($bd) || (!in_array(APP_DIR, $bd) && is_file($file)))
+            {
+                $env = strtolower(trim(file_get_contents($file)));
+                if ($env !== '')
+                    define('APP_ENV', $env);
+                return $env;
+            }
+        }
+
+        // APP_ENV = "default"
+        define('APP_ENV', 'default');
+        return 'default';
     }
-    
+
     /**
      * Fetch all config ini vars into current object
      * 
@@ -63,25 +94,27 @@ class Config
      */
     private static function _fetch()
     {
-        $file = CONFIG_DIR.DS.self::getEnvironment().'.ini';
+        $file = CONFIG_DIR . DS . self::getEnvironment() . '.ini';
 
         // die if no config file is found !
-        if(!is_file($file)) die(str_replace(APP_DIR, '', $file).' does not exist');
-        
+        if (!is_file($file))
+            die(str_replace(APP_DIR, '', $file) . ' does not exist');
+
         $array = parse_ini_file($file, true);
-        
+
         self::$_cache = new stdClass();
-        
-        foreach($array as $section => $values)
+
+        foreach ($array as $section => $values)
         {
-            if(is_array($values))
+            if (is_array($values))
             {
                 self::$_cache->$section = new stdClass();
-                foreach($values as $k => $v)
+                foreach ($values as $k => $v)
                 {
                     self::$_cache->$section->$k = $v;
                 }
             }
         }
-    }     
+    }
+
 }
