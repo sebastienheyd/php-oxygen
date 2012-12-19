@@ -94,7 +94,8 @@ class Form
      */
     public function addRule($ruleName, $className)
     {
-        if(class_exists($className)) $this->_rules[$ruleName] = $className;
+        if(!class_exists($className)) trigger_error('Class '.$className.' not found', E_USER_ERROR);
+        $this->_rules[$ruleName] = $className;
     }
     
     /**
