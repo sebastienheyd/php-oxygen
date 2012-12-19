@@ -63,20 +63,26 @@ class Form
         
         foreach($rules as $rule)
         {
-            preg_match('/\[(.*)\]/i', $rule, $matches);
+            $args = null;
+            
+            // get rule argument if needed
+            if(preg_match('/([a-z0-9\-_]*?)\[(.*)\]/i', $rule, $matches))
+            {
+                $rule = $matches[1];
+                $args = $matches[2];
+            }
 
+            // field is not required and value is empty
             if($rule !== 'required' && $this->_post->$fieldName === '') continue;
             
+            // get class name
             $className = 'f_form_check_'.ucfirst($rule);
-            
-            if(array_key_exists($rule, $this->_rules)) $className = $this->_rules[$rule];
+            if(array_key_exists($rule, $this->_rules)) $className = $this->_rules[$rule];           
 
-            $args = null;
-            if(isset($matches[0])) $className = str_replace($matches[0], '', $className);
-            if(isset($matches[1])) $args = $matches[1];
-            
+            // class instanciation
             $rule = new $className($this->_post, $fieldName, $fullName);
 
+            // rule execution
             if(!$rule->check($args))
             {            
                 if(!isset($this->_errors[$fieldName])) $this->_errors[$fieldName] = $rule->getError();
