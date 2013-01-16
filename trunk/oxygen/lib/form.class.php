@@ -196,7 +196,7 @@ class Form
      * Get the hidden captcha tags to insert into form
      * 
      * @param string $fieldId       [optional] hidden captcha hidden field name (default is hcptch)
-     * @return strin                Return a tag to insert into form to secure
+     * @return string               Return a tag to insert into form to secure
      */
     public static function getCaptchaTags($fieldId = "hcptch")
     {
@@ -213,6 +213,6 @@ class Form
      */
     public static function checkCaptcha($fieldId = 'hcptch', $minLimit = 5, $maxLimit = 1200)
     {
-        return f_form_Captcha::checkCaptcha($fieldId, $minLimit, $maxLimit);
+        return f_form_Captcha::checkCaptcha($fieldId, $minLimit, $maxLimit) !== false;
     }
 }
