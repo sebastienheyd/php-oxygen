@@ -30,6 +30,9 @@ class Security
         
         // To avoid same encoded string for the same string
         $text = self::hash($text).'~~~'.$text;
+
+        // If zlib is active we compress the value to crypt
+        if(function_exists('gzdeflate')) $text = gzdeflate($text, 9);        
         
         // Use openssl_encrypt with PHP >= 5.3.0
         if(function_exists('openssl_encrypt') && in_array('BF-OFB', openssl_get_cipher_methods()))
@@ -90,9 +93,12 @@ class Security
 
             $msg = base64_decode($text) ^ $key;
         }
+        
+        // If zlib is active we uncompress the crypted value
+        if(function_exists('gzinflate')) $msg = @gzinflate($msg);
 
         // To avoid truncated encoded strings
-        list($hash, $value) = explode('~~~', $msg);       
+        @list($hash, $value) = explode('~~~', $msg);       
         if(self::check($value, $hash)) return $value;
         
         return false;
@@ -108,14 +114,8 @@ class Security
     */
     public static function hash($data, $rounds = 8)
     {
-        if(function_exists('openssl_random_pseudo_bytes'))
-        {
-            $salt = openssl_random_pseudo_bytes(16);
-        }
-        else
-        {
-            $salt = String::random(array('length' => 40));
-        }
+        $salt = function_exists('openssl_random_pseudo_bytes') ? 
+            openssl_random_pseudo_bytes(16) : String::random(array('length' => 40));
 
         $salt = substr(strtr(base64_encode($salt), '+', '.'), 0 , 22);
 

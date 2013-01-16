@@ -161,7 +161,7 @@ class String
      * @param boolean $onlyLowerCase    [optionnal] Get string only in lowercase (defaut = true)
      * @return type 
      */
-    function hrRandom($length = 8, $onlyLowerCase = true)
+    public static function hrRandom($length = 8, $onlyLowerCase = true)
     {      
         // variables initialization
         $p = 0; $result = '';
