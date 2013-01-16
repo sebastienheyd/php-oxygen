@@ -30,13 +30,14 @@ class f_form_Captcha
      * Returns the hidden captcha tags to put in your form
      * 
      * @param string $formId    [optional] The id to use to generate input elements (default = "hcptch")
+     * @param boolean $withImage    [optional]
      * @return string           The tags to put in your form
      */
-    public static function getFormTags($formId = 'hcptch')
+    public static function getFormTags($formId = 'hcptch', $withImage = false)
     {        
         // Get spinner vars
         $now = time();
-        $name = String::hrRandom();
+        $name = String::random(array('numbers' => false, 'uppercase' => false));
         
         // Generate the spinner
         $spinner = array(
@@ -46,6 +47,12 @@ class f_form_Captcha
             'user_agent'    => $_SERVER['HTTP_USER_AGENT'],
             'hfield_name'   => $name
         );
+        
+        if($withImage)
+        {
+            $captcha = String::hrRandom(5);
+            $spinner['captcha'] = $captcha;
+        }  
         
         // Encrypt the spinner
         $spinner = Security::encrypt(serialize($spinner));
@@ -57,7 +64,16 @@ class f_form_Captcha
         // build tags
         $tags  = '<input type="hidden" name="'.$formId.'[spinner]" value="'.$spinner.'" />'.PHP_EOL;
         $tags .= '<span style="'.$style.'"><input type="text" name="'.$formId.'[name]" value=""/></span>'.PHP_EOL;
-        $tags .= '<input type="hidden" name="hcptch['.$name.']" value="'.$now.'" />'.PHP_EOL;
+        
+        if($withImage)
+        {
+            $tags .= self::_generateImage($captcha);
+            $tags .= '<input type="text" name="'.$formId.'['.$name.']" value="" autocomplete="off" />'.PHP_EOL;
+        }
+        else
+        {
+            $tags .= '<input type="hidden" name="'.$formId.'['.$name.']" value="'.$now.'" />'.PHP_EOL;
+        }        
  
         return $tags;
     }
@@ -67,10 +83,52 @@ class f_form_Captcha
      * 
      * @param string $formId    [optional] The id to use to generate input elements
      */
-    public static function renderFormTags($formId = 'hcptch')
+    public static function renderFormTags($formId = 'hcptch', $withImage = false)
     {
-        echo self::getFormTags($formId);
+        echo self::getFormTags($formId, $withImage);
     }
+    
+    /**
+     * Generate a random "captcha" picture with the given text on it
+     * 
+     * @param type $value
+     * @return type
+     */
+    private static function _generateImage($value)
+    {
+        // Création de l'image
+        $img = imagecreatetruecolor(60, 25);
+        
+        // Allocation des couleurs
+        $c1 = imagecolorallocate($img, 255, 120, 10);
+        $c2 = imagecolorallocate($img, 51, 204, 204);
+        $c3 = imagecolorallocate($img, 51, 153, 204);
+        $c4 = imagecolorallocate($img, rand(204,255), rand(204,255), rand(204,255));
+        
+        // Création des lignes aléatoires
+        imageline($img, rand(5, 20), 1, rand(30, 60), 60, $c1);
+        imageline($img, 1, 60, rand(30, 60), 0, $c2);
+        imageline($img, 1, rand(10, 20), 60, rand(10, 20), $c3);
+        
+        // Génération des pixels aléatoires
+        for ($i = 0; $i < 1000; $i++) 
+        {
+            $c = imagecolorallocate($img, rand(50, 170), rand(50, 170), rand(50, 170));
+            imagesetpixel($img, rand(1, 60),rand(1, 25), $c);
+        }
+        
+        // Création du texte aléatoire
+        imagestring($img, 5, rand(1, 12), rand(1, 8), $value, $c4);
+        
+        // Récupération de l'image en base64
+        ob_start();
+            $image = imagepng($img, null, 9);
+            $i = ob_get_contents();
+        ob_end_clean();        
+        
+        // Affichage
+        return '<img src="data:image/png;base64,'.base64_encode($i).'" alt="" />';
+    }    
     
     /**
      * Check the hidden captcha's values
@@ -119,19 +177,32 @@ class f_form_Captcha
         }        
         
         // Check time limits
-        $now = time();
-        if($now - $hField < $minLimit || $now - $hField > $maxLimit)
+        $now = time();        
+        
+        if($now - $spinner['timestamp'] < $minLimit || $now - $spinner['timestamp'] > $maxLimit)
         {
             self::$_error = self::$CAPTCHA_TIME_LIMIT_ERROR;
             return false;
         }
         
-        // Check if the random field value is similar to the spinner value
-        if(!ctype_digit($hField) || $spinner['timestamp'] != $hField)
+        // We have a classic captcha with an image
+        if(isset($spinner['captcha']))
         {
-            self::$_error = self::$CAPTCHA_HFIELD_ERROR;
-            return false;
-        }   
+            if(strtolower($hField) !== $spinner['captcha'])
+            {
+                self::$_error = self::$CAPTCHA_IMAGE_ERROR;
+                return false;
+            }
+        }
+        else
+        {
+            // Check if the random field value is similar to the spinner value
+            if(!ctype_digit($hField) || $spinner['timestamp'] != $hField)
+            {
+                self::$_error = self::$CAPTCHA_HFIELD_ERROR;
+                return false;
+            }               
+        }
         
         // Check spinner values
         if(!isset($spinner['session_id'], $spinner['ip'], $spinner['user_agent']) &&
