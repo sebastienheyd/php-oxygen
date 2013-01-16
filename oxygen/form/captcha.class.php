@@ -16,23 +16,39 @@
  */
 class f_form_Captcha
 { 
+    private static $_error = false;
+    
     // Errors vars
-    static $CAPTCHA_NO_SESSION_DATA = 10;
-    static $CAPTCHA_VALUES_NOT_SUBMITTED = 20;
-    static $CAPTCHA_TIME_LIMIT_EXCEEDED = 30;
-    static $CAPTCHA_REMOTE_ADDRESS_ERROR = 40;
-    static $CAPTCHA_SPAMBOT_AUTO_FILL = 50;    
+    static $CAPTCHA_VALUES_NOT_SUBMITTED = 10;
+    static $CAPTCHA_TIME_LIMIT_ERROR = 20;
+    static $CAPTCHA_SPINNER_ERROR = 30;
+    static $CAPTCHA_HFIELD_ERROR = 40;
+    static $CAPTCHA_IMAGE_ERROR = 50;
+    static $CAPTCHA_SPAMBOT_AUTO_FILL = 60;   
 
     /**
      * Returns the hidden captcha tags to put in your form
      * 
-     * @param string $formId    The id to use to generate input elements
+     * @param string $formId    [optional] The id to use to generate input elements (default = "hcptch")
      * @return string           The tags to put in your form
      */
     public static function getFormTags($formId = 'hcptch')
     {        
-        // build the spinner key with current time and remote address, encrypt it
-        $spinner = self::_generateSpinner();
+        // Get spinner vars
+        $now = time();
+        $name = String::hrRandom();
+        
+        // Generate the spinner
+        $spinner = array(
+            'timestamp'     => $now,
+            'session_id'    => session_id(),
+            'ip'            => self::_getIp(),
+            'user_agent'    => $_SERVER['HTTP_USER_AGENT'],
+            'hfield_name'   => $name
+        );
+        
+        // Encrypt the spinner
+        $spinner = Security::encrypt(serialize($spinner));
 
         // put a random invisible style, to fool spambots a little bit ;-)
         $styles = array('position:absolute;left:-'.mt_rand(10000, 20000).'px;', 'display: none');        
@@ -41,6 +57,7 @@ class f_form_Captcha
         // build tags
         $tags  = '<input type="hidden" name="'.$formId.'[spinner]" value="'.$spinner.'" />'.PHP_EOL;
         $tags .= '<span style="'.$style.'"><input type="text" name="'.$formId.'[name]" value=""/></span>'.PHP_EOL;
+        $tags .= '<input type="hidden" name="hcptch['.$name.']" value="'.$now.'" />'.PHP_EOL;
  
         return $tags;
     }
@@ -48,7 +65,7 @@ class f_form_Captcha
     /**
      * Display the hidden captcha's tags to put in you form
      * 
-     * @param string $formId    The id to use to generate input elements
+     * @param string $formId    [optional] The id to use to generate input elements
      */
     public static function renderFormTags($formId = 'hcptch')
     {
@@ -58,54 +75,91 @@ class f_form_Captcha
     /**
      * Check the hidden captcha's values
      * 
-     * @param string $formId        The id to use to generate input elements
-     * @param integer $timeLimit    Submission time limit
+     * @param string $formId        [optional] The id to use to generate input elements (default = "hcptch")
+     * @param integer $minLimit     [optional] Submission minimum time limit in seconds (default = 5)
+     * @param integer $maxLimit     [optional] Submission maximum time limit in seconds (default = 1200)
      * @return boolean              Return false if the submitter is a robot 
      */
-    public static function checkCaptcha($formId = 'hcptch', $timeLimit = 1200)
-    {
+    public static function checkCaptcha($formId = 'hcptch', $minLimit = 5, $maxLimit = 1200)
+    {                
         // get posted values
         $values = Request::getInstance()->post($formId);
         
-        // check if all hidden fields are correctly filled
-        if($values === null || !isset($values->spinner) || !isset($values->name) || $values->name != '') return false;
-                
-        // check if form is posted at the right time and from the right remote address
-        if(!self::_checkSpinner($values->spinner, $timeLimit)) return false;
+        // Check post values
+        if($values === null || !isset($values->spinner) || !isset($values->name))
+        {
+            self::$_error = self::$CAPTCHA_VALUES_NOT_SUBMITTED;
+            return false;
+        }
+
+        // Hidden field is set
+        if($values->name !== '')
+        {
+            self::$_error = self::$CAPTCHA_SPAMBOT_AUTO_FILL;
+            return false;
+        }
+        
+        // Get the spinner values
+        $spinner = Security::decrypt($values->spinner);
+        $spinner = unserialize($spinner); 
+        
+        // Spinner is null or unserializable
+        if(!$spinner || !is_array($spinner) || empty($spinner))
+        {
+            self::$_error = self::$CAPTCHA_SPINNER_ERROR;  
+            return false;
+        }
+        
+        // Check the random posted field
+        $hField = $values->{$spinner['hfield_name']};
+        if(!isset($hField) || $hField === '')
+        {
+            self::$_error = self::$CAPTCHA_VALUES_NOT_SUBMITTED;
+            return false;
+        }        
+        
+        // Check time limits
+        $now = time();
+        if($now - $hField < $minLimit || $now - $hField > $maxLimit)
+        {
+            self::$_error = self::$CAPTCHA_TIME_LIMIT_ERROR;
+            return false;
+        }
+        
+        // Check if the random field value is similar to the spinner value
+        if(!ctype_digit($hField) || $spinner['timestamp'] != $hField)
+        {
+            self::$_error = self::$CAPTCHA_HFIELD_ERROR;
+            return false;
+        }   
+        
+        // Check spinner values
+        if(!isset($spinner['session_id'], $spinner['ip'], $spinner['user_agent']) &&
+               $spinner['session_id'] !== session_id &&
+               $spinner['ip'] !== self::_getIp() && 
+               $spinner['user_agent'] !== $_SERVER['HTTP_USER_AGENT']
+        ){
+            self::$_error = self::$CAPTCHA_SPINNER_ERROR;
+            return false;
+        }
+           
+        // Unset post values
+        if(isset($_POST[$formId])) unset($_POST[$formId]);
         
         // everything is ok, return true
         return true;
-    }
+    } 
     
     /**
-     * Generate a spinner including session id, ip and user agent
+     * Get the error code
      * 
-     * @return string       The spinner key
+     * @return integer
      */
-    private static function _generateSpinner()
+    public static function getError()
     {
-        return Security::encrypt(time() .'|'. Security::hash(session_id().self::_getIp().$_SERVER['HTTP_USER_AGENT']));
+        return self::$_error;
     }
-    
-    /**
-     * Check the posted spinner
-     * 
-     * @param string $spinner       The spinner key
-     * @param integer $timeLimit    Submission time limit
-     * @return boolean 
-     */
-    private static function _checkSpinner($spinner, $timeLimit)
-    {
-        $spinnerValue = explode('|', Security::decrypt($spinner));
 
-        if(count($spinnerValue) === 2 && 
-           time() - $spinnerValue[0] < $timeLimit && 
-           Security::check(session_id().self::_getIp().$_SERVER['HTTP_USER_AGENT'], $spinnerValue[1])) 
-                return true;
-        
-        return false;
-    }
-    
     /**
      * Get the client IP
      * 
@@ -120,10 +174,8 @@ class f_form_Captcha
             	$tab = explode(',',$_SERVER['HTTP_X_FORWARDED_FOR']);
                 return $tab[0];
             }
-            else
-            {
-                return $_SERVER['HTTP_X_FORWARDED_FOR'];
-            }
+            
+            return $_SERVER['HTTP_X_FORWARDED_FOR'];
         }
 
         return $_SERVER['REMOTE_ADDR'];

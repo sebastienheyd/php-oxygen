@@ -147,9 +147,9 @@ if (!function_exists('to_object'))
      * @param array $array  The array to convert
      * @return stdClass     A stdClass object
      */
-    function to_object(array $array)
+    function to_object($array)
     {
-        if (is_array($array)) return (object) array_map(__FUNCTION__, $d);
+        if (is_array($array)) return (object) array_map(__FUNCTION__, $array);
         return $array;
     }
 }

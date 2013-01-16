@@ -206,12 +206,13 @@ class Form
     /**
      * Check a posted hidden captcha made with getCaptchaTags
      * 
-     * @param string $fieldId       [optional] hidden captcha hidden field name (default is hcptch)
-     * @param int $timeLimit        [optional] submission time limit in seconds (default is 1200)
-     * @return type
+     * @param string $formId        [optional] The id to use to generate input elements (default = "hcptch")
+     * @param integer $minLimit     [optional] Submission minimum time limit in seconds (default = 5)
+     * @param integer $maxLimit     [optional] Submission maximum time limit in seconds (default = 1200)
+     * @return boolean              Return false if the submitter is a robot 
      */
-    public static function checkCaptcha($fieldId = "hcptch", $timeLimit = 1200)
+    public static function checkCaptcha($fieldId = 'hcptch', $minLimit = 5, $maxLimit = 1200)
     {
-        return f_form_Captcha::checkCaptcha($fieldId, $timeLimit);
+        return f_form_Captcha::checkCaptcha($fieldId, $minLimit, $maxLimit);
     }
 }
