@@ -23,7 +23,6 @@ class f_cache_File implements f_cache_Interface
     {
         $this->_cachePath = CACHE_DIR.DS.'files';    
         $this->isSupported();
-
     }
     
     public function get($id)
@@ -37,10 +36,10 @@ class f_cache_File implements f_cache_Interface
         $cache = unserialize(file_get_contents($file));
         
         if(time() > ($cache[0] + $cache[1]) || $cache[0] <= $this->_getTimeToken())
-		{
-			unlink($file);
-			return false;
-		}
+        {
+                unlink($file);
+                return false;
+        }
         
         $data = $cache[3];        
         if($cache[2] === 'array' || $cache[2] === 'object') $data = unserialize($data);
@@ -82,7 +81,11 @@ class f_cache_File implements f_cache_Interface
     private function _getTimeToken()
     {
         if($this->_timeToken !== null) return $this->_timeToken;
-        if(is_file($this->_cachePath.DS.'time_token')) return file_get_contents($this->_cachePath.DS.'time_token');
+        if(is_file($this->_cachePath.DS.'time_token'))
+        {
+            $this->_timeToken = file_get_contents($this->_cachePath.DS.'time_token');
+            return $this->_timeToken;
+        }
         if($this->flush()) return $this->_timeToken;      
         trigger_error('Cannot define cache time token', E_USER_ERROR);
     }
