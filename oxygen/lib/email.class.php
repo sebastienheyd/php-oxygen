@@ -16,6 +16,8 @@ class Email
 {
     private $_from;
     private $_returnPath;
+    private $_messageId;
+    private $_reference;
     private $_to = array();
     private $_cc = array();
     private $_bcc = array();
@@ -124,6 +126,36 @@ class Email
         $args = func_get_args();
         return call_user_func_array(array($this, 'bcc'), $args);
     }
+    
+    /**
+     * Sets the message ID
+     * 
+     * @param string $id        Id of the e-mail
+     * @param string $suffix    [optional] Id suffix. Default = email
+     * @param string $host      [optional] Host address
+     * @return Email
+     */
+    public function messageId($id, $suffix = 'email', $host = null)
+    {
+        if($host === null) $host = $_SERVER['HTTP_HOST'];
+        $this->_messageId = md5($id).'.'.$suffix.'@'.$host;
+        return $this;
+    }
+    
+    /**
+     * Sets the reference to an e-mail
+     * 
+     * @param string $id        Id of the referenced e-mail
+     * @param string $suffix    [optional] Id suffix. Default = email
+     * @param string $host      [optional] Host address
+     * @return Email
+     */
+    public function reference($id, $suffix = 'email', $host = null)
+    {
+        if($host === null) $host = $_SERVER['HTTP_HOST'];
+        $this->_reference = md5($id).'.'.$suffix.'@'.$host;    
+        return $this;
+    }    
  
     /**
      * Sets the email subject
@@ -217,15 +249,15 @@ class Email
      */
     public function send($useReturnPath = true)
     {
-        if (($this->_bodyText != '' || $this->_bodyHtml != '') && isset($this->_to) && isset($this->_from))
+        if (($this->_bodyText !== '' || $this->_bodyHtml !== '') && isset($this->_to) && isset($this->_from))
         {
             if(version_compare(phpversion(), '5.3.0', '>=') || ini_get("safe_mode") || $useReturnPath == false)
             {
-                return mail(join(',', $this->_to), $this->_b($this->_subject), $this->_buildMessage(), $this->_buildHeader());
+                return mail(join(',', $this->_to), $this->_b($this->_subject), $this->_buildMessage(), $this->_buildHeaders());
             }
             else
             {
-                return mail(join(',', $this->_to), $this->_b($this->_subject), $this->_buildMessage(), $this->_buildHeader(), '-f'.$this->_returnPath);
+                return mail(join(',', $this->_to), $this->_b($this->_subject), $this->_buildMessage(), $this->_buildHeaders(), '-f'.$this->_returnPath);
             }
         }
         return false;
@@ -236,48 +268,33 @@ class Email
      *
      * @return string           Return the builded header
      */
-    private function _buildHeader()
+    private function _buildHeaders()
     {
-        $header = 'From: ' . $this->_from . self::$_line;
-        $header .= 'Reply-To: ' . $this->_from . self::$_line;
-        $header .= 'X-Sender: ' . $this->_from . self::$_line;
-        $header .= 'X-Mailer:PHP/' . phpversion() . self::$_line;
+        $h = array();        
+        $h[] = 'From: ' . $this->_from;
+        $h[] = 'Reply-To: ' . $this->_from;
+        $h[] = 'X-Sender: ' . $this->_from;
+        $h[] = 'X-Mailer:PHP/' . phpversion();
                 
-        if(!empty($this->_cc))  $header .= 'Cc: '.join(',', $this->_cc).self::$_line;
-        if(!empty($this->_bcc)) $header .= 'Bcc: '.join(',', $this->_bcc).self::$_line;        
+        if(!empty($this->_cc))          $h[] = 'Cc: '.join(',', $this->_cc);
+        if(!empty($this->_bcc))         $h[] = 'Bcc: '.join(',', $this->_bcc);     
+        if(isset($this->_messageId))    $h[] = 'Message-ID: '.$this->_messageId;
+        if(isset($this->_reference))    $h[] = 'References: ' . $this->_reference;
         
-        $header .= 'MIME-Version: 1.0' . self::$_line;
+        $h[] = 'MIME-Version: 1.0';
         
-        if ($this->_isMultiPart())
+        if ($this->_isMultiPart() || $this->_hasAttachment())
         {                      
-            $header .= 'Content-Type: multipart/alternative; boundary=alt-' . $this->_frontier . self::$_line;
-        }
-        else if (isset($this->_bodyText) && $this->_bodyText !== null)
-        {
-            if($this->_hasAttachment())
-            {
-                $header .= 'Content-Type: multipart/mixed; boundary=multi-' . $this->_frontier . self::$_line;
-            }
-            else
-            {
-                $header .= 'Content-Type: text/plain; charset="utf-8"' . self::$_line;
-                $header .= 'Content-Transfer-Encoding: base64' . self::$_line . self::$_line;                
-            }
+            $h[] = 'Content-Type: multipart/alternative; boundary=alt-' . $this->_frontier;
         }
         else
         {
-            if($this->_hasAttachment())
-            {
-                $header .= 'Content-Type: multipart/mixed; boundary=multi-' . $this->_frontier . self::$_line;
-            }
-            else
-            {            
-                $header .= 'Content-Type: text/html; charset="utf-8"' . self::$_line;
-                $header .= 'Content-Transfer-Encoding: base64' . self::$_line . self::$_line;
-            }
-        } 
- 
-        return $header;
+            $type = isset($this->_bodyText) ? 'plain':'html';
+            $h[] = 'Content-Type: text/'.$type.'; charset="utf-8"';
+            $h[] = 'Content-Transfer-Encoding: base64' . self::$_line;
+        }
+
+        return join(self::$_line, $h);
     }
  
     /**
@@ -287,66 +304,61 @@ class Email
      */
     private function _buildMessage()
     {
-        $message = '';
+        $m = array();
         
         if($this->_isMultiPart()) // mail is in plain text and html
         { 
             // plain text message
-            $message .= '--alt-' . $this->_frontier . self::$_line;
-            $message .= 'Content-Type: text/plain; charset="utf-8"' . self::$_line;
-            $message .= 'Content-Transfer-Encoding: base64' . self::$_line . self::$_line;
-            $message .= chunk_split(base64_encode($this->_bodyText)) . self::$_line . self::$_line;
+            $m[] = '--alt-' . $this->_frontier;
+            $m[] = 'Content-Type: text/plain; charset="utf-8"';
+            $m[] = 'Content-Transfer-Encoding: base64' . self::$_line;
+            $m[] = chunk_split(base64_encode($this->_bodyText)) . self::$_line;
  
             // html message
-            $message .= '--alt-' . $this->_frontier . self::$_line;
+            $m[] = '--alt-' . $this->_frontier;
             
              // mail has an attachment, we must declare
             if ($this->_hasAttachment())
             {
-                $message .= 'Content-Type: multipart/mixed; boundary=multi-' . $this->_frontier . self::$_line . self::$_line;
-                $message .= '--multi-' . $this->_frontier . self::$_line;
+                $m[] = 'Content-Type: multipart/mixed; boundary=multi-' . $this->_frontier . self::$_line;
+                $m[] = '--multi-' . $this->_frontier;
             }
             
-            $message .= 'Content-Type: text/html; charset="utf-8"' . self::$_line;
-            $message .= 'Content-Transfer-Encoding: base64' . self::$_line . self::$_line;
-            $message .= chunk_split(base64_encode($this->_bodyHtml)) . self::$_line . self::$_line;
+            $m[] = 'Content-Type: text/html; charset="utf-8"';
+            $m[] = 'Content-Transfer-Encoding: base64' . self::$_line;
+            $m[] = chunk_split(base64_encode($this->_bodyHtml)) . self::$_line;
         }
-        else if (isset($this->_bodyText)) // mail is only in plain text
-        {            
+        else // mail is only in plain text or only in html
+        {       
             if ($this->_hasAttachment())
             {
-                $message .= '--multi-' . $this->_frontier . self::$_line;
-                $message .= 'Content-Type: text/plain; charset="utf-8"' . self::$_line;
-                $message .= 'Content-Transfer-Encoding: base64' . self::$_line . self::$_line;
+                $m[] = '--alt-' . $this->_frontier;
+                
+                $m[] = 'Content-Type: multipart/mixed; boundary=multi-' . $this->_frontier . self::$_line;
+                $m[] = '--multi-' . $this->_frontier;
+                
+                $type = isset($this->_bodyText) ? 'plain':'html';
+                $m[] = 'Content-Type: text/'.$type.'; charset="utf-8"';            
+                $m[] = 'Content-Transfer-Encoding: base64' . self::$_line;
             }
- 
-            $message .= chunk_split(base64_encode($this->_bodyText)). self::$_line . self::$_line;;
-        }
-        else  // mail is only in html
-        {
-            if ($this->_hasAttachment())
-            {
-                $message .= '--multi-' . $this->_frontier . self::$_line;
-                $message .= 'Content-Type: text/html; charset="utf-8"' . self::$_line;
-                $message .= 'Content-Transfer-Encoding: base64' . self::$_line . self::$_line;
-            }
- 
-            $message .= chunk_split(base64_encode($this->_bodyHtml)). self::$_line . self::$_line;;
+             
+            $content = isset($this->_bodyText) ? $this->_bodyText:$this->_bodyHtml;            
+            $m[] = chunk_split(base64_encode($content)). self::$_line;;
         }
         
         if ($this->_hasAttachment()) // we have a file attached to the mail
         {
             foreach ($this->_attachment as $attachment)
             {
-                $message .= '--multi-' . $this->_frontier . self::$_line;                    
-                $message .= 'Content-Type: ' . $attachment['mimeType'] . '; name="' . $this->_b($attachment['name']) . '"' . self::$_line;
-                $message .= 'Content-Transfer-Encoding: base64' . self::$_line;
-                $message .= 'Content-Disposition: attachment; filename="' . $this->_b($attachment['name']) . '"' . self::$_line . self::$_line;
-                $message .= chunk_split(base64_encode($attachment['content'])). self::$_line;
+                $m[] = '--multi-' . $this->_frontier;                    
+                $m[] = 'Content-Type: ' . $attachment['mimeType'] . '; name="' . $this->_b($attachment['name']) . '"';
+                $m[] = 'Content-Transfer-Encoding: base64';
+                $m[] = 'Content-Disposition: attachment; filename="' . $this->_b($attachment['name']) . '"' . self::$_line;
+                $m[] = chunk_split(base64_encode($attachment['content']));
             }
         }
  
-        return $message;
+        return join(self::$_line, $m);
     }
  
     /**
@@ -356,7 +368,7 @@ class Email
      */
     private function _isMultiPart()
     {
-        return isset($this->_bodyText) && isset($this->_bodyHtml) && $this->_bodyText !== null && $this->_bodyHtml !== null;
+        return isset($this->_bodyText) && isset($this->_bodyHtml);
     }
     
     /**
