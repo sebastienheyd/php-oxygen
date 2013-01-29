@@ -243,8 +243,8 @@ class Email
         $header .= 'X-Sender: ' . $this->_from . self::$_line;
         $header .= 'X-Mailer:PHP/' . phpversion() . self::$_line;
                 
-        if(!empty($this->_cc))  $header .= 'Cc: '.join(',', $this->_cc).self::$line;
-        if(!empty($this->_bcc)) $header .= 'Bcc: '.join(',', $this->_bcc).self::$line;        
+        if(!empty($this->_cc))  $header .= 'Cc: '.join(',', $this->_cc).self::$_line;
+        if(!empty($this->_bcc)) $header .= 'Bcc: '.join(',', $this->_bcc).self::$_line;        
         
         $header .= 'MIME-Version: 1.0' . self::$_line;
         
