@@ -18,6 +18,7 @@ abstract class f_form_check_Abstract
 {
     protected $post;
     protected $fieldName;
+    protected $fieldValue;
     protected $fullName;
     
     /**

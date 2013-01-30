@@ -1,6 +1,8 @@
 var myScripts = new Array(
     basepath+'js/jquery.min.js', 
     basepath+'js/shCore.js', 
+    basepath+'js/shBrushApache.js', 
+    basepath+'js/shBrushBash.js', 
     basepath+'js/shBrushPhp.js', 
     basepath+'js/shBrushJscript.js', 
     basepath+'js/shBrushCss.js', 
