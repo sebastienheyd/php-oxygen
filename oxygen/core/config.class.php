@@ -57,8 +57,7 @@ class Config
     public static function getEnvironment()
     {
         // APP_ENV is defined manually
-        if (defined('APP_ENV'))
-            return APP_ENV;
+        if (defined('APP_ENV')) return APP_ENV;
 
         // APP_ENV is defined in vhost or htaccess
         if (getenv('APP_ENV'))
@@ -76,8 +75,7 @@ class Config
             if (empty($bd) || (!in_array(APP_DIR, $bd) && is_file($file)))
             {
                 $env = strtolower(trim(file_get_contents($file)));
-                if ($env !== '')
-                    define('APP_ENV', $env);
+                if ($env !== '') define('APP_ENV', $env);
                 return $env;
             }
         }
@@ -96,9 +94,8 @@ class Config
     {
         $file = CONFIG_DIR . DS . self::getEnvironment() . '.ini';
 
-        // die if no config file is found !
-        if (!is_file($file))
-            die(str_replace(APP_DIR, '', $file) . ' does not exist');
+        // copy default file to custom one
+        if (!is_file($file)) copy(CONFIG_DIR . DS . 'default.ini', $file );
 
         $array = parse_ini_file($file, true);
 
@@ -109,10 +106,7 @@ class Config
             if (is_array($values))
             {
                 self::$_cache->$section = new stdClass();
-                foreach ($values as $k => $v)
-                {
-                    self::$_cache->$section->$k = $v;
-                }
+                foreach ($values as $k => $v) self::$_cache->$section->$k = $v;
             }
         }
     }

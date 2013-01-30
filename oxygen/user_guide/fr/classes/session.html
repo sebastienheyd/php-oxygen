@@ -12,63 +12,76 @@
         <p>
             La classe Session permet de gérer la session en cours. Une session permet de conserver des données en mémoire qui pourront être récupérées et utilisées partout sur le site.
             Par exemple, vous pouvez conserver des identifiants en session pour éviter à l'internaute de se reconnecter à chaque page. 
-            Attention cependant à ne pas confondre avec les cookies, qui eux restent sur la machine même après la fermeture du navigateur, ce qui n'est pas le cas de la session.
+            Attention cependant à ne pas confondre avec les cookies, qui eux peuvent rester sur la machine même après la fermeture du navigateur, ce qui n'est pas le cas de la session.
         </p>        
         
-        <h2>
-            Exemples d'utilisation
-        </h2>
-        <p>Il existe plusieurs façon d'utiliser la classe Session, la première en utilisant les fonctions statiques :</p>
-        <php>
-            Session::set('login', 'john');       // Enregistre "john" en session avec la clé "login"            
-            $login = Session::get('login');      // $login = "john"            
-            Session::delete('login');            // Supprime la clé login et sa valeur de la session
-        </php>
-        <p>La seconde façon en instanciant la classe et en utilisant les setters "magiques" :</p>
-        <php>
-            $session = Session::getInstance();   // On instancie la classe            
-            $session->setLogin('john');          // Enregistre "john" en session avec la clé "login"            
-            $login = $session->getLogin('john'); // $login = "john"            
-            $session->unsetLogin();              // Supprime la clé login et sa valeur de la session
-        </php>
-        <p>Et enfin en utilisant définissant directement les variables de la classe</p>
-        <php>
-            $session = Session::getInstance();   // On instancie la classe
-            $session->login = 'john';            // Enregistre "john" en session avec la clé "login"
-            $login = $session->login;            // $login = "john"
-            unset($session->login);              // Supprime la clé login et sa valeur de la session          
-        </php>
-        
         <h2>Configuration</h2>
-        <p>
-            Les données de session sont en général enregistrées dans des fichiers sur le serveur, mais il est possible de les inscrire en base de données par exemple.
-            Cela peut être nécessaire lorsque votre site doit être hébergé sur plusieurs serveurs et que les internautes sont "balancés" d'un serveur à l'autre (load balancing) et qu'ils doivent conserver les mêmes données d'un serveur à l'autre (comme un panier par exemple).
-            Il est possible de configurer la classe pour utiliser la base de données en ajoutant les lignes suivantes à votre fichier de configuration (dans le dossier webapp/config) :
-        </p>
-        <pre class="brush:xml">
-            &lt;session>
-                &lt;type>database&lt;/type>
-                &lt;table>session&lt;/table>
-            &lt;/session>
-        </pre>
-        <blockquote class="info">
-            La balise table contient le nom de la table où seront stockées les données des sessions, si la table n'existe pas elle sera automatiquement créé, attention donc à ne pas donner le nom d'une table existante.
-        </blockquote>
+        <p>Les paramètres de Session sont modifiables dans le <a href="../installation/configuration.html">fichier de configuration</a> dans la catégorie [session]. Les options sont les suivantes</p>
+        <table>
+            <tr>
+                <td><strong>handler</strong></td>
+                <td>
+                    Le type de session à utiliser :
+                    <ul>
+                        <li>commenté : utilise le type par défaut défini par les options de php</li>
+                        <li>files : enregistre les données dans le dossier webapp/cache/session (le dossier sera créé automatiquement)</li>
+                        <li>database : utilise la base de données. Cette dernière doit être configurée ainsi que les options pour savoir quelle table utiliser</li>
+                        <li>memcache : utilise memcache ou memcached si disponible</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>maxlifetime</strong></td>
+                <td>
+                    Durée maximale de la session. Si le paramètre est commenté PHP-Oxygen utilisera le paramètre par défaut de php
+                </td>
+            </tr>
+            <tr>
+                <td><strong>db_config</strong></td>
+                <td>
+                    <a href="db/configuration.html">Nom de la configuration de la base de donnée</a> à utiliser
+                </td>
+            </tr>
+            <tr>
+                <td><strong>table</strong></td>
+                <td>
+                    Nom de la table à utiliser dans la base de donnée. Par défaut le nom est "sessions". Si la table n'existe pas elle sera automatiquement créée, attention donc à ne pas donner le nom d'une table existante
+                </td>
+            </tr>
+            <tr>
+                <td><strong>memcache_host</strong></td>
+                <td>
+                    L'adresse du serveur memcache. Par défaut 127.0.0.1
+                </td>
+            </tr>
+            <tr>
+                <td><strong>memcache_port</strong></td>
+                <td>
+                    Le port à utiliser pour se connecter au serveur memcache. Par défaut 11211
+                </td>
+            </tr>
+        </table>                
         
-        <h2>Référence des fonctions</h2>
+        <h2>Méthodes</h2>
         
         <h3>set()</h3>
-        <p>Définit une variable en session. Fonction statique.</p>
+        <p>Définit une variable en session. Méthode statique.</p>
+        <php>
+            Session::set('login', 'john');       // Enregistre "john" en session avec la clé "login"        
+        </php>
         
         <h3>get()</h3>
-        <p>Récupère une variable en session ou renvoi une valeur par défaut. Fonction statique</p>
+        <p>Récupère une variable en session ou renvoi une valeur par défaut. Méthode statique</p>
         <php>
             Session::get('login');          // Retourne null si login n'est pas déjà enregistré
             Session::get('login', 'john')   // Retourne "john" si login n'est pas déjà enregistré
         </php>
         
         <h3>delete()</h3>
-        <p>Supprime une variable de la session</p>
+        <p>Supprime une variable de la session. Méthode statique</p>
+        <php>
+             Session::delete('login');            // Supprime la clé login et sa valeur de la session
+        </php>
         
         <h3>start()</h3>
         <p>Démarre une session, si une session existe déjà la fonction ne fait rien.</p>

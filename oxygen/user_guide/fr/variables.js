@@ -9,8 +9,7 @@ var menu = '\
             <ul>\n\
                 <li><a href="'+basepath+lang+'/installation/required.html">Pré-requis</a></li>\n\
                 <li><a href="'+basepath+lang+'/installation/installation.html">Installation</a></li>\n\
-                <li><a href="#">Configuration</a></li>\n\
-                <li><a href="#">Mise à jour</a></li>\n\
+                <li><a href="'+basepath+lang+'/installation/configuration.html">Configuration</a></li>\n\
             </ul>\n\
         </li>\n\
         <li class="menuLabel"><span class="menuTitle">Introduction</span>\n\
@@ -99,7 +98,7 @@ var menu = '\
 
 var header = '\
 <div id="header">\n\
-    <h4>Guide de l&apos;utilisateur Version 0.1</h4>\n\
+    <h4>Guide de l&apos;utilisateur Version 0.2</h4>\n\
     <div id="breadCrumb">\n\
         <a href="#" class="homeLink">Accueil</a>\n\
         <a href="#" class="guideLink">Guide FR</a>\n\
@@ -116,7 +115,7 @@ var footer = '\
 <br />\n\
 <a href="http://www.php-oxygen.com">PHP Oxygen</a>\n\
 &nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;\n\
-<span class="copyright">Copyright &copy; 2011-2012</span>\n\
+<span class="copyright">Copyright &copy; 2011-2013</span>\n\
 &nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;\n\
 <span class="author">Sébastien HEYD</span>\n\
 </div>';

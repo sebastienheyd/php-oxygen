@@ -9,6 +9,12 @@ $(document).ready(function(){
 
 function parseCode()
 {    
+    $.each($('apache, apacheconf, htaccess'), function(){
+        $(this).replaceWith('<pre class="brush:htaccess;">'+$(this).text()+'</pre>');
+    });
+    $.each($('bash, shell'), function(){
+        $(this).replaceWith('<pre class="brush:bash;">'+$(this).text()+'</pre>');
+    });
     $.each($('php'), function(){
         $(this).replaceWith('<pre class="brush:php;">'+$(this).text()+'</pre>');
     });
@@ -57,7 +63,9 @@ function breadCrumbItems()
 
 function variablesDisplay()
 {
-    document.title = $('h1').text()+' : PHP Oxygen';
+    var title = $('h1:first-child').text()+' : PHP Oxygen';
+    document.title = title;
+    $('title').text(title);
     
     var base = (basepath == 'null') ? '' : basepath;
     $('a.homeLink').attr('href', base + 'index.html');

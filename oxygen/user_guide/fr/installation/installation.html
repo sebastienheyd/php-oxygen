@@ -10,8 +10,29 @@
     <body>     
         <h1>Installation</h1>
         <p>
-            
+            Pour installer PHP-Oxygen, il suffit de récupérer et de placer correctement les fichiers dans votre espace d'hébergement.
         </p>
-                
+        <h2>IMPORTANT ! Dossier www</h2>
+        <p>
+            Pour fonctionner, votre hébergement doit être configuré de façon à ce que le dossier www inclus dans PHP-Oxygen soit le dossier public. 
+            Tous les autres dossier sont donc au même niveaux que ce dernier et vous devez configurer le vhost pour que www soit le seul dossier accessible.
+        </p>
+        <p>Exemple :</p>
+        <apache>
+            &lt;VirtualHost *:80&gt;
+                Servername example.com
+                DocumentRoot /var/example.com/www
+            &lt;/VirtualHost&gt;
+        </apache>
+        <p>
+            Dans cet exemple, le dossier /var/example.com contient les fichiers de PHP-Oxygen (racine) et /var/example.com est le dossier public (dossier www de PHP-Oxygen).
+        </p>
+        <p>Pour plus de détails sur les dossiers de PHP-Oxygen, voir la rubrique <a href="../general/structure.html">Structure / squelette</a></p>
+        <h2>Récupération des fichiers</h2>
+        <h3>Via SVN</h3>
+        <p>Il est possible de récupérer facilement la version de développement de PHP-Oxygen dans le dossier courant via SVN en utilisant la commande suivante :</p>
+        <bash>
+            svn checkout http://php-oxygen.googlecode.com/svn/trunk/ .
+        </bash>
     </body>            
 </html>

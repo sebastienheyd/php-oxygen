@@ -337,10 +337,7 @@ class Error
      */
     public static function show401()
     {
-        while (ob_get_level())
-        {
-            ob_end_clean();
-        }
+        while (ob_get_level()) ob_end_clean();
         set_header(401);
 
         $uri = Uri::getInstance()->getUri(true);
@@ -370,10 +367,7 @@ class Error
      */
     public static function show404()
     {
-        while (ob_get_level())
-        {
-            ob_end_clean();
-        }
+        while (ob_get_level()) ob_end_clean();
         set_header(404);
 
         $uri = $_SERVER['REQUEST_URI'];
@@ -405,10 +399,7 @@ class Error
      */
     public static function showConfigurationError()
     {
-        while (ob_get_level())
-        {
-            ob_end_clean();
-        }
+        while (ob_get_level()) ob_end_clean();
         set_header(404);
 
         $uri = Uri::getInstance()->getUri(false);

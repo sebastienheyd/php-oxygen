@@ -14,42 +14,90 @@
             Pour développer correctement une application, vous devez respecter cette structure même si celle-ci reste ouverte à des modifications.
         </p>
         
-        <h2>Racine</h2>
-        <p>Le dossier racine est composé de cinq dossiers. Dans le code la constante pour retrouver ce chemin est <strong>APP_DIR</strong></p>
+        <h2>Dossiers à la racine</h2>
         <table>
-            <tr><th>model</th><td>Dossier regroupant les classes orm générées à partir de la structure de la base de données.</td></tr>
-            <tr><th>module</th><td>Dossier contenant les modules de votre application. Les modules présent dans ce dossier sont tous surchargeables dans le dossier webapp/module. Dans la majorité des cas c'est dans ce dossier que vous allez développer les fonctions de votre applicaiton. Constante de chemin : <strong>MODULES_DIR</strong></td></tr>
-            <tr><th>oxygen</th><td>Dossier contenant les fichiers du framework. Constante de chemin : <strong>FW_DIR</strong></td></tr>
-            <tr><th>webapp</th><td>Ce dossier regroupe le(s) fichier(s) de configuration, le cache et les surcharges. Constante de chemin : <strong>WEBAPP_DIR</strong></td></tr>
             <tr>
-                <th>www</th>
-                <td>Le dossier de démarrage (ou dossier partagé en ligne), votre configuration doit pointer sur le fichier index.php de ce dossier. Constante de chemin : <strong>WWW_DIR</strong>
+                <th>Chemin</th>
+                <th>Constante</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><strong>/</strong></td>
+                <td>APP_DIR</td>
+                <td>Dossier racine de l'application.</td>
+            </tr>
+            <tr>
+                <td><strong>/model</strong></td>
+                <td></td>
+                <td>Dossier regroupant les classes ORM générées à partir de la structure de la base de données.</td>
+            </tr>
+            <tr>
+                <td><strong>/module</strong></td>
+                <td>MODULES_DIR</td>
+                <td>
+                    Dossier contenant les modules de votre application. Les modules présent dans ce dossier sont tous surchargeables dans le dossier webapp/module/module_name.<br />
+                    C'est dans ce dossier que vous allez développer les fonctions de votre application.
                 </td>
+            </tr>
+            <tr>
+                <td><strong>/oxygen</strong></td>
+                <td>FW_DIR</td>
+                <td>Dossier contenant les fichiers du framework.</td>
+            </tr>
+            <tr>
+                <td><strong>/webapp</strong></td>
+                <td>WEBAPP_DIR</td>
+                <td>Ce dossier regroupe le(s) fichier(s) de configuration, le cache et les surcharges.</td>
+            </tr>
+            <tr>
+                <td><strong>/www</strong></td>
+                <td>WWW_DIR</td>
+                <td>Le dossier public (ou dossier partagé en ligne), votre configuration doit pointer sur le fichier index.php de ce dossier.</td>
             </tr>
         </table>            
         
-        <h2>Module</h2>
+        <h2>Dossier module</h2>
         <p>
             On retrouve dans ce dossier le/les module(s) utilisables dans votre projet. 
             Chaque module peut être composé de plusieurs dossiers qui permettront de trier vos scripts d'une façon logique. 
-            La constante pour obtenir le chemin de la racine du dossier modules est <strong>MODULES_DIR</strong>.
         </p>
         <blockquote class="warning">
             Le nommage du dossier est soumis à des règles car il compose une partie de l'uri. 
             Vous devez utiliser que des caractères alphanumériques en minuscule et sans accents pour respecter la convention de nommage.
         </blockquote>
         
-        <h3>Structure d'un module</h3>
-        
-        <p>Voici les dossiers génériques qui composent un module classique.</p>
         <table>
-            <tr><th>action</th><td>Dossier regroupant les contrôleurs du module.</td></tr>
-            <tr><th>assets</th><td>Dossier contenant les fichiers accessibles en url directe. Exemple : si votre module est admin et que vous placez une image logo.jpg dans le dossier assets du module l'image s'affichera en saisissant l'url http://monhost/admin/logo.jpg</td></tr>
-            <tr><th>config</th><td>Dossier contenant le/les fichier(s) de configuration du module comme le fichier contenant les routes.</td></tr>
-            <tr><th>i18n</th><td>Dossier contenant les données de traduction, la plupart du temps ce dossier est créé automatiquement par la méthode translate de la <a href="../classes/i18n.html">classe i18n</a></td></tr>
-            <tr><th>lib</th><td>Dossier contenant les classes de helpers et services du module.</td></tr>
-            <tr><th>template</th><td>Dossier contenant les gabarits pour les rendus.</td></tr>
-            <tr><th>view</th><td>(optionnel) Dossier contenant les classes des vues pour les vues non génériques.</td></tr>
+            <tr>
+                <td>/module/module_name<strong>/action</strong></td>
+                <td>Dossier regroupant les contrôleurs du module.</td>
+            </tr>
+            <tr>
+                <td>/module/module_name<strong>/assets</strong></td>
+                <td>
+                    Dossier contenant les fichiers accessibles en url directe.<br />
+                    Exemple : si votre module est admin et que vous placez une image logo.jpg dans le dossier assets du module l'image s'affichera en saisissant l'url http://monhost/admin/logo.jpg
+                </td>
+            </tr>
+            <tr>
+                <td>/module/module_name<strong>/config</strong></td>
+                <td>Dossier contenant le/les fichier(s) de configuration du module comme le fichier contenant les routes.</td>
+            </tr>
+            <tr>
+                <td>/module/module_name<strong>/i18n</strong></td>
+                <td>Dossier contenant les données de traduction, la plupart du temps ce dossier est créé automatiquement par la méthode translate de la <a href="../classes/i18n.html">classe i18n</a></td>
+            </tr>
+            <tr>
+                <td>/module/module_name<strong>/lib</strong></td>
+                <td>Dossier contenant les classes de helpers et services du module.</td>
+            </tr>
+            <tr>
+                <td>/module/module_name<strong>/template</strong></td>
+                <td>Dossier contenant les gabarits pour les rendus.</td>
+            </tr>
+            <tr>
+                <td>/module/module_name<strong>/view</strong></td>
+                <td>(optionnel) Dossier contenant les classes des vues pour les vues non génériques.</td>
+            </tr>
         </table>
         
         <h2>Webapp</h2>
@@ -58,13 +106,49 @@
             La constante pour obtenir le chemin de la racine du dossier webapp est <strong>WEBAPP_DIR</strong>.
         </p>
         <table>
-            <tr><th>cache</th><td>Contient les fichiers de cache et les scripts de compilation générés par la classe Template (Smarty). Constante du chemin : <strong>CACHE_DIR</strong></td></tr>
-            <tr><th>config</th><td>Contient le(s) fichier(s) de configuration du projet ainsi que la clé générée pour le cryptage des données. Constante du chemin : <strong>CONFIG_DIR</strong></td></tr>
-            <tr><th>hooks</th><td>(Optionnel) Dossier de surcharge des classes du framework. Constante de chemin : <strong>HOOKS_DIR</strong></td></tr>
-            <tr><th>logs</th><td>(Optionnel) Dossier contenant les logs du projet, si le dossier n'existe pas il est automatiquement créé. Constante du chemin : <strong>LOGS_DIR</strong></td></tr>
-            <tr><th>module</th><td>(Optionnel) Dossier de surcharge des modules. Constante du chemin : <strong>WEBAPP_MODULES_DIR</strong></td></tr>
-            <tr><th>smartyplugins</th><td>(Optionnel) Dossier contenant les plugins Smarty additionnels et spécifiques au projet.</td></tr>
+            <tr>
+                <th>Chemin</th>
+                <th>Constante</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>/webapp<strong>/cache</strong></td>
+                <td>CACHE_DIR</td>
+                <td>Contient les fichiers de cache et les scripts de compilation générés par la classe Template (Smarty).</td>
+            </tr>
+            <tr>
+                <td>/webapp<strong>/config</strong></td>
+                <td>CONFIG_DIR</td>
+                <td>Contient le(s) fichier(s) de configuration du projet ainsi que la clé générée pour le cryptage des données.</td>
+            </tr>
+            <tr>
+                <td>/webapp<strong>/logs</strong></td>
+                <td>LOGS_DIR</td>
+                <td>Dossier contenant les logs du projet, si le dossier n'existe pas il est automatiquement créé.</td>
+            </tr>
         </table>
-
+        <h3>Dossiers optionnels</h3>
+        <table>
+             <tr>
+                <th>Chemin</th>
+                <th>Constante</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>/webapp<strong>/hooks</strong></td>
+                <td>HOOKS_DIR</td>
+                <td>Dossier de surcharge des classes du framework.</td>
+            </tr>
+            <tr>
+                <td>/webapp<strong>/module</strong></td>
+                <td>WEBAPP_MODULES_DIR</td>
+                <td>Dossier de surcharge des modules.</td>
+            </tr>
+            <tr>
+                <td>/webapp<strong>/smartyplugins</strong></td>
+                <td></td>
+                <td>Dossier pour les plugins Smarty additionnels et spécifiques au projet.</td>
+            </tr>
+        </table>
     </body>            
 </html>

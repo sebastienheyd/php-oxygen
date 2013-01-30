@@ -12,6 +12,22 @@
         <p>
            La classe Date permet de manipuler les données temporelles. 
         </p> 
+        <h2>Configuration</h2>
+        <p>
+            Les options de configuration se trouvent dans la catégorie [general] du <a href="../installation/configuration.html">fichier de configuration</a>. 
+            Elles se limitent à la définition du fuseau horaire et optionellement de la langue à utiliser pour <a href="../general/l10n/dates.html">l'affichage des dates en texte</a>.
+        </p>
+        <p>
+            Exemple pour définir le fuseau horaire de Paris et le français comme langue :
+        </p>
+        <pre>
+    [general]
+        ; Time zone to use for date functions (Default is "UTC")
+        timezone = "Europe/Paris"
+
+        ; Default application locale (Default is "en_US")
+        locale = "fr_FR"
+        </pre>
         <h2>Instancier un objet Date</h2>
         <p>
             Il existe plusieurs méthodes pour instancier un objet date. 

@@ -52,7 +52,7 @@ img {
 }
 
 td { vertical-align:         top; }
-ul { margin-top: 10px; }
+ul { margin: 10px 0; }
 
 li {
     margin-left: 30px;
@@ -91,9 +91,9 @@ pre     { color: #00F; }
                     <p>If not, you have two possibilities :</p>
                     <ul>
                         <li>Create routes.xml in the webapp/config folder.</li>
-                        <li>Create a module with a routes.xml file in the config folder. PHP Oxygen will automaticaly parse all routes.xml files in modules and build the file in webapp/config</li>
+                        <li>Create a module with a routes.xml file in his config folder. PHP Oxygen will automaticaly parse all routes.xml files in modules and build the file in webapp/config</li>
                     </ul>
-                    <p>In the xml file, the default route seems like this :</p>
+                    <p>The default route in the routes.xml file must be set like this :</p>
                     <pre>
 <span class="dtd">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 &lt;routes&gt;
@@ -101,7 +101,7 @@ pre     { color: #00F; }
 &lt;/routes&gt;
                     </pre>
                     
-                    <p>For additional details please read the <a href="http://guide.php-oxygen.com">user guide</a></p>
+                    <p>For additional informations please read the <a href="http://guide.php-oxygen.com">user guide</a></p>
                     <h2>Environment tests</h2>
                     <table class="tests">
                         {foreach from=$tests item=test}
