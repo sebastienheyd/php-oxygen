@@ -15,6 +15,8 @@ class f_cache_Null implements f_cache_Interface
 {
     static $_instance;
         
+    public function __construct(){}
+    
     public function get($id)
     {
         return false;

@@ -15,7 +15,7 @@ class f_cache_Apc implements f_cache_Interface
 {
     static $_instance;
     
-    private function __construct()
+    public function __construct()
     {
         $this->isSupported();                
     }
