@@ -259,102 +259,82 @@ class f_date_Format
      * Returns an array of differences in years, weeks, days, hours, minutes, seconds between current date and instanciated date
      * 
      * @return array 
-     */
+     */    
     public function getDiff($timestamp = null)
     {
         // Init result
-        $result = array();
-
-        $d = $timestamp === null ? time() : $timestamp;
-
-        // Get days diff
-        $daysDiff = strtotime(date('d-m-Y', $this->_date->toTimeStamp())) - strtotime(date('d-m-Y', $d));
-
-        // Get hours diff
-        $hoursDiff = strtotime(date('H:i:s', $this->_date->toTimeStamp())) - strtotime(date('H:i:s', $d));
-
-        // Get position in time
-        $position = $daysDiff < 0 ? 'past' : 'future';
-        if ($daysDiff == 0) $position = $hoursDiff < 0 ? 'past' : 'future';           
-        $result['position'] = $position;
-
-        // Get absolute values
-        $daysDiff = abs($daysDiff);
-        $hoursDiff = abs($hoursDiff);
-
-        $leap = 0;
-        if ($daysDiff != 0) $leap = $this->_getNbLeapDays();
-            
-        if ($position === 'past')   $daysDiff -= $leap > 0 ? ($leap - 1) * 86400 : 0;
-        if ($position === 'future') $daysDiff += $leap > 0 ? ($leap - 1) * 86400 : 0;
-
-        $result['years'] = floor($daysDiff / 31536000);
-        $daysDiff -= $result['years'] * 31536000;
-
-        $result['months'] = floor($daysDiff / 2628000);
-        $daysDiff -= $result['months'] * 2628000;
-
-        $result['weeks'] = floor($daysDiff / 604800);
-        $daysDiff -= $result['weeks'] * 604800;
-
-        $result['days'] = floor($daysDiff / 86400);
-
-        $result['hours'] = floor($hoursDiff / 3600);
-        $hoursDiff -= $result['hours'] * 3600;
-
-        $result['minutes'] = floor($hoursDiff / 60);
-        $hoursDiff -= $result['minutes'] * 60;
-
-        $result['seconds'] = floor($hoursDiff);
-
-        if ($result['hours'] < 0)
+        $r = array();
+        
+        // Get current date DateTime object
+        $_date1 = $this->_date->getDateTime();
+        
+        // Get given or current timestamp
+        $d = $timestamp === null ? time() : $timestamp;        
+        $_date2 = new DateTime("@".$d);        
+        $_date2->setTimezone(new DateTimeZone(Config::get('general.timezone', @date_default_timezone_get())));    
+        
+        // Catch position in time
+        $diff = (int) $_date1->format('U') - (int) $_date2->format('U'); 
+        $date1 = $_date1; $date2 = $_date2;
+        $position = 'past';
+        if($diff > 0) 
         {
-            if ($result['days'] == 0)
-            {
-                $result['weeks'] = $result['weeks'] - 1;
-                $result['days'] = 6;
-                $result['hours'] = 24 - abs($result['hours']);
-            }
-            else
-            {
-                $result['days'] = $result['days'] - 1;
-                $result['hours'] = 24 - abs($result['hours']);
-            }
+            $position = 'future';
+            $date1 = $_date2; $date2 = $_date1;
         }
-
-        return $result;
-    }
-
-    private function _getNbLeapDays()
-    {
-        $d1 = time();
-        $d2 = $this->_date->toTimeStamp();
-
-        $years = range(date('Y', time()), date('Y', $this->_date->toTimeStamp()));
-
-        $leap = 0;
-        $nb = count($years);
-
-        foreach ($years as $k => $year)
+        
+        // Set years / months
+        $r['years'] = ((int) $date2->format('Y')) - ((int) $date1->format('Y'));        
+        $r['months'] = ((int) $date2->format('n')) - ((int) $date1->format('n'));
+        if($r['months'] < 0) 
         {
-            if (date('L', strtotime("$year-1-1")) === '1')
-            {
-                if ($k === 0 || $k === $nb)
-                {
-                    $date1 = mktime(0, 0, 0, date("m", $d1), date("d", $d1), date("Y", $year));
-                    $date2 = mktime(0, 0, 0, date("m", $d2), date("d", $d2), date("Y", $year));
-                    $days = range(date('z', $date1), date('z', $date2));
-                    if (in_array(59, $days)) $leap++;
-                }
-                else
-                {
-                    $leap++;
-                }
-            }
+            $r['years'] -= 1;
+            $r['months'] = $r['months'] + 12;
+        }             
+        
+        // Set days
+        $days = ((int) $date2->format('j')) - ((int) $date1->format('j'));
+        if($days < 0) 
+        {
+            $r['months'] -= 1;
+            $days = $days + ((int) $date1->format('t'));
         }
-
-        return $leap;
-    }
+        
+        // Set weeks / days
+        $r['weeks'] = (int) floor($days / 7);
+        $r['days'] = $days - ($r['weeks'] * 7);
+        
+        // Set hours
+        $r['hours'] = ((int) $date2->format('G')) - ((int) $date1->format('G'));
+        if($r['hours'] < 0) 
+        {
+            $r['days'] -= 1;
+            $r['hours'] = $r['hours'] + 24;
+        }
+        
+        // Set minutes
+        $r['minutes'] = ((int) $date2->format('i')) - ((int) $date1->format('i'));
+        if($r['minutes'] < 0)
+        {
+            $r['hours'] -= 1;
+            $r['minutes'] = $r['minutes'] + 60;
+        }
+        
+        // Set seconds
+        $r['seconds'] = ((int) $date2->format('s')) - ((int) $date1->format('s'));
+        if($r['seconds'] < 0) 
+        {
+            $r['minutes'] -= 1;
+            $r['seconds'] = $r['seconds'] + 60;
+        }
+        
+        // Set absolute values
+        $r = array_map('abs', $r);
+        
+        // Put position in result
+        $r['position'] = $position;        
+        return $r;
+    }   
 
     /**
      * Returns a string which indicates the difference between current date and instanciated date.
@@ -363,6 +343,8 @@ class f_date_Format
      * 
      * @param integer $precision    [optional] Result's level precision (1 to 6). Default is 1
      * @param string $separator     [optional] Separator to use between results, default is ' ' (space)
+     * @param boolean $futurePast   [optional] Display ago/in suffix/prefix. Default is true
+     * @param integer $timestamp    [optional] Timestamp to use for diff. Default is current timestamp.
      * @return string               Difference in full-text
      */
     public function toDiff($precision = 1, $separator = ' ', $futurePast = true, $timestamp = null)
@@ -371,21 +353,15 @@ class f_date_Format
 
         $diff['days'] = $diff['weeks'] * 7 + $diff['days'];
         unset($diff['weeks']);
-
+        
         $times = array();
-        foreach ($diff as $k => $d)
-            if (is_float($d) && $d > 0)
-                $times[$k] = $d;
-        $times = array_slice($times, 0, $precision, true);
-
-        if (empty($times))
-            return sprintf($this->_vars['relativeTime'][$position], $this->_formatDiff(1, 'seconds'));
+        foreach ($diff as $k => $d) if (is_int($d) && $d > 0) $times[$k] = $d;
+        $times = array_slice($times, 0, $precision, true);        
+        
+        if (empty($times)) return sprintf($this->_vars['relativeTime']['past'], $this->_formatDiff(1, 'seconds'));
 
         $res = array();
-        foreach ($times as $type => $value)
-        {
-            $res[] = $this->_formatDiff($value, $type);
-        }
+        foreach ($times as $type => $value) $res[] = $this->_formatDiff($value, $type);
 
         $res = join($separator, $res);
 
@@ -393,28 +369,28 @@ class f_date_Format
         return sprintf($this->_vars['relativeTime'][$diff['position']], $res);
     }
 
+    /**
+     * Format a integer value to a full text value
+     * 
+     * @param integer $value    Value to use
+     * @param string $unit      Unit to use
+     * @return string
+     */
     private function _formatDiff($value, $unit)
     {
-        if ($unit == 'months') $unit = 'M';
-        if ($unit !== 'M')     $unit = $unit[0];
-        $str = '';
+        if ($unit === 'months') $unit = 'M';
+        if ($unit !== 'M')      $unit = $unit[0];
 
         if ($value <= 1)
         {
-            if (isset($this->_vars['relativeTime'][$unit]))
-            {
-                $str = $this->_vars['relativeTime'][$unit];
-            }
+            if (isset($this->_vars['relativeTime'][$unit]))  
+                return $this->_vars['relativeTime'][$unit];
         }
         else
         {
             if (isset($this->_vars['relativeTime'][$unit . $unit]))
-            {
-                $str = sprintf($this->_vars['relativeTime'][$unit . $unit], $value);
-            }
+                return sprintf($this->_vars['relativeTime'][$unit . $unit], $value);
         }
-
-        return $str;
     }
 
     /**

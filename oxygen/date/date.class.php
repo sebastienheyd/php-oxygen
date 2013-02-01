@@ -12,8 +12,8 @@
  */
 class f_date_Date
 {
-
     private $_date;
+    private $_datetime;
     private $_year;
     private $_month;
     private $_day;
@@ -92,7 +92,7 @@ class f_date_Date
         }
 
         $this->_date = $date;
-
+        
         $date = explode(' ', $date);
 
         list($this->_year, $this->_month, $this->_day) = explode('-', $date[0]);
@@ -102,6 +102,8 @@ class f_date_Date
         {
             throw new RangeException("Invalid date : " . $this->_date . " date does not exist");
         }
+        
+        $this->_datetime = new DateTime($this->_date);
     }
 
     /**
@@ -124,7 +126,7 @@ class f_date_Date
     {
         return f_date_Format::getInstance()->setDate($this)->getDiff($timestamp);
     }
-
+    
     /**
      * Returns a string which indicates the difference between current date and instanciated date.
      * 
@@ -194,12 +196,11 @@ class f_date_Date
 
     /**
      * Returns current instanciated date timestamp
-     * 
      * @return integer
      */
     public function toTimeStamp()
     {
-        if (!isset($this->timestamp)) $this->timestamp = strtotime($this->_date);
+        if (!isset($this->timestamp)) $this->timestamp = (int) $this->_datetime->format('U');
         return $this->timestamp;
     }
 
@@ -209,7 +210,7 @@ class f_date_Date
      */
     public function getDayOfWeek()
     {
-        if (!isset($this->dayOfWeek)) $this->dayOfWeek = date("w", $this->toTimeStamp());
+        if (!isset($this->dayOfWeek)) $this->dayOfWeek = (int) $this->_datetime->format('w');
         return $this->dayOfWeek;
     }
 
@@ -219,7 +220,7 @@ class f_date_Date
      */
     public function getDaysInMonth()
     {
-        if (!isset($this->daysInMonth)) $this->daysInMonth = date("t", $this->_month);
+        if (!isset($this->daysInMonth)) $this->daysInMonth = (int) $this->_datetime->format('t');
         return $this->daysInMonth;
     }
 
@@ -229,18 +230,37 @@ class f_date_Date
      */
     public function getDayOfYear()
     {
-        if (!isset($this->dayOfYear)) $this->dayOfYear = date("z", $this->toTimeStamp());
+        if (!isset($this->dayOfYear)) $this->dayOfYear = (int) $this->_datetime->format('z');
         return $this->dayOfYear;
     }
 
     /**
-     * Returns current instanciated date year is leap
-     * @return boolean
+     * Returns current instanciated date GMT diff
+     * @return string
      */
     public function getGmtDiff()
     {
-        if (!isset($this->gmtDiff)) $this->gmtDiff = date("O", $this->toTimeStamp());
+        if (!isset($this->gmtDiff)) $this->gmtDiff = $this->_datetime->format('O');
         return $this->gmtDiff;
+    }
+    
+    /**
+     * Returns the DateTime object
+     * @return DateTimetoDiff
+     */
+    public function getDateTime()
+    {
+        return $this->_datetime;
+    }
+    
+    /**
+     * Returns current instanciated date is a leap Year
+     * @return boolean
+     */
+    public function isLeap()
+    {
+        if (!isset($this->isLeap)) $this->isLeap = (bool) $this->_datetime->format('L');
+        return $this->isLeap;
     }
 
     /**
