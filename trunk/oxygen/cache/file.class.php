@@ -19,7 +19,7 @@ class f_cache_File implements f_cache_Interface
     private $_cacheArr = array();
     private $_timeToken;
         
-    private function __construct()
+    public function __construct()
     {
         $this->_cachePath = CACHE_DIR.DS.'files';    
         $this->isSupported();

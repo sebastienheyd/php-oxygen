@@ -17,7 +17,7 @@ class f_cache_Memcache implements f_cache_Interface
     
     private $_memcache;
         
-    private function __construct()
+    public function __construct()
     {             
         $this->isSupported();   
     }

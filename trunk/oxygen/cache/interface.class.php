@@ -10,47 +10,51 @@
  * @author      Sébastien HEYD <sheyd@php-oxygen.com>
  * @package     PHP Oxygen
  */
-
 interface f_cache_Interface
 {
     /**
-	 * Fetch data from cache
-	 *
-	 * @param 	mixed           Unique cache identifier
-	 * @return 	mixed|false		Data or false if none
-	 */
-    public function get($id);
+     * Main constructor
+     */
+    public function __construct();
     
-	/**
-	 * Save content into cache
-	 *
-	 * @param 	string		Unique cache identifier
-	 * @param 	mixed		Data to store
-	 * @param 	int			Cache lifetime in seconds
+    /**
+     * Fetch data from cache
+     *
+     * @param 	mixed           Unique cache identifier
+     * @return 	mixed|false		Data or false if none
+     */
+    public function get($id);
+
+    /**
+     * Save content into cache
+     *
+     * @param 	string		Unique cache identifier
+     * @param 	mixed		Data to store
+     * @param 	int			Cache lifetime in seconds
      * 
      * @return boolean  Return true on success
      */
     public function save($id, $data, $ttl = 60);
-    
-	/**
-	 * Delete from Cache
-	 *
-	 * @param 	string		Unique cache identifier
-	 * @return 	boolean		Return true on success
-	 */
+
+    /**
+     * Delete from Cache
+     *
+     * @param 	string		Unique cache identifier
+     * @return 	boolean		Return true on success
+     */
     public function delete($id);
-    
+
     /**
      * Flush all cache
      * 
      * @return boolean  Return true on success 
      */
-    public function flush(); 
-    
+    public function flush();
+
     /**
      * Check if handler is supported
      * 
      * @return boolean  Return true if handler is supported 
      */
-    public function isSupported();   
+    public function isSupported();
 }
