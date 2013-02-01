@@ -20,8 +20,9 @@ class Date
      * @return f_date_Date          Return an instance of f_date_Date
      */
     public static function fromTimeStamp($timestamp)
-    {        
-        return f_date_Date::getInstance(date('Y-m-d H:i:s', $timestamp));
+    {      
+        $date = new DateTime("@".$timestamp);
+        return f_date_Date::getInstance($date->format(DATETIME_SQL));
     }
     
     /**
@@ -55,7 +56,9 @@ class Date
      */
     public static function fromString($string)
     {
-        return f_date_Date::getInstance(date('Y-m-d H:i:s', strtotime($string)));
+        $date = new DateTime();
+        $date->modify($string);
+        return f_date_Date::getInstance($date->format(DATETIME_SQL));
     }
     
     /**
@@ -77,6 +80,7 @@ class Date
      */
     public static function now()
     {
-        return f_date_Date::getInstance(date('Y-m-d H:i:s'));
+        $date = new DateTime();
+        return f_date_Date::getInstance($date->format(DATETIME_SQL));
     }
 }
