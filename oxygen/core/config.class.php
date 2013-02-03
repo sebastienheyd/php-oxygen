@@ -18,7 +18,6 @@ class Config
      * Get a configuration value
      * 
      * @param string $section      Name of the configuration section to get
-     * @param string $name         [optionnal] Name of the parameter to get into the section. If null get section object
      * @param mixed $defaultValue  [optionnal] Default value if parameter is not found. Default is false.
      * @return defaultValue
      */

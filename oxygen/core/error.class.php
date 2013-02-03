@@ -72,10 +72,6 @@ class Error
         // Log error
         Log::error($label . ' : "' . $msg . '" in ' . $file . ' (ln.' . $errline . ')');
 
-        // Error report is off return nothing
-        if ($level === self::OFF)
-            return;
-
         switch ($errno)
         {
             case E_NOTICE:
@@ -106,10 +102,22 @@ class Error
                     $this->_showCliError($label, $message, debug_backtrace());
 
                 $message = '"' . $msg . '" in <i>' . $file . '</i> (ln.' . $errline . ')';
-                $this->_showError($label, $message, debug_backtrace());
+                while (ob_get_level()) ob_end_clean();
 
-                exit;
-                break;
+                ob_start();
+                    $this->_showError($label, $message, debug_backtrace());
+                    $error = ob_get_contents();
+                ob_end_clean();
+
+                if ($level === self::OFF)
+                {
+                    $message = 'Error in '.$file . ' (ln.' . $errline . ')';
+                    $this->_sendErrorByEmail($message, $error);
+                    $this->_showGenericErrorPage();
+                }
+
+                die($error);             
+            break;
         }
     }
 
@@ -121,6 +129,9 @@ class Error
      */
     public function exceptionHandler(Exception $exception)
     {
+        // Get error level
+        $level = constant('self::' . strtoupper(Config::get('debug.error_level', 'debug')));        
+        
         /* @var $exception Exception */
         $trace = $exception->getTrace();
 
@@ -145,7 +156,22 @@ class Error
             $this->_showCliError($class, $message, $trace);
 
         $message = '"' . $exception->getMessage() . '" in <i>' . str_replace(APP_DIR . DS, '', $exception->getFile()) . '</i> (ln.' . $exception->getLine() . ')';
-        $this->_showError(get_class($exception), $message, $trace);
+        
+        while (ob_get_level()) ob_end_clean();       
+        
+        ob_start();
+            $this->_showError(get_class($exception), $message, $trace);
+            $error = ob_get_contents();
+        ob_end_clean();
+        
+        if ($level === self::OFF)
+        {
+            $message = 'Exception in '.str_replace(APP_DIR . DS, '', $exception->getFile()) . ' (ln.' . $exception->getLine() . ')';
+            $this->_sendErrorByEmail($message, $error);
+            $this->_showGenericErrorPage();
+        }
+
+        die($error);        
     }
 
     /**
@@ -211,18 +237,13 @@ class Error
      * @param string    $type       Type of error (the error page title)
      * @param string    $message    Error message
      * @param array     $backtrace  Array of parsed backtrace
-     * @param string    $template   [optional] The error template to use, default is 'error.html'
-     * @param integer   $header     [optional] Error code, default is 500
      * @return void
      */
-    private function _showError($type, $message, $backtrace, $template = "error.html", $header = 500)
+    private function _showError($type, $message, $backtrace)
     {
-        while (ob_get_level())
-        {
-            ob_end_clean();
-        }
-        set_header($header);
-
+        set_header(503);
+        header('Retry-after: 28800');     
+        
         $bt = $this->_parseBacktrace($backtrace);
 
         $tpl = Template::getInstance();
@@ -234,6 +255,21 @@ class Error
         $tpl->assign('type', $type);
         $tpl->assign('message', $message);
 
+        // Get error level
+        $level = constant('self::' . strtoupper(Config::get('debug.error_level', 'debug')));          
+        
+        $template = 'error.html';
+        if ($level === self::OFF)
+        {
+            $template = 'error_detailed.html';
+            $tpl->assign('server', $_SERVER);
+            $tpl->assign('request', var_export($_REQUEST, true));
+            $addr = $_SERVER['REMOTE_ADDR'];
+            $host = gethostbyaddr($_SERVER['REMOTE_ADDR']);
+            if($host !== $addr) $addr = $host.' ('.$addr.')';
+            $tpl->assign('addr', $host);
+        }          
+        
         try
         {
             $tpl->setTemplate($template)->render();
@@ -242,9 +278,55 @@ class Error
         {
             echo $exc->getMessage();
         }
+    }
+    
+    /**
+     * Send the error page by e-mail
+     * 
+     * @param string $message
+     * @param string $error
+     */
+    private function _sendErrorByEmail($message, $error)
+    {
+        $email = Config::get('debug.notification_email');        
+        if($email === false || $email === '' || !String::checkEmail($email)) return;
+        
+        $sender = Config::get('debug.notification_sender', 'noreply@'.$_SERVER['HTTP_HOST']);
+        
+        Email::to($email)->from($sender)
+                         ->subject($message)
+                         ->bodyHtml($error)
+                         ->bodyText(strip_tags($error))
+                         ->send();
+    }
+    
+    /**
+     * Stop script and show an generic error page
+     * 
+     * @return void
+     */
+    private function _showGenericErrorPage()
+    {
+        while (ob_get_level()) ob_end_clean();
+        
+        set_header(503);
+        header('Retry-after: 28800');
+
+        $tpl = Template::getInstance();
+        $tpl->setTemplateDir(HOOKS_DIR . DS . 'errors');
+        $tpl->addTemplateDir(FW_DIR . DS . 'errors');
+
+        try
+        {
+            $tpl->setTemplate('generic.html')->render();
+        }
+        catch (Exception $exc)
+        {
+            echo $exc->getMessage();
+        }
 
         die();
-    }
+    }    
 
     /**
      * Parse backtrace to an array and add additionnal informations
@@ -391,9 +473,9 @@ class Error
 
         die();
     }
-
+    
     /**
-     * Stop script and show a 404 error page
+     * Stop script and show a configuration error page
      * 
      * @return void
      */
