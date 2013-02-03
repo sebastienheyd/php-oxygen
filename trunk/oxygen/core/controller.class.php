@@ -310,6 +310,8 @@ class Controller
             $file = get_module_file($this->_module, 'template' . DS . $viewName);
         }
   
+        if(!$file && is_file($model->view)) $file = $model->view;
+        
         if(!$file) trigger_error($model->view.' not found in module '.$this->_module, E_USER_ERROR);  
         
         $tpl = Template::getInstance($file, $this->_module);

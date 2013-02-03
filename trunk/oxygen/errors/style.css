@@ -86,4 +86,6 @@ table td
     font-size:              12px;
 }
 
+th { text-align: left; padding-right: 15px; }
+
 tr.selected { background-color: #F0F0F0; font-weight: bold; }
