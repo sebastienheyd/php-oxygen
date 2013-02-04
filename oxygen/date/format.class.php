@@ -284,37 +284,39 @@ class f_date_Format
         }
         
         // Set years / months
-        $r['years'] = ((int) $date2->format('Y')) - ((int) $date1->format('Y'));        
+        $r['years'] = ((int) $date2->format('Y')) - ((int) $date1->format('Y')); 
         $r['months'] = ((int) $date2->format('n')) - ((int) $date1->format('n'));
-        if($r['months'] < 0) 
+        if($r['months'] <= 0) 
         {
             $r['years'] -= 1;
             $r['months'] = $r['months'] + 12;
         }             
         
+        $r['weeks'] = 0;
+        
         // Set days
-        $days = ((int) $date2->format('j')) - ((int) $date1->format('j'));
-        if($days < 0) 
+        $r['days'] = ((int) $date2->format('j')) - ((int) $date1->format('j'));
+        if($r['days'] <= 0) 
         {
             $r['months'] -= 1;
-            $days = $days + ((int) $date1->format('t'));
+            $r['days'] = $r['days'] + ((int) $date1->format('t'));
         }
-        
-        // Set weeks / days
-        $r['weeks'] = (int) floor($days / 7);
-        $r['days'] = $days - ($r['weeks'] * 7);
         
         // Set hours
         $r['hours'] = ((int) $date2->format('G')) - ((int) $date1->format('G'));
-        if($r['hours'] < 0) 
+        if($r['hours'] <= 0) 
         {
             $r['days'] -= 1;
             $r['hours'] = $r['hours'] + 24;
         }
         
+        // Set weeks / days
+        $r['weeks'] = (int) floor($r['days'] / 7);
+        $r['days'] = $r['days'] - ($r['weeks'] * 7);       
+        
         // Set minutes
         $r['minutes'] = ((int) $date2->format('i')) - ((int) $date1->format('i'));
-        if($r['minutes'] < 0)
+        if($r['minutes'] <= 0)
         {
             $r['hours'] -= 1;
             $r['minutes'] = $r['minutes'] + 60;
@@ -322,7 +324,7 @@ class f_date_Format
         
         // Set seconds
         $r['seconds'] = ((int) $date2->format('s')) - ((int) $date1->format('s'));
-        if($r['seconds'] < 0) 
+        if($r['seconds'] <= 0) 
         {
             $r['minutes'] -= 1;
             $r['seconds'] = $r['seconds'] + 60;
