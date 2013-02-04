@@ -29,7 +29,7 @@ h2 {
     margin-bottom:          20px;   
     border-radius:          5px;
     -moz-border-radius:     5px;
-	-webkit-border-radius:  5px;    
+    -webkit-border-radius:  5px;    
 }
 
 a#showStack
@@ -39,53 +39,20 @@ a#showStack
     padding:                5px 10px;    
     border-radius:          5px;
     -moz-border-radius:     5px;
-	-webkit-border-radius:  5px;
+    -webkit-border-radius:  5px;
 }
 
-a#showStack:hover
-{
-    background-color:       #F0F0F0;
-}
-
-div#menu
-{
-    margin-bottom:          15px;
-}
-
-div#stack div {
-    border-top:             1px dashed #CCC;
-    padding-top:            10px;
-    margin-bottom:          10px;
-}
-
-a
-{
-    text-decoration: none;
-    color: #000;
-}
-
-img.img32 {
-    position: relative;
-    margin-bottom: -16px;
-}
-
-img.img16 {
-    position: relative;
-    margin-bottom: -4px;
-}
-
+a#showStack:hover { background-color: #F0F0F0; }
+div#menu { margin-bottom:15px; }
+div#stack div { border-top:1px dashed #CCC; padding-top:10px; margin-bottom:10px; }
+a { text-decoration: none; color: #000; }
+img.img16 { position: relative; margin-bottom: -4px; }
+img.img32 { position: relative; margin-bottom: -16px; }
 table { border-collapse: collapse; }
-
 table.code { margin-left: 20px; margin-top: 5px; }
-
 table.code td span { float: left; }
-
-table td
-{
-    vertical-align:         top;
-    font-size:              12px;
-}
-
+table td { vertical-align: top; font-size: 12px; }
 th { text-align: left; padding-right: 15px; }
-
 tr.selected { background-color: #F0F0F0; font-weight: bold; }
+.details { margin-bottom: 15px; }
+.details table th { font-size: 12px; padding-right: 15px; }
