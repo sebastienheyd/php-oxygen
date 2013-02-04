@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This file is part of the PHP Oxygen package.
  *
@@ -10,16 +9,15 @@
  * @author      Sébastien HEYD <sheyd@php-oxygen.com>
  * @package     PHP Oxygen
  */
-
 class UserAgent
-{    
+{
+
     private static $instance;
-    
     private $_agent;                 // user agent full string
     private $_accept;                // accepted types
     private $_languages = array();   // array of accepted languages
     private $_charsets = array();    // array of accepted charsets
-    
+
     /**
      * Return singleton instance
      * 
@@ -27,37 +25,36 @@ class UserAgent
      */
     public static function getInstance()
     {
-        if(!isset(self::$instance)) self::$instance = new self();
+        if (!isset(self::$instance)) self::$instance = new self();
         return self::$instance;
     }
-    
+
     /**
      * Constructor
      */
     protected function __construct()
-	{
-		if(isset($_SERVER['HTTP_USER_AGENT'])) $this->_agent = trim($_SERVER['HTTP_USER_AGENT']);
-        
-        if(isset($_SERVER['HTTP_ACCEPT'])) $this->_accept = trim($_SERVER['HTTP_ACCEPT']);
-        
+    {
+        if (isset($_SERVER['HTTP_USER_AGENT'])) $this->_agent = trim($_SERVER['HTTP_USER_AGENT']);
+        if (isset($_SERVER['HTTP_ACCEPT'])) $this->_accept = trim($_SERVER['HTTP_ACCEPT']);
+
         $this->_setLanguages();
         $this->_setCharsets();
-	}
-    
+    }
+
     public function __toString()
     {
         return $this->_agent;
     }
-    
+
     // -------------------------------------------- GENERAL / DETECTION
-    
+
     public function getAgentString()
     {
         return $this->_agent;
     }
-    
+
     // -------------------------------------------- LANGUAGES
-    
+
     /**
      * Get the accepted languages
      * 
@@ -67,7 +64,7 @@ class UserAgent
     {
         return empty($this->_languages) ? $this->_setLanguages() : $this->_languages;
     }
-    
+
     /**
      * Get the first accepted language
      * 
@@ -75,10 +72,10 @@ class UserAgent
      */
     public function getLanguage()
     {
-        if(empty($this->_languages)) $this->_setLanguages();        
+        if (empty($this->_languages)) $this->_setLanguages();
         return preg_replace('/-(.*)$/i', '', first($this->_languages));
     }
-    
+
     /**
      * Check if the browser accepts the given language
      * 
@@ -88,12 +85,12 @@ class UserAgent
     public function acceptLanguage($language)
     {
         $language = strtolower(str_replace('_', '-', $language));
-        if(empty($this->_languages)) $this->_setLanguages();
+        if (empty($this->_languages)) $this->_setLanguages();
         return in_array($language, $this->_languages);
     }
-    
+
     // -------------------------------------------- CHARSETS
-    
+
     /**
      * Get the accepted charsets
      * 
@@ -103,7 +100,7 @@ class UserAgent
     {
         return empty($this->_charsets) ? $this->_setCharsets() : $this->_charsets;
     }
-    
+
     /**
      * Get the first accepted charset
      * 
@@ -113,7 +110,7 @@ class UserAgent
     {
         return first(empty($this->_charsets) ? $this->_setCharsets() : $this->_charsets);
     }
-    
+
     /**
      * Check if the browser accpets the given charset
      * 
@@ -121,12 +118,12 @@ class UserAgent
      */
     public function acceptCharset($charset)
     {
-        if(empty($this->_charsets)) $this->_setCharsets();
+        if (empty($this->_charsets)) $this->_setCharsets();
         return in_array($charset, $this->_charsets);
-    }        
-    
+    }
+
     // -------------------------------------------- REFERRER
-    
+
     /**
      * Get the referrer
      * 
@@ -136,7 +133,7 @@ class UserAgent
     {
         return (!isset($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER'] == '') ? '' : trim($_SERVER['HTTP_REFERER']);
     }
-    
+
     /**
      * Is this a referral from another site ?
      * 
@@ -146,9 +143,9 @@ class UserAgent
     {
         return (!isset($_SERVER['HTTP_REFERER']) || $_SERVER['HTTP_REFERER'] == '') ? false : true;
     }
-    
+
 // -------------------------------------------- PLATFORM
-    
+
     /**
      * Get the current platform
      * 
@@ -156,27 +153,27 @@ class UserAgent
      */
     public function getPlatform()
     {
-        if(!isset($this->platform))
+        if (!isset($this->platform))
         {
             $this->platform = 'undefined';
-            
-            include(FW_DIR.DS.'lib'.DS.'data'.DS.'platforms.php');
 
-            foreach($platforms as $rule => $platform)
+            include(FW_DIR . DS . 'lib' . DS . 'data' . DS . 'platforms.php');
+
+            foreach ($platforms as $rule => $platform)
             {
-                if(preg_match("|".preg_quote($rule)."|i", $this->_agent, $match))
+                if (preg_match("|" . preg_quote($rule) . "|i", $this->_agent, $match))
                 {
                     $this->platform = $platform;
                     break;
                 }
-            }            
+            }
         }
-        
+
         return $this->platform;
-    }    
-    
+    }
+
     // -------------------------------------------- BROWSER
-    
+
     /**
      * Get the current browser
      * 
@@ -184,27 +181,27 @@ class UserAgent
      */
     public function getBrowser()
     {
-        if(!isset($this->browser))
+        if (!isset($this->browser))
         {
             $this->browser = 'undefined';
             $this->isBrowser = false;
-            
-            include(FW_DIR.DS.'lib'.DS.'data'.DS.'browsers.php');
-            foreach($browsers as $rule => $browser)
+
+            include(FW_DIR . DS . 'lib' . DS . 'data' . DS . 'browsers.php');
+            foreach ($browsers as $rule => $browser)
             {
-                if(preg_match("|".preg_quote($rule).".*?([0-9\.]+)|i", $this->_agent, $match))
+                if (preg_match("|" . preg_quote($rule) . ".*?([0-9\.]+)|i", $this->_agent, $match))
                 {
                     $this->isBrowser = true;
                     $this->browser = $browser;
                     $this->version = $match[1];
                     break;
                 }
-            }            
+            }
         }
-        
+
         return $this->browser;
     }
-    
+
     /**
      * Get the current browser version
      * 
@@ -212,12 +209,12 @@ class UserAgent
      */
     public function getBrowserVersion()
     {
-        if(!isset($this->isBrowser)) $this->getBrowser();
+        if (!isset($this->isBrowser)) $this->getBrowser();
         return isset($this->version) ? $this->version : null;
     }
-    
+
     // -------------------------------------------- ROBOTS    
-    
+
     /**
      * Get the robot name if current user agent is a robot
      * 
@@ -227,7 +224,7 @@ class UserAgent
     {
         return $this->isRobot() ? $this->robot : '';
     }
-    
+
     /**
      * Is current user agent a robot ?
      * 
@@ -236,28 +233,28 @@ class UserAgent
      */
     public function isRobot()
     {
-        if(!isset($this->isRobot))
+        if (!isset($this->isRobot))
         {
             $this->isRobot = false;
-            
-            include(FW_DIR.DS.'lib'.DS.'data'.DS.'robots.php');
 
-            foreach($robots as $rule => $robot)
+            include(FW_DIR . DS . 'lib' . DS . 'data' . DS . 'robots.php');
+
+            foreach ($robots as $rule => $robot)
             {
-                /* @var $robot SimpleXMLElement */ 
-                if (preg_match("|".preg_quote($rule)."|i", $this->_agent))
+                /* @var $robot SimpleXMLElement */
+                if (preg_match("|" . preg_quote($rule) . "|i", $this->_agent))
                 {
                     $this->isRobot = true;
                     $this->robot = $robot;
                     return true;
                 }
-            }            
+            }
         }
         return $this->isRobot;
     }
-    
+
     // -------------------------------------------- MOBILE    
-    
+
     /**
      * Is current device a tablet ?
      * 
@@ -265,13 +262,10 @@ class UserAgent
      */
     public function isTablet()
     {
-        if($this->isMobile())
-        {
-            return isset($this->deviceType) ? $this->deviceType == 'tablet' : false;
-        }
-        return false;
+        if (!$this->isMobile()) return false;
+        return isset($this->deviceType) ? $this->deviceType == 'tablet' : false;
     }
-    
+
     /**
      * Check if the current user agent is a mobile from the given type
      * 
@@ -280,13 +274,10 @@ class UserAgent
      */
     public function isDevice($deviceName)
     {
-        if($this->isMobile())
-        {
-            return isset($this->device) ? $this->device == strtolower($deviceName) : false;
-        }
-        return false;
+        if (!$this->isMobile()) return false;
+        return isset($this->device) ? $this->device == strtolower($deviceName) : false;
     }
-    
+
     /**
      * Is current device a mobile device ?
      * 
@@ -294,10 +285,10 @@ class UserAgent
      */
     public function isMobile()
     {
-        if(!isset($this->isMobile))
-        {            
+        if (!isset($this->isMobile))
+        {
             $this->isMobile = false;
-            
+
             if (isset($_SERVER['HTTP_X_WAP_PROFILE']) || isset($_SERVER['HTTP_PROFILE']))
             {
                 $this->device = 'generic';
@@ -312,25 +303,25 @@ class UserAgent
             }
             else
             {
-                include(FW_DIR.DS.'lib'.DS.'data'.DS.'devices.php');
+                include(FW_DIR . DS . 'lib' . DS . 'data' . DS . 'devices.php');
 
-                foreach($devices as $rule => $device)
-                {                
-                    if(preg_match('/'.$rule.'/i', $this->_agent))
+                foreach ($devices as $rule => $device)
+                {
+                    if (preg_match('/' . $rule . '/i', $this->_agent))
                     {
                         $this->device = $device['value'];
                         $this->deviceType = $device['type'];
                         $this->isMobile = true;
                     }
                 }
-            }            
+            }
         }
-        
+
         return $this->isMobile;
     }
-    
+
     // -------------------------------------------- PRIVATE METHODS
-    
+
     /**
      * Set the browser accepted languages to private var
      * 
@@ -338,17 +329,17 @@ class UserAgent
      */
     private function _setLanguages()
     {
-        if((empty($this->_languages)) && isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && $_SERVER['HTTP_ACCEPT_LANGUAGE'] != '')
-		{
-			$languages = preg_replace('/(;q=[0-9\.]+)/i', '', strtolower(trim($_SERVER['HTTP_ACCEPT_LANGUAGE'])));
-			$this->_languages = explode(',', $languages);            
-		}
+        if ((empty($this->_languages)) && isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) && $_SERVER['HTTP_ACCEPT_LANGUAGE'] != '')
+        {
+            $languages = preg_replace('/(;q=[0-9\.]+)/i', '', strtolower(trim($_SERVER['HTTP_ACCEPT_LANGUAGE'])));
+            $this->_languages = explode(',', $languages);
+        }
 
-		if(empty($this->_languages)) $this->_languages = array('undefined');
-        
+        if (empty($this->_languages)) $this->_languages = array('undefined');
+
         return $this->_languages;
     }
-    
+
     /**
      * Set the browser accepted charsets to private var
      * 
@@ -357,13 +348,14 @@ class UserAgent
     private function _setCharsets()
     {
         if (empty($this->_charsets) && isset($_SERVER['HTTP_ACCEPT_CHARSET']) && $_SERVER['HTTP_ACCEPT_CHARSET'] != '')
-		{
-			$charsets = preg_replace('/(;q=.+)/i', '', strtolower(trim($_SERVER['HTTP_ACCEPT_CHARSET'])));
-			$this->_charsets = explode(',', $charsets);
-		}
+        {
+            $charsets = preg_replace('/(;q=.+)/i', '', strtolower(trim($_SERVER['HTTP_ACCEPT_CHARSET'])));
+            $this->_charsets = explode(',', $charsets);
+        }
 
-		if(empty($this->_charsets)) $this->_charsets = array('undefined');
-        
+        if (empty($this->_charsets)) $this->_charsets = array('undefined');
+
         return $this->_charsets;
     }
+
 }
