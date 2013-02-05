@@ -12,10 +12,9 @@
  */
 class Request
 {
-
     private static $_instance;
-    public $get;
-    public $post;
+    protected $_get = array();
+    protected $_post = array();
 
     /**
      * Get f_Request instance. Singleton
@@ -24,68 +23,40 @@ class Request
      */
     public static function getInstance()
     {
-        if (!isset(self::$_instance))
-            self::$_instance = new self();
+        if (!isset(self::$_instance)) self::$_instance = new self();
         return self::$_instance;
     }
 
     private function __construct()
-    {
-        if (isset($_GET) && !empty($_GET))
-        {
-            $this->get = to_object($_GET);
-        }
-
-        if (isset($_POST) && !empty($_POST))
-        {
-            $this->post = to_object($_POST);
-        }
-    }
-
-    /**
-     * Check if a variable exists in $_GET
-     *
-     * @param string $name      Name of the variable in $_GET
-     * @return boolean          Return true if variable exist in $_GET
-     */
-    public function hasGet($name)
-    {
-        return isset($this->get->$name);
-    }
-
-    /**
-     * Check if a variable exists in $_POST
-     *
-     * @param string $name      Name of the variable in $_POST
-     * @return boolean          Return true if variable exist in $_POST
-     */
-    public function hasPost($name)
-    {
-        return isset($this->post->$name);
+    {        
+        if (isset($_GET) && !empty($_GET))   $this->_get = $_GET;
+        if (isset($_POST) && !empty($_POST)) $this->_post = $_POST;
     }
 
     /**
      * Get variable value from $_GET
      *
-     * @param string $name      Name of the variable to get from $_GET
-     * @param mixed $default    [optional] Default value if variable does not exist in $_GET. Default is null
+     * @param string|null $name [optional] Name of the variable to get from $_GET. If null return whole container
+     * @param mixed $default    [optional] Default value if variable does not exist in $_GET. Default is false
      * @return mixed|null
      */
-    public function get($name, $default = null)
+    public function get($name = null, $default = false)
     {
-        return $this->hasGet($name) ? $this->get->$name : $default;
+        if($name === null) return $this->_get;
+        return isset($this->_get[$name]) ? $this->_get[$name] : $default;
     }
 
     /**
      * Get variable value from $_POST
      *
-     * @param string $name      Name of the variable to get from $_POST
-     * @param mixed $default    [optional] Default value if variable does not exist in $_POST. Default is null
+     * @param string|null $name      [optionnal] Name of the variable to get from $_POST. If null return whole container
+     * @param mixed $default    [optional] Default value if variable does not exist in $_POST. Default is false
      * @return mixed|null
      */
-    public function post($name, $default = null)
+    public function post($name, $default = false)
     {
-        return $this->hasPost($name) ? $this->post->$name : $default;
+        if($name === null) return $this->_post;
+        return isset($this->_post[$name]) ? $this->_post[$name] : $default;
     }
 
 }

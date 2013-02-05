@@ -27,12 +27,12 @@ class Form
     {
         if($object === null)
         {
-            $post = Request::getInstance()->post;
+            $post = Request::getInstance()->post();
         }
         else
         {
             if($object instanceof Document) $post = $object->getObjectVars();
-        }
+        }         
         
         if(!isset($post) || empty($post)) return false;
         
@@ -46,7 +46,7 @@ class Form
      */
     private function __construct($post)
     {
-        $this->_post = $post;
+        $this->_post = to_object($post);
     }
     
     /**

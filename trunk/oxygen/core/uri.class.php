@@ -90,14 +90,14 @@ class Uri
         // prevent calling index.php when routed only
         if(Config::get('route.routed_only') == '1' && preg_match('#^\/index.php#i', $uri)) Error::show404();
         
+        // remove script name
         if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)  $uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
-        $uri = strtolower($uri);
         
-        // get suffix from config
+        // remove suffix from config
         $this->_suffix = HTTP_SUFFIX;
         if($this->_suffix !== null)  $uri = str_replace($this->_suffix, '', $uri);
         
-        // get prefix from config
+        // remove prefix from config
         $this->_prefix = HTTP_PREFIX;
         if($this->_prefix !== null)  $uri = str_replace($this->_prefix, '', $uri);
 

@@ -120,9 +120,9 @@ class Controller
             $request = Request::getInstance();
 
             // if $_GET['module'] has been set
-            if (isset($request->get->module))
+            if ($module = $request->get('module'))
             {
-                $this->_module = $request->get->module;
+                $this->_module = $module;
 
                 // get action or return default action 
                 $this->_action = ucfirst_last($request->get('action', 'index'));
@@ -154,7 +154,7 @@ class Controller
 
         // load asset if exists
         $this->_loadAsset();
-        $this->_module = $uri->segment(1);
+        $this->_module = strtolower($uri->segment(1));
         $this->_action = ucfirst_last($uri->segment(2, 'index'));
         $this->_args = $uri->segmentsSlice(3);
     }
