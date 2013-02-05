@@ -267,11 +267,11 @@ class f_date_Format
         
         // Get current date DateTime object
         $_date1 = $this->_date->getDateTime();
-        
+                
         // Get given or current timestamp
         $d = $timestamp === null ? time() : $timestamp;        
         $_date2 = new DateTime("@".$d);        
-        $_date2->setTimezone(new DateTimeZone(Config::get('general.timezone', @date_default_timezone_get())));    
+        $_date2->setTimezone(new DateTimeZone(Config::get('general.timezone', @date_default_timezone_get())));                    
         
         // Catch position in time
         $diff = (int) $_date1->format('U') - (int) $_date2->format('U'); 
@@ -283,60 +283,64 @@ class f_date_Format
             $date1 = $_date2; $date2 = $_date1;
         }
         
-        // Set years / months
-        $r['years'] = ((int) $date2->format('Y')) - ((int) $date1->format('Y')); 
-        $r['months'] = ((int) $date2->format('n')) - ((int) $date1->format('n'));
-        if($r['months'] <= 0) 
-        {
-            $r['years'] -= 1;
-            $r['months'] = $r['months'] + 12;
-        }             
-        
-        $r['weeks'] = 0;
-        
-        // Set days
-        $r['days'] = ((int) $date2->format('j')) - ((int) $date1->format('j'));
-        if($r['days'] <= 0) 
-        {
-            $r['months'] -= 1;
-            $r['days'] = $r['days'] + ((int) $date1->format('t'));
-        }
-        
-        // Set hours
-        $r['hours'] = ((int) $date2->format('G')) - ((int) $date1->format('G'));
-        if($r['hours'] <= 0) 
-        {
-            $r['days'] -= 1;
-            $r['hours'] = $r['hours'] + 24;
-        }
-        
-        // Set weeks / days
-        $r['weeks'] = (int) floor($r['days'] / 7);
-        $r['days'] = $r['days'] - ($r['weeks'] * 7);       
-        
-        // Set minutes
-        $r['minutes'] = ((int) $date2->format('i')) - ((int) $date1->format('i'));
-        if($r['minutes'] <= 0)
-        {
-            $r['hours'] -= 1;
-            $r['minutes'] = $r['minutes'] + 60;
-        }
+        $r = array('years' => 0, 'months' => 0, 'weeks' => 0, 'days' => 0, 'hours' => 0, 'minutes' => 0, 'seconds' => 0, 'position' => $position);        
         
         // Set seconds
         $r['seconds'] = ((int) $date2->format('s')) - ((int) $date1->format('s'));
-        if($r['seconds'] <= 0) 
+        if($r['seconds'] < 0) 
         {
             $r['minutes'] -= 1;
             $r['seconds'] = $r['seconds'] + 60;
         }
         
-        // Set absolute values
-        $r = array_map('abs', $r);
+        // Set minutes
+        $r['minutes'] = ((int) $date2->format('i')) - ((int) $date1->format('i')) + $r['minutes'];
+        if($r['minutes'] < 0)
+        {
+            $r['hours'] -= 1;
+            $r['minutes'] = $r['minutes'] + 60;
+        }
         
-        // Put position in result
-        $r['position'] = $position;        
+        // Set hours
+        $r['hours'] = ((int) $date2->format('G')) - ((int) $date1->format('G')) + $r['hours'];
+        if($r['hours'] < 0) 
+        {
+            $r['days'] -= 1;
+            $r['hours'] = $r['hours'] + 24;
+        }
+        
+        // Set days
+        $r['days'] = ((int) $date2->format('j')) - ((int) $date1->format('j')) + $r['days'];
+        if($r['days'] < 0) 
+        {
+            $r['months'] -= 1;
+            $nbDays = (int) $date1->format('t');
+            if($position === 'future') $nbDays = $this->daysInMonth($date2->format('n') - 1, $date2->format('Y'));
+            $r['days'] = $r['days'] + $nbDays;
+        }
+        
+        // Set months
+        $r['months'] = ((int) $date2->format('n')) - ((int) $date1->format('n')) + $r['months'];
+        if($r['months'] < 0) 
+        {
+            $r['years'] -= 1;
+            $r['months'] = $r['months'] + 12;
+        }          
+        
+        // Set years
+        $r['years'] = ((int) $date2->format('Y')) - ((int) $date1->format('Y')) + $r['years'];                
+        
+        // Set weeks / days
+        $r['weeks'] = (int) floor($r['days'] / 7);
+        $r['days'] = $r['days'] - ($r['weeks'] * 7);         
+    
         return $r;
-    }   
+    }
+    
+    private function daysInMonth($month, $year)
+    {
+        return $month == 2 ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31);
+    } 
 
     /**
      * Returns a string which indicates the difference between current date and instanciated date.

@@ -104,6 +104,7 @@ class f_date_Date
         }
         
         $this->_datetime = new DateTime($this->_date);
+        $this->_datetime->setTimezone(new DateTimeZone(Config::get('general.timezone', @date_default_timezone_get())));    
     }
 
     /**
