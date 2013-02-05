@@ -337,6 +337,13 @@ class f_date_Format
         return $r;
     }
     
+    /**
+     * Get number of days in the given month of the given year
+     * 
+     * @param integer $month    Month number 1-12
+     * @param integer $year     Year
+     * @return integer
+     */
     private function daysInMonth($month, $year)
     {
         return $month == 2 ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31);

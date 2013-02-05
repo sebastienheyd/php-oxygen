@@ -82,3 +82,4 @@ catch (Exception $e)
     die('Cannot start session : '.$e->getMessage());
 }
 
+if($bootstrap = Config::get('general.bootstrap_append_file')) include APP_DIR.$bootstrap;
