@@ -287,6 +287,6 @@ abstract class Document
      */
     public function getObjectVars()
     {
-        return to_object(get_object_vars($this));
+        return get_object_vars($this);
     }
 }
