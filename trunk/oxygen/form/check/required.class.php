@@ -26,6 +26,6 @@ class f_form_check_Required extends f_form_check_Abstract
     
     public function getError()
     {
-        return $this->translate('The field is required');
+        return $this->translate('The field %name% is required');
     }
 }
