@@ -10,23 +10,21 @@
  * @author      Sébastien HEYD <sheyd@php-oxygen.com>
  * @package     PHP Oxygen
  */
-
 abstract class f_auth_Driver
 {
+
     const SESSION_NAME = 'auth_login';
     const COOKIE_NAME = 'auth_remember';
-    
+
     protected static $_instance;
-    
     protected $user;
-    
-    protected $token;   
-    
+    protected $token;
+
     public function __construct()
     {
         $this->token = Session::get(self::SESSION_NAME, $this->recall());
     }
-     
+
     /**
      * Attempt to log a user
      * 
@@ -36,48 +34,52 @@ abstract class f_auth_Driver
      * 
      * @return boolean              Return true if connexion attempt is successful 
      */
-    abstract public function attempt($login, $password); 
-    
+    abstract public function attempt($login, $password);
+
     /**
      * Retrieve the user linked to the token
      * 
      * @return mixed|null 
      */
     abstract protected function retrieve($token);
-    
+
     public function isLogged()
     {
         return $this->getUser() !== null;
     }
-    
+
     public function getUser()
-	{
-		if ($this->user !== null) return $this->user;
-		return $this->user = $this->retrieve($this->token);
-	}    
-    
+    {
+        if ($this->user !== null)
+            return $this->user;
+        return $this->user = $this->retrieve($this->token);
+    }
+
     public function login($token, $remember = false, $cookiePath = '/')
     {
         $this->token = $token;
 
         Session::set(self::SESSION_NAME, $token);
 
-		if ($remember) Cookie::set(self::COOKIE_NAME, $token, Cookie::expire('365', 'd'), $cookiePath);
+        if ($remember)
+            Cookie::set(self::COOKIE_NAME, $token, Cookie::expire('365', 'd'), $cookiePath);
 
-		return true;
+        return true;
     }
-    
+
     public function logout()
     {
         $this->user = null;
         $this->token = null;
         Cookie::delete(self::COOKIE_NAME);
         Session::delete(self::SESSION_NAME);
-    } 
-    
+    }
+
     protected function recall()
-	{
-        if($cookie = Cookie::get(self::COOKIE_NAME)) return $cookie;       
+    {
+        if ($cookie = Cookie::get(self::COOKIE_NAME))
+            return $cookie;
         return null;
-	}
+    }
+
 }

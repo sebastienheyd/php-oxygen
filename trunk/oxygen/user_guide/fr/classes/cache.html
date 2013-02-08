@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Cache</h1>
+        <p>La classe Cache permet de gérer facilement la mise en cache des variables, blocs, pages, etc...</p>
+        <h2>Configuration</h2>
+        <p>
+            Le cache peut utiliser plusieurs systèmes de stockage paramétrables dans le 
+            <a href="../installation/configuration.html">fichier de configuration</a>.
+            Pour cela on modifiera les paramètres dans la catégorie [cache].
+        </p>
+        <table>
+            <tr>
+                <td><strong>handler</strong></td>
+                <td>
+                    Si le paramètre est commenté le cache est désactivé. Sinon les valeurs peuvent être :<br />
+                    <ul>
+                        <li><strong>apc</strong> : utilisation de l'extension APC de PHP</li>
+                        <li><strong>memcache</strong> : utilisation de l'extension memcache ou memcached de PHP</li>
+                        <li><strong>file</strong> : le cache est stocké dans des fichiers situés dans webapp/cache/files</li>
+                        <li><strong>null</strong> (ou paramètre "handler" commenté) : le cache est désactivé</li>
+                    </ul>
+                </td>                
+            </tr>
+            <tr>
+                <td><strong>memcache_host</strong></td>
+                <td>Adresse du serveur memcache à utiliser, par défaut 127.0.0.1</td>
+            </tr>
+            <tr>
+                <td><strong>memcache_port</strong></td>
+                <td>Port du serveur memcache à utiliser, par défaut 11211</td>
+            </tr>
+            <tr>
+                <td><strong>autoload</strong></td>
+                <td>
+                    Si true alors la recherche des classes via l'autoload sera mise en cache. 
+                    Cela peut être surtout utile dans un environnement de production.<br /> 
+                    Le cache est stocké dans le fichier webapp/cache/autoload.cache
+                </td>
+            </tr>
+            <tr>
+                <td><strong>routes</strong></td>
+                <td>
+                    Si true les règles des fichiers routes.xml des différents modules seront compilés et stockés dans 
+                    un seul fichier de cache. <br /> Le fichier de cache est stocké dans le fichier webapp/cache/routes.xml
+                </td>
+            </tr>
+        </table>
+        
+        <h2>Utilisation</h2>
+        <p>
+            L'utilisation de la classe Cache est très simple car on ne fait que stocker, vérifier la présence du contenu 
+            avant de le récupérer. Un exemple typique :
+        </p>
+        <php>
+            // On défini un identifiant de cache
+            $cid = 'mon_identifiant_de_cache';
+
+            // Il y a une valeur pour le cache ? oui alors on la retourne 
+            if($cache = Cache::get($cid)) return $cache;
+
+            // On défini la valeur à stocker
+            $value = (string) time();
+
+            // On crée le cache (ici pour 10 secondes)
+            if(Cache::save($cid, $value, 10)) return $value;
+        </php>        
+        
+        <h2>Méthodes</h2>
+        <h3>save()</h3>
+        <p>
+            Méthode statique. Enregistre la valeur donnée en cache pour la durée spécifiée. La durée s'exprime en secondes et est de 60 
+            secondes par défaut.
+        </p>
+        <php>
+            // Enregistre "valeur à stocker" dans "id_de_cache" pendant 600 secondes
+            Cache::save('id_de_cache', 'valeur à stocker', 600);
+        </php>
+        
+        <h3>get()</h3>
+        <p>Méthode statique. Récupère la valeur du cache pour l'id donné. Renvoi false si le cache n'existe pas</p>
+        <php>
+            // Retourne la valeur de "id_de_cache"
+            Cache::get('id_de_cache');
+        </php>
+        
+        <h3>delete()</h3>
+        <p>Méthode statique. Supprime le cache pour l'id donné.</p>
+        <php>
+            // Supprime le cache "id_de_cache"
+            Cache::delete('id_de_cache');
+        </php>
+        
+        <h3>flush()</h3>
+        <p>Méthode statique. Supprime tout le contenu du cache.</p>
+        <php>
+            // Supprime tout le cache
+            Cache::flush();
+        </php>
+        <blockquote class="info">
+            Quand le cache est stocké dans des fichiers (handler="file"), ces derniers ne sont pas supprimés. Le timestamp 
+            est comparé à celui se trouvant dans le fichier time_token du dossier webapp/cache/files. Cela permet d'avoir 
+            un flush plus rapide que si on supprimait tous les fichiers.
+        </blockquote>
+  
+    </body>            
+</html>
