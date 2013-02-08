@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Auth</h1>
+        <p>La classe Auth permet de gérer une identification.</p>
+        
+        <h2>Configuration</h2>
+        <p>
+            Le paramétrage se fait dans la catégorie [auth] du <a href="../installation/configuration.html">fichier de configuration</a>.
+            Les paramètres sont les suivants :
+        </p>
+        <table>
+            <tr>
+                <td><strong>handler</strong></td>
+                <td>
+                    Le type de stockage des utilisateurs (par défaut = "file"). Les types possibles sont :<br />
+                    <ul>
+                        <li>file : les utilisateurs sont stockés dans un fichier .users dans le dossier webapp/config.</li>
+                        <li>db : les utilisateurs sont stockés en base de données. Les paramètres d'accès sont également définis dans la configuration.</li>
+                    </ul>
+                    Voir "Stockage des utilisateurs" ci dessous. 
+                </td>
+            </tr>
+            <tr>
+                <td><strong>db_config</strong></td>
+                <td>Nom de la configuration de la base de données à utiliser. "db1" par défaut.</td>
+            </tr>
+            <tr>
+                <td><strong>db_table</strong></td>
+                <td>Nom de la table ou sont stockés les utilisateurs.</td>
+            </tr>
+            <tr>
+                <td><strong>db_login_field</strong></td>
+                <td>Nom du champ où sont stockés les identifiants des utilisateurs.</td>
+            </tr>
+            <tr>
+                <td><strong>db_hash_field</strong></td>
+                <td>Nom du champ où sont stockés les mots de passe des utilisateurs. Voir "Stockage des utilisateurs" ci dessous. </td>
+            </tr>
+        </table>
+        
+        <h2>Exemple</h2>
+        <p>Voici un exemple d'utilisation de la classe Auth :</p>
+        <php>
+        // L'utilisateur est identifié ?
+        if(Auth::isLogged())
+        {
+           // On affiche que l'utilisateur est loggué
+           return "L'utilisateur ".Auth::getUser()." est identifié !"; 
+        }
+        else // non, il n'est pas identifié...
+        {
+            // Le formulaire d'identification à été posté ?
+            if($form = Form::getInstance())
+            {
+                // oui, on vérifie l'identité...
+                if(Auth::attempt($form->getValue('login'), $form->getValue('password'), $form->isChecked('remember')))
+                {
+                    // L'utilisateur est correctement identifié, on rafraichit la page
+                    refresh();
+                }
+                else
+                {
+                    // L'identification a échouée, on affiche une erreur.
+                    echo 'Identification échouée';
+                }
+            }
+            
+            // Sinon on affiche le formulaire
+            echo '&lt;form action="" method="post">
+                    &lt;input type="text" name="login" placeholder="Identifiant" />
+                    &lt;input type="password" name="password" placeholder="Mot de passe" />
+                    &lt;input type="checkbox" name="remember" id="remember" />
+                    &lt;label for="remember">Se souvenir de moi&lt;/label>
+                    <&lt;input type="submit" />
+                  &lt;/form>';                        
+        }
+        </php>
+        
+        <h2>Stockage des utilisateur</h2>
+        <p>
+            Les utilisateurs peuvent être stockés soit dans un fichier .users dans le dossier webapp/config soit en base de données.<br />
+            Dans les deux cas on y stocke l'identifiant et le mot de passe crypté.
+        </p>
+        <blockquote class="warning">
+            Les mots de passe des utilisateurs doivent obligatoirement être "hashés" par la méthode <a href="security.html">Security::hash()</a>.
+        </blockquote>
+        <p>
+            Dans le cas de la base de données les champs sont clairement identifiés dans le fichier de configuration.
+            Dans le cas des utilisateurs dans le fichier .users il faudra saisir un utilisateur par ligne avec l'identifiant 
+            en premier suivi d'un double point et le mot de passe "hashé". Exemple :
+        </p>
+        <pre>
+john:$1$OUQySmpz$9SdUQvS6Sb5Xir.wJnHqB.
+bob:$1$aGpkR2dJ$BtVkO1p6LRzSjarc/2N47.
+ross:$1$cjFtMUp0$8dywLfQW.kILuzvQUCo.Z1
+        </pre>
+        
+        <h2>Méthodes</h2>
+        
+        <h3>attempt()</h3>
+        <p>
+            Méthode statique. Tente d'authentifier l'utilisateur donné par son identiant et son mot de passe. Si l'utilisateur est valide 
+            l'identifiant de ce dernier sera stocké en session. L'identifiant pourra également être stocké dans un cookie 
+            en spécifiant true comme troisième argument, cela permet de se souvenir de l'utilisateur même après avoir fermé
+            le navigateur.
+        </p>
+        <php>
+            // Tente l'authentification
+            Auth::attempt($_POST['login'], $_POST['password']);
+            
+            // Tente l'authentification et conserve le login dans un cookie
+            Auth::attempt($_POST['login'], $_POST['password'], true);
+        </php>
+        <blockquote class="info">
+            Le cookie d'identification est valable un an à partir de sa date de génération.
+        </blockquote>
+        
+        <h3>isLogged()</h3>
+        <p>
+            Méthode statique. Vérifie qu'un utilisateur est identifié. Dans le cas ou aucun utilisateur n'est identifié mais qu'un cookie 
+            d'identification est défini ce dernier sera utilisé et la méthode renverra true (si l'utilisateur existe toujours).
+        </p>
+        
+        <h3>getUser()</h3>
+        <p>Méthode statique. Récupère l'identifiant de l'utilisateur authentifié. Renvoi null si aucun utilisateur n'est identifié.</p>
+        
+        <h3>login()</h3>
+        <p>
+            Méthode statique. Identifie un utilisateur sans vérifier son mot de passe et son existance. Cette méthode peut 
+            être utilisée pour des tests par exemple ou pour un autre système d'authentification.
+        </p>
+        
+        <h3>logout()</h3>
+        <p>
+            Méthode statique. Supprime l'identification de l'utilisateur courant. Cela va supprimer l'utilisateur de la 
+            session et supprimer le cookie d'identification.
+        </p>
+    </body>            
+</html>

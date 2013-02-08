@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Cli</h1>
+        <p>La classe Cli aide à l'utilisation de vos scripts en ligne de commande.</p>        
+        
+        <h2>Méthodes</h2>
+        <blockquote class="info">
+            Si sa valeur est true, la constante CLI_MODE permet de savoir si vous êtes bien en mode ligne de commande.
+        </blockquote>
+        
+        <h3>clearScreen()</h3>
+        <p>Efface le contenu de l'écran. C'est l'équivalent à la commande clear en ligne de commande.</p>
+        
+        <h3>confirm()</h3>
+        <p>
+            Demande une confirmation avant d'exécuter la suite du script. Le second argument permet de définir 
+            la valeur à saisir pour répondre oui ou non.
+        </p>
+        <php>
+            $cli = Cli::getInstance();
+            
+            // Pose la question "Poursuivre le script ?". Si la réponse est "n" on arrête l'exécution
+            if(!$cli->confirm('Poursuivre le script ?', array('o' => true, 'n' => false)) die();            
+        </php>
+        
+        <h3>getArg()</h3>
+        <p>Récupère l'argument donné au script à son exécution dans la ligne de commande. Exemple si le script appelé est </p>
+        <pre>php -f example.php argument1 argument2</pre>
+        <p>On pourra récupérer les arguments comme ceci</p>
+        <php>
+            $cli = Cli::getInstance();
+            
+            $cli->getArg(1); // "argument1"
+            $cli->getArg(2); // "argument2"            
+        </php>
+        
+        <h3>getArgs()</h3>
+        <p>Récupère tous les arguments donnés au script lors de son exécution en ligne de commande. Voir getArg() ci dessus.</p>
+        
+        <h3>getColor()</h3>
+        <p>
+            Récupère la chaine permettant de mettre en couleur le texte affiché. Si l'argument est vide c'est le code de 
+            la couleur par défaut du terminal qui sera retournée.
+        </p>
+        <php>
+            $cli = Cli::getInstance();
+            
+            // Défini la couleur rouge
+            echo $cli->getColor('red');
+            
+            echo 'Ce texte sera en rouge';
+            
+            // Défini la couleur par défaut du terminal.
+            echo $cli->getColor();            
+        </php>
+        <p>
+            Les codes couleurs autorisés sont les suivants : black, red, green, brown, blue, purple, cyan, light gray, 
+            dark gray, light red, light green, yellow, light blue, light purple, light cyan, white
+        </p>
+        
+        <h3>getString()</h3>
+        <h3>hasArg()</h3>
+        <h3>input()</h3>
+        <h3>isCurrentMode()</h3>
+        <h3>meter()</h3>
+        <h3>printf()</h3>
+        <h3>setColor()</h3>
+        
+    </body>            
+</html>

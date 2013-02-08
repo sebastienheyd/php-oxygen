@@ -15,42 +15,77 @@
             dans l'enregistrement des données dans les cookies ou dans le système de captcha invisible, etc...
         </p>    
         
-        <blockquote class="info">Pour crypter les données, la classe Security va générer une clé pour l'application, 
-            cette clé sera stockée dans un fichier caché nommé .key dans le dossier webapp/config. </blockquote>
+        <blockquote class="info">
+            Pour crypter les données, la classe Security va générer une clé pour l'application, 
+            cette clé sera stockée dans un fichier caché nommé .key dans le dossier webapp/config.
+        </blockquote>
                 
-        <h2>Référence des fonctions</h2>
+        <h2>Méthodes</h2>
         
         <h3>encrypt()</h3>
-        <p>Crypte une chaîne de caractères qui pourra être décryptée par la suite. Fonction statique.<p>
-        <p>Security::encrypt() utilise la clé de l'application mais hash et sale également les données stockées. 
-            Ainsi la même chaîne de caractères stockée n'aura pas la même chaine une fois cryptée.</p>
-        <p>Il est possible de définir une autre clé que la clé de l'application si besoin.</p>
-        <blockquote class="info">Security::encrypt() utilise par défaut openssl_encrypt pour crypter les données (PHP >= 5.3.0), 
-            si openssl_encrypt n'est pas disponible c'est mcrypt qui sera utilisé sinon le cas échéant un cryptage par xor sera effectué.</blockquote>
+        <p>
+            Méthode statique. Crypte une chaîne de caractères qui pourra être décodée par decrypt().
+        <p>
+        <p>
+            Security::encrypt() utilise la clé de l'application mais "hash" et "sale" également les données stockées. 
+            Ainsi le même contenu n'aura pas la même chaine une fois cryptée.
+        </p>
+        <p>
+            Il est possible de définir une autre clé que la clé de l'application si besoin.
+        </p>
+        <blockquote class="info">
+            Security::encrypt() utilise par défaut openssl_encrypt pour crypter les données (PHP >= 5.3.0), 
+            si openssl_encrypt n'est pas disponible c'est mcrypt qui sera utilisé sinon le cas échéant un cryptage par 
+            xor sera effectué.
+        </blockquote>
         <php>
             Security::encrypt('password');          // Utilisera la clé par défaut de l'application
             Security::encrypt('password', 'clé');   // Utilisera la clé "clé"
         </php>
         
         <h3>decrypt()</h3>
-        <p>Décrypte une chaîne cryptée par Security::encrypt(). Fonction statique.</p>
+        <p>Méthode statique. Décrypte une chaîne cryptée par Security::encrypt().</p>
         <php>
             Security::decrypt('DW0e0zeZczJOE...');          // Utilisera la clé par défaut de l'application
             Security::decrypt('EXHXp4lh8LkB6...', 'clé');   // Utilisera la clé "clé"
         </php>
         
         <h3>hash()</h3>
-        <p>Permet de générer une signature numérique (hash) pour la chaîne donnée. Fonction statique.</p>
-        <blockquote class="info">Security::hash va utiliser crypt pour générer la signature. 
-            Avec PHP >= 5.3.0 la signature utilisera le chiffrement Blowfish sinon MD5 le cas échéant.</blockquote>
-        <blockquote class="warning">Si vous migrez de PHP 5.2 à PHP 5.3 les signatures ne seront plus reconnues, 
-            définissez alors hash_force_md5 à true dans le fichier de configuration.</blockquote>
+        <p>Méthode statique. Génère une signature numérique (hash) pour la chaîne donnée.</p>
+        <blockquote class="info">
+            Security::hash va utiliser crypt pour générer la signature. 
+            Avec PHP >= 5.3.0 la signature utilisera le chiffrement Blowfish sinon MD5 le cas échéant.
+        </blockquote>
+        <blockquote class="warning">
+            Si vous migrez de PHP 5.2 à PHP 5.3 les signatures ne seront plus reconnues, 
+            définissez alors hash_force_md5 à true dans le fichier de configuration.
+        </blockquote>
         
         <h3>check()</h3>
         <p>Vérifie qu'une signature numérique (hash) correspond bien à la chaîne donnée.</p>
         <php>
             $hash = Security::hash('password');             // Génère une signature numérique
             $test = Security::check('password', $hash);     // Retourne true, la signature correspond.
+        </php>
+        
+        <h3>token()</h3>
+        <p>
+            Méthode statique. Génere un token anti-CSRF. L'appel à la méthode va enregistrer le token en session pour 
+            pouvoir en faire la comparaison.
+        </p>
+        <xml>
+            &lt;form action="form.php?token=&lt;?php echo Security::token() ?>" method="post">
+                &lt;button type="submit">Soumettre&lt;/button>
+            &lt;/form>';
+        </xml>
+        
+        <h3>checkToken()</h3>
+        <p>
+            Méthode statique. Vérifie la correspondance entre le token généré par token() et la valeur donnée.
+        </p>
+        <php>
+            // Retourne true si le token correspond à la valeur en session
+            Security::checkToken($_GET['token']);
         </php>
     </body>            
 </html>
