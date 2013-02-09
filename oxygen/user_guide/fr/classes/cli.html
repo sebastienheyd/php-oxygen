@@ -16,20 +16,11 @@
             Si sa valeur est true, la constante CLI_MODE permet de savoir si vous êtes bien en mode ligne de commande.
         </blockquote>
         
+        <h3>isCurrentMode()</h3>
+        <p>Renvoi true si le script est bien exécuté en ligne de commande.</p>
+        
         <h3>clearScreen()</h3>
         <p>Efface le contenu de l'écran. C'est l'équivalent à la commande clear en ligne de commande.</p>
-        
-        <h3>confirm()</h3>
-        <p>
-            Demande une confirmation avant d'exécuter la suite du script. Le second argument permet de définir 
-            la valeur à saisir pour répondre oui ou non.
-        </p>
-        <php>
-            $cli = Cli::getInstance();
-            
-            // Pose la question "Poursuivre le script ?". Si la réponse est "n" on arrête l'exécution
-            if(!$cli->confirm('Poursuivre le script ?', array('o' => true, 'n' => false)) die();            
-        </php>
         
         <h3>getArg()</h3>
         <p>Récupère l'argument donné au script à son exécution dans la ligne de commande. Exemple si le script appelé est </p>
@@ -41,6 +32,11 @@
             $cli->getArg(1); // "argument1"
             $cli->getArg(2); // "argument2"            
         </php>
+        
+        <h3>hasArg()</h3>
+        <p>
+            Vérifie que l'argument donné au script à son exécution dans le ligne de commande existe.
+        </p>
         
         <h3>getArgs()</h3>
         <p>Récupère tous les arguments donnés au script lors de son exécution en ligne de commande. Voir getArg() ci dessus.</p>
@@ -61,18 +57,69 @@
             // Défini la couleur par défaut du terminal.
             echo $cli->getColor();            
         </php>
-        <p>
+        <blockquote class="info">
             Les codes couleurs autorisés sont les suivants : black, red, green, brown, blue, purple, cyan, light gray, 
             dark gray, light red, light green, yellow, light blue, light purple, light cyan, white
-        </p>
+        </blockquote>
+        
+        <h3>setColor()</h3>
+        <p>Défini la couleur des textes qui seront affichés. Il s'agit de l'équivalant d'un echo de getColor().</p>
         
         <h3>getString()</h3>
-        <h3>hasArg()</h3>
-        <h3>input()</h3>
-        <h3>isCurrentMode()</h3>
-        <h3>meter()</h3>
+        <p>Permet de récupérer une chaine de caractères en spécifiant sa couleur. Les couleurs sont celle de la méthode getColor</p>
+        <php>
+            $cli = Cli::getInstance();
+            
+            $strRed   = $cli->getString('Ma chaîne est rouge', 'red');
+            $strGreen = $cli->getString('Ma chaîne est verte', 'green');
+        </php>
+        
         <h3>printf()</h3>
-        <h3>setColor()</h3>
+        <p>
+            Fonctionne comme getString() mais affiche directement la chaîne.
+        </p>
+        
+        <h3>confirm()</h3>
+        <p>
+            Demande une confirmation avant d'exécuter la suite du script. Le second argument permet de définir 
+            la valeur à saisir pour répondre oui ou non.
+        </p>
+        <php>
+            $cli = Cli::getInstance();
+            
+            // Pose la question "Poursuivre le script ?". Si la réponse est "n" on arrête l'exécution
+            if(!$cli->confirm('Poursuivre le script ?', array('o' => true, 'n' => false)) die();            
+        </php>
+        
+        <h3>input()</h3>
+        <p>
+            Affiche un texte et attend une entrée de l'utilisateur.
+        </p>
+        <php>
+            $cli = Cli::getInstance();
+            
+            // Affiche le text "Saisissez votre nom" et attends la saisie de l'utilisateur
+            $name = $cli->input('Saisissez votre nom');
+            
+            // Affiche le texte en bleu
+            $cli->printf('Bonjour '.$name, 'blue');
+        </php>
+        
+        <h3>meter()</h3>
+        <p>
+            Affiche un compteur s'incrémentant en fonction des valeurs données. Utile pour les imports par exemple.
+        </p>
+        <php>
+            $cli = Cli::getInstance();
+            
+            $nbUsers = count($users);
+            
+            foreach($users as $k => $u)
+            {
+                // Affichera par ex. "Utilisateur importé 34/100 (34%)"
+                $cli->meter($k+1, $nbUsers, 'Utilisateur importé ');
+            }
+        </php>
         
     </body>            
 </html>
