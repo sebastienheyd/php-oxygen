@@ -11,18 +11,22 @@
         <h1>Configuration</h1>
         <p>
             La configuration de PHP-Oxygen se fait via un fichier .ini dans le dossier webapp/config. 
-            Ce dernier peut être différent en fonction du contexte défini (dev, preprod, prod, etc...)
+            Ce dernier peut être différent en fonction du contexte défini (dev, preprod, prod, etc...).
         </p>
         <h2>Contextualisation</h2>
         <p>
-            Il existe plusieurs méthodes pour utiliser un fichier différent par contexte. Le principe est de nommer le fichier à appeler.
+            Il existe plusieurs méthodes pour utiliser un fichier différent par contexte. 
+            Le principe est de nommer le fichier à appeler.
         </p>
         <p>
             Exemple : si la valeur de contexte définie est "preprod" le fichier chargé sera webapp/config/preprod.ini
         </p>
         
         <h3>Définition manuelle en PHP</h3>
-        <p>La définition manuelle se fait avant le chargement du framework (bootstrap.php), cela est surtout nécessaire pour l'utilisation de PHP-Oxygen en ligne de commande.</p>
+        <p>
+            La définition manuelle se fait avant le chargement du framework (bootstrap.php), cela est surtout nécessaire 
+            pour l'utilisation de PHP-Oxygen en ligne de commande.
+        </p>
         <p>La définition se fait en attribuant une valeur à la constante APP_ENV</p>
         <p>Exemple pour définir preprod comme contexte :</p>
         <php>
@@ -34,7 +38,10 @@
         </php>
         
         <h3>Définition dans le vhost Apache</h3>
-        <p>Le contexte peut être défini directement dans la configuration du vhost Apache. Cette solution permet d'utiliser le même contexte sur plusieurs projets si vous utilisez des alias de vhost.</p>
+        <p>
+            Le contexte peut être défini directement dans la configuration du vhost Apache. 
+            Cette solution permet d'utiliser le même contexte sur plusieurs projets si vous utilisez des alias de vhost.
+        </p>
         <p>Pour définir le contexte on défini une variable d'environnement APP_ENV.</p>
         <p>Exemple pour définir preprod comme contexte :</p>
         <apacheconf>
@@ -46,15 +53,26 @@
         </apacheconf>
         
         <h3>Définition dans l'htaccess</h3>
-        <p>La définition du contexte dans l'htaccess se fait quasiment de la même façon que dans le vhost, c'est à dire en définissant la variable d'environnement APP_ENV</p>
+        <p>
+            La définition du contexte dans l'htaccess se fait quasiment de la même façon que dans le vhost, c'est à dire 
+            en définissant la variable d'environnement APP_ENV
+        </p>
         <p>Le fichier .htaccess se trouve dans le dossier www.</p>
         <p>Exemple pour définir preprod comme contexte :</p>
         <htaccess>
             SetEnv APP_ENV "preprod"
         </htaccess>
         
+        <h2>Récupération des valeurs</h2>
+        <p>
+            La récupération des valeurs contextualisée se fera via la classe <a href="../classes/config.html">Config</a>
+        </p>
+        
         <h2>Contenu de la configuration</h2>
-        <p>Le contenu du fichier de configuration est clair et commenté. Chaque partie est expliquée en détail dans la documentation des classes concernées.</p>
+        <p>
+            Le contenu du fichier de configuration est clair et commenté. Chaque partie est expliquée en détail dans la 
+           documentation des classes concernées.
+        </p>
         <ul>
             <li><a href="../classes/db/configuration.html">Configuration de l'accès à la base de données</a></li>
             <li><a href="../classes/date.html">Configuration du fuseau horaire</a></li>
