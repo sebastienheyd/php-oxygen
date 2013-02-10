@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Plugins Smarty</h1>
+        <p>
+            PHP-Oxygen utilise Smarty pour l'affichage des vues. Ce dernier est extensible via des plugins, c'est pour 
+            cela que PHP-Oxygen en fourni un certain nombre. Il existe deux types de plugins Smarty, les balises et les 
+            modificateurs.
+        </p>
+        
+        <blockquote class="warning">
+            Les balises ou les modificateurs Smarty ne fonctionnent bien entendu que lors de l'affichage des vues via la 
+            classe <a href="../classes/template.html">Template</a>.
+        </blockquote>
+        
+        <h2>Balises Smarty</h2>
+        <h3>widget</h3>
+        <p>
+            La balise {widget} affiche le résultat de l'exécution d'une action comme le ferait le contrôleur 
+            principal. La balise permet également d'afficher un gabarit (template) directement avec la possibilité
+            de lui fournir des variables.
+        </p>
+        <xml>
+            &lt;div>
+                &lt;!-- Exécute le contrôleur form du module contact (m_contact_action_Form) -->
+                {widget module="contact" action="form"}
+                
+                &lt;!-- Idem mais fourni idContact=12 en argument de execute() -->
+                {widget module="contact" action="form" idContact=12}
+                
+                &lt;!-- Affiche le gabarit address.html du module contact en fournissant idContact=12 -->
+                {widget module="contact" template="address.html" idContact=12}
+            &lt;/div>
+        </xml>
+            
+        <h3>setLocale et t</h3>
+        <p>
+            Il s'agit de balises de localisation. Voir <a href="../general/l10n/template.html">localisation d'un gabarit (template)</a>.
+        </p>
+            
+    </body>            
+</html>
