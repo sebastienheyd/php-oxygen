@@ -10,9 +10,42 @@
     <body>     
         <h1>Cookie</h1>
         <p>
-            La classe Cookie permet la gestion des cookies.
+            La classe Cookie permet de gérer facilement les cookies pour votre application.
         </p>
         
+        <h2>Méthodes</h2>
+        <h3>expire()</h3>
+        <p>
+            Méthode statique. Retourne la valeur en seconde d'une durée donnée en minute (défaut), heure, jour. Permet de 
+            facilement définir la durée de vie d'un cookie.
+        </p>
+        <php>
+            // 60 minutes => 3600
+            Cookie::expire('60');
+            
+            // 1 heure => 3600
+            Cookie::expire('1', h);
+            
+            // 1 jour => 86400
+            Cookie::expire('1', 'd');
+        </php>
+        
+        <h3>get()</h3>
+        <p>
+            Méthode statique. Retourne la valeur du cookie spécifié ou la valeur par défaut.
+        </p>
+        <php>
+            // Retourne la valeur du cookie "mycookie" sinon retourne false
+            Cookie::get('mycookie');
+            
+            // Retourne la valeur du cookie "mycookie" sinon retourne "defaultvalue"
+            Cookie::get('mycookie', 'defaultvalue');            
+        </php>
+        
+        <h3>set()</h3>
+        <p>
+            Méthode statique. Crée un nouveau cookie.
+        </p>
        
     </body>            
 </html>

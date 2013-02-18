@@ -49,8 +49,7 @@ class Cookie
             $value = $_COOKIE[$name];
         }
 
-        // decode cookie content        
-        //list($value, $timestamp, $hash) = explode('~~', $value);
+        // retrieve cookie content        
         $cookieValue = explode('|', $value);        
 
         // hash is not correct
