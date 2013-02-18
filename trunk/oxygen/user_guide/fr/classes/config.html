@@ -10,31 +10,27 @@
     <body>     
         <h1>Classe Config</h1>
         <p>
-           La classe Config permet de lire le contenu du/des fichier(s) de configuration de l'application.           
-        </p>
+            La classe Config permet de lire le contenu du <a href="../installation/configuration.html">fichier de 
+            configuration de l'application</a>. 
+        </p>                
         
-        <h2>Emplacement</h2>
-        
-        <p>Le(s) fichier(s) de configuration se trouve(nt) dans le dossier webapp/config.</p>
-        
-        <h2>Contextualisation</h2>
-        <p>
-            La configuration de PHP Oxygen est contextualisée. Cela veut dire que vous pouvez avoir un fichier de configuration par environnement. 
-            Cela est très utile dans le cas ou vous développez sur un ou plusieurs serveurs et que vous avez un ou plusieurs serveurs de production par exemple.<br />
-            Pour cela il suffit de définir la variable d'environnement APP_ENV soit dans le fichier .htaccess, soit directement dans la configuration du vhost Apache. Par exemple :
-        </p>
-        
-        <blockquote>
-            SetEnv APP_ENV "development"
-        </blockquote>
-        
-        <p>
-            Dans cet exemple, le fichier de configuration utilisé sera webapp/config/development.ini
-        </p>
-        
-        <h2>Fonctions</h2>
+        <h2>Méthodes</h2>
         <h3>get()</h3>
-        <p>La fonction get</p>
+        <p>
+            Méthode statique. Permet de récupérer la valeur d'une variable de configuration ou d'une section sinon 
+            renvoie la valeur par défaut (false si non spécifiée).
+        </p>
+        <php>
+            // Retourne la valeur error_level de la section debug, sinon 'off'
+            Config::get('debug.error_level', 'off');
+            
+            // Retourne un tableau associatif de la section debug
+            Config::get('debug');
+        </php>
+        
+        <h3>getEnvironment()</h3>
+        <p>Méthode statique. Récupère le nom d'environnement courant sinon "default". Voir <a href="../installation/configuration.html">
+           fichier de configuration</a>.</p>
         
     </body>            
 </html>
