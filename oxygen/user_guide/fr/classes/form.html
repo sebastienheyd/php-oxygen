@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe Form</h1>
+        <p>
+            La classe Form aide à la vérification et l'exploitation des données des formulaires.
+        </p>                
+        
+        <h2>Méthodes</h2>
+        <h3>getInstance()</h3>
+        <p>
+            Méthode statique. Instancie la classe si des données ont été postées sinon retourne false.
+        </p>
+        <php>
+            if($form = Form::getInstance())
+            {
+                // le formulaire est posté... on traite
+            }
+        </php>
+        <p>
+            La méthode peut prendre en argument le nom du tableau associatif utilisé dans les balises du formulaire, 
+            exemple :
+        </p>
+        <xml>
+            &lt;form action="" method="post" &gt;
+                &lt;input type="text" name="myform[login]" /&gt;
+                &lt;input type="password" name="myform[password]" /&gt;
+            &lt;/form&gt;
+        </xml>
+        Et dans le script PHP
+        <php>
+            if($form = Form::getInstance('myform'))
+            {
+                // le formulaire 'myform' est posté... on traite
+            }
+        </php>
+        
+        <a name="check"></a>
+        <h3>check()</h3>
+        <p>
+            Permet de vérifier une donnée postée. Pour cela on va indiquer le nom du champ et la(les) règle(s) à utiliser.
+        </p>
+        <php>
+            if($form = Form::getInstance('myform'))
+            {                
+                // le champ login est requis et comporte que des caractères alpha-numériques
+                $form->check('login', 'required|alphanum');
+                
+                // le champ mot de passe est requis et doit avoir 8 caractères au minimum
+                $form->check('password', 'required|length[8]');
+                
+                // le champ vérification du mot de passe est requis et doit être identique au champ mot de passe
+                $form->check('password_match', 'required|match[password]');
+            }
+        </php>
+        <p>
+            Lors de l'affichage des erreurs c'est le nom du champ qui est utilisé, à moins que vous le spécifiez en 
+            troisième argument de la méthode. Exemple :
+        </p>
+        <php>
+            // L'erreur sera "Le champ login est requis"
+            $form->check('login', 'required');
+            
+            // L'erreur sera "Le champ identifiant est requis"
+            $form->check('login', 'required', 'identifiant');
+        </php>
+        <blockquote class="info">
+            Le troisième argument peut être une donnée traductible. Voir <a href="../general/l10n.html">Localisation (l10n)</a>
+        </blockquote>
+        <p>
+            Les règles sont associées à une classe, il est possible de rajouter des règles avec la méthode 
+            <a href="#addrule">addRule()</a>. PHP-Oxygen est fourni avec des règles de base :
+        </p>
+        <table>
+            <tr>
+                <td><strong>alpha</strong></td>
+                <td>
+                    Vérifie que la valeur est constituée uniquement de caractères alphabétiques sans tenir compte de la 
+                    casse.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>alphanum</strong></td>
+                <td>
+                    Vérifie que la valeur est constituée uniquement de caractères numériques et alphabétiques sans tenir
+                    compte de la casse.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>email</strong></td>
+                <td>
+                    Vérifie que la valeur est un e-mail correctement saisi.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>integer</strong></td>
+                <td>
+                    Vérifie que la valeur est un nombre entier. Il est possible de vérifier également que la valeur est 
+                    supérieure à et/ou inférieure à.<br />
+                    <code>integer[2]</code> (supérieure à 2)<br />
+                    <code>integer[2,5]</code> (supérieure à 2, inférieure à 5)<br />
+                </td>
+            </tr>
+            <tr>
+                <td><strong>length[min,(max)]</strong></td>
+                <td>
+                    Vérifie la longueur de la valeur. La longueur minimale est obligatoire.<br />
+                    <code>length[2]</code> (supérieure à 2)<br />
+                    <code>length[2,5]</code> (supérieure à 2, inférieure à 5)<br /> 
+                </td>
+            </tr>
+            <tr>
+                <td><strong>match[field]</strong></td>
+                <td>
+                    Vérifie que la valeur est égale à la valeur du champ <code>field</code>. Idéal pour la vérification
+                    des mots de passe par exemple.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>numeric</strong></td>
+                <td>
+                    Vérifie que la valeur est numérique, qu'elle soit un entier ou un nombre à virgule.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>regex[exp]</strong></td>
+                <td>
+                    Vérifie que la valeur correspond à l'expression régulière <code>exp</code> donnée. Exemple <br />
+                    <code>regex[/^([a-z]*)?$/i]</code>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>required</strong></td>
+                <td>
+                    Vérifie que la valeur est définie.
+                </td>
+            </tr>
+        </table>
+        
+        <a name="addrule"></a>
+        <h3>addRule()</h3>
+        <p>
+            Permet d'ajouter une règle de vérification que l'on pourra utiliser avec la méthode <a href="#check">check()</a>.
+            Pour cela on spécifiera la classe à appeler. Celle-ci doit étendre f_form_check_Abstract
+        </p>
+        <php>
+            // Par exemple, on déclare le checker
+            $form->addRule('password_check', 'm_form_check_Password');
+            
+            // On l'applique
+            $form->check('password', 'password_check');
+        </php>
+        
+        <h3>isValid()</h3>
+        <p>
+            Retourne true si le formulaire courant n'a pas retourné d'erreur.
+        </p>
+        <php>
+            if($form = Form::getInstance('myform'))
+            {                
+                // le champ login est requis
+                $form->check('login', 'required');
+                
+                // le champ login est saisi, pas d'erreur
+                if($form->isValid()) 
+                {
+                    // traitement...
+                }
+            }
+        </php>
+        
+        <a name="geterrors"></a>
+        <h3>getErrors()</h3>
+        <p>
+            Retourne un tableau associatif des erreurs avec le nom du champ comme index.
+        </p>
+        <blockquote class="info">
+            Les erreurs retournées sont des textes localisés. Les locales des erreurs fournies par défaut avec PHP-Oxygen
+            se trouvent dans le dossier oxygen/form/check/i18n
+        </blockquote>
+        <php>
+            if($form = Form::getInstance('myform'))
+            {                
+                $form->check('login', 'required');
+                
+                if(!$form->isValid()) 
+                {
+                    print_r($form->getErrors());
+                    
+                    /*
+                        Array
+                        (
+                            [login] => Le champ test est requis
+                        )
+                    */
+                }
+            }
+        </php>
+        
+        <a name="getvalues"></a>
+        <h3>getValues()</h3>
+        <p>
+            Retourne les valeurs postées dans un objet standard. Si true est donné en argument les valeurs seront 
+            retournées dans un tableau associatif avec le nom du champ comme index.
+        </p>
+        <php>
+            if($form = Form::getInstance('myform'))
+            {                
+                $form->check('login', 'required');
+                
+                if($form->isValid()) 
+                {
+                    // Insertion des valeurs dans une base de données
+                    Db::insert('myTable', $form->getValues(true));
+                }
+            }
+        </php>
+        
+        <h3>getValue()</h3>
+        <p>
+            Retourne une valeur postée ou une valeur par défaut si elle n'existe pas (null si non définie).
+        </p>
+        <blockquote class="info">
+            Bien entendu la valeur par défaut ne sera jamais utilisée si vous vérifiez le champ avec la règle required.
+        </blockquote>
+        
+        <h3>isChecked()</h3>
+        <p>
+            A utiliser pour vérifier si une checkbox à été cochée ou non.
+        </p>
+        <php>
+            // Retourne true si la checkbox "confirmation" est cochée.
+            $form->isChecked('confirmation');
+        </php>
+        
+        <h3>setObjPropertiesByClassName()</h3>
+        <p>Défini les propriétés d'un objet à partir du nom de sa classe. L'objet doit étendre Document.</p>
+        
+        <h3>setObjProperties()</h3>
+        <p>Défini les propriétés d'un objet instancié. L'objet doit étendre Document.</p>
+        
+        <h3>getCaptchaTags()</h3>
+        <p>
+            Méthode statique. Retourne les champs à insérer dans votre formulaire pour mettre en place un catpcha 
+            invisible. La méthode peut prendre comme argument le nom des champs.
+        </p>
+        
+        <h3>checkCaptcha()</h3>
+        <p>
+            Méthode statique. Vérifie les données du captcha invisible postées. La méthode prend en argument le nom du 
+            champ (doit être le même que celui indiqué dans getCaptchaTags()). Les deux arguments suivants permettent 
+            de préciser la durée minimale (défaut 5secs) et la durée maximale (défaut 10mn) pour la soumission du 
+            formulaire.
+        </p>
+        
+    </body>            
+</html>

@@ -30,7 +30,7 @@ class f_form_check_Length extends f_form_check_Abstract
         
         if(empty($args)) trigger_error('Length check args must contain a min and a max value', E_USER_ERROR);
         
-        $length = strlen($this->fieldValue);       
+        $length = mb_strlen($this->fieldValue);       
         
         if(count($args) == 1)
         {

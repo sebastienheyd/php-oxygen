@@ -41,11 +41,57 @@
             // Retourne la valeur du cookie "mycookie" sinon retourne "defaultvalue"
             Cookie::get('mycookie', 'defaultvalue');            
         </php>
+        <blockquote class="info">
+            La méthode get() va vérifier automatiquement la signature (hash) de la valeur du cookie. Il est donc 
+            nécessaire de créer vos cookies avec la méthode set() de la classe Cookie.
+        </blockquote>
         
         <h3>set()</h3>
         <p>
-            Méthode statique. Crée un nouveau cookie.
+            Méthode statique. Crée un nouveau cookie. La méthode prend les mêmes arguments que la fonction 
+            <a href="http://php.net/manual/fr/function.setcookie.php">setcookie()</a> de PHP, dans l'ordre :
         </p>
+        <table>
+            <tr>
+                <td><strong>nom</strong></td>
+                <td>Le libellé du cookie à créer. Servira pour l'identifier avec la méthode get</td>
+            </tr>
+            <tr>
+                <td><strong>valeur</strong></td>
+                <td>La valeur à stocker dans le cookie. Si la valeur est un tableau il est automatiquement sérialisé.</td>
+            </tr>
+            <tr>
+                <td><strong>durée</strong></td>
+                <td>Durée de vie du cookie en secondes. Par défaut = 3600s (une heure)</td>
+            </tr>
+            <tr>
+                <td><strong>chemin</strong></td>
+                <td>Le chemin sur le serveur sur lequel le cookie sera disponible. Par défaut = "/" (ensemble du domaine)</td>
+            </tr>
+            <tr>
+                <td><strong>domaine</strong></td>
+                <td>Le domaine pour lequel le cookie est disponible. NULL par défaut (tout domaine)</td>
+            </tr>
+            <tr>
+                <td><strong>secure</strong></td>
+                <td>
+                    Indique si le cookie doit uniquement être transmis à travers une connexion sécurisée HTTPS depuis le
+                    client. NULL par défaut (détecte si la connexion courante est en HTTPS)
+                </td>
+            </tr>
+            <tr>
+                <td><strong>httponly</strong></td>
+                <td>
+                    Lorsque ce paramètre vaut TRUE, le cookie ne sera accessible que par le protocole HTTP. TRUE par défaut.
+                </td>
+            </tr>
+        </table>
+        <blockquote class="info">
+            La valeur enregistrée avec la méthode set() est automatiquement enregistrée avec son hash permettant ainsi 
+            de la signer.
+        </blockquote>
        
+        <h3>delete()</h3>
+        <p>Méthode statique. Supprime un cookie par son nom.</p>
     </body>            
 </html>

@@ -51,13 +51,13 @@ var menu = '\
                 <li><a href="'+basepath+lang+'/classes/config.html">Config</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/cookie.html">Cookie</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/cron.html">Cron</a></li>\n\
-                <li><a href="#">Controller</a></li>\n\
+                <li><a href="'+basepath+lang+'/classes/controller.html">Controller</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/date.html">Date</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/db.html">Db</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/email.html">Email</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/error.html">Error</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/file.html">File</a></li>\n\
-                <li><a href="#">Form</a></li>\n\
+                <li><a href="'+basepath+lang+'/classes/form.html">Form</a></li>\n\
                 <li><a href="#">Generator</a></li>\n\
                 <li><a href="#">Html</a></li>\n\
                 <li><a href="'+basepath+lang+'/classes/i18n.html">I18n</a></li>\n\
@@ -83,9 +83,9 @@ var menu = '\
     <ul class="menuList">\n\
         <li class="menuLabel"><span class="menuTitle">Tutoriaux</span>\n\
             <ul>\n\
+                <li><a href="'+basepath+lang+'/howto/form.html">Créer un formulaire</a></li>\n\
                 <li><a href="#">Authentifier un utilisateur</a></li>\n\
                 <li><a href="#">Créer une page</a></li>\n\
-                <li><a href="#">Créer un formulaire</a></li>\n\
             </ul>\n\
         </li>\n\
     </ul>\n\
