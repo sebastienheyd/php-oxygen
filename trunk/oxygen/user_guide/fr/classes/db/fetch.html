@@ -203,7 +203,7 @@
             Permet de regrouper les résultats selon la valeur de la première colonne de la requête.
         </p>        
         <blockquote class="warning">
-            Ces deux modificateurs sont utilisables uniquement avec la fonction fetchAll().
+            Ces deux modificateurs sont utilisables uniquement avec la méthode fetchAll().
         </blockquote>
         <php>
             $res = DB::query('SELECT country, customerNumber FROM customers')->fetchAll(PDO::FETCH_ASSOC|PDO::FETCH_GROUP);

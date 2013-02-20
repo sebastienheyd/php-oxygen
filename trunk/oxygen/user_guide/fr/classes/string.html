@@ -11,8 +11,11 @@
         <h1>String</h1>
         <p>La classe string permet la manipulation, la génération ou encore la vérification des chaines de caractères.</p>
         
-        <h2>Réference des fonctions</h2>
-        <blockquote class="info">Toutes les fonctions de la classe String sont statiques et peuvent être appelées dans n'importe quel fichier après initialisation du framework.</blockquote>
+        <h2>Méthodes</h2>
+        <blockquote class="info">
+            Toutes les méthodes de la classe String sont statiques et peuvent être appelées dans n'importe quel fichier 
+            après initialisation du framework.
+        </blockquote>
         
         <h3>checkIp()</h3>
         <p>Vérifie que l'adresse IP fournie est correctement formatée en retournant true si elle est correcte, sinon false.</p>
@@ -20,7 +23,7 @@
             String::checkIp('192.168.0.1'); // retournera true
         </php>
         <blockquote class="warning">
-            Attention, cette fonction ne vérifie pas que l'adresse IP existe et répond au ping.
+            Attention, cette méthode ne vérifie pas que l'adresse IP existe et répond au ping.
         </blockquote>
         
         <h3>checkEmail()</h3>
@@ -42,7 +45,7 @@
         <h3>toUrl()</h3>
         <p>
             Convertit une phrase en une chaine compatible avec les urls (en supprimant les accents et les espaces par exemple). Cela est utile si vous voulez utiliser par exemple un titre comme url.
-            La fonction prends les arguments suivants :
+            La méthode prends les arguments suivants :
         </p>    
         <ul>
             <li>une chaine à convertir</li>
@@ -79,7 +82,7 @@
             String::truncateAtWord('Ceci est une phrase.', 7); // Retourne "Ceci est..."            
         </php>
         <blockquote class="info">
-            Tout comme truncateAtLength(), le gabarit de fin est modifiable en modifiant le 3ème argument de la fonction (par défaut "...")
+            Tout comme truncateAtLength(), le gabarit de fin est modifiable en modifiant le 3ème argument de la méthode (par défaut "...")
         </blockquote>        
         
         <h3>truncateAtSentence()</h3>
@@ -89,7 +92,7 @@
             // Retourne "Ceci est une phrase..."
         </php>
         <blockquote class="info">
-            Tout comme truncateAtLength(), le gabarit de fin est modifiable en modifiant le 3ème argument de la fonction (par défaut "...")
+            Tout comme truncateAtLength(), le gabarit de fin est modifiable en modifiant le 3ème argument de la méthode (par défaut "...")
         </blockquote>
         
         <h3>escapeWordChars()</h3>
@@ -160,7 +163,7 @@
         <h3>strpos()</h3>
         <p>
             Version améliorée de strpos de php, permet l'utilisation d'un tableau pour la recherche (la recherche renvoi alors la position de la première chaine trouvée). 
-            La fonction sera essentiellement utilisée pour vérifier la présence d'un mot dans une phrase.
+            La méthode sera essentiellement utilisée pour vérifier la présence d'un mot dans une phrase.
         </p>
         <php>
             if(String::strpos("john bob russel brian", array('mac', 'russel')))

@@ -24,10 +24,8 @@ class f_form_check_Integer extends f_form_check_Abstract
     public function check($args)
     {
         if($args !== null) $args = explode(',', $args);
-
-        $check = ( !is_int($this->fieldValue) ? (preg_match('/^-?[0-9]+$/', $this->fieldValue)) : true );
         
-        if(!$check)
+        if(!( is_int($this->fieldValue) || ctype_digit($this->fieldValue) ))
         {
             $this->_errorMsg = $this->translate('%name% must contain an integer', array('nb' => $args[0]));
             return false;        

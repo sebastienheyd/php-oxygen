@@ -20,29 +20,22 @@ class Form
     /**
      * Get a new instance of Form
      * 
-     * @param Document $object      [optionnal] an instance of an object extending Document
+     * @param string $name      [optionnal] Name of the $_POST index to get.
      * @return Form
      */
-    public static function getInstance($object = null)
+    public static function getInstance($name = null)
     {
-        if($object === null)
-        {
-            $post = Request::getInstance()->post();
-        }
-        else
-        {
-            if($object instanceof Document) $post = $object->getObjectVars();
-        }         
-        
+        $post = Request::getInstance()->post($name);
+             
         if(!isset($post) || empty($post)) return false;
         
         return new self($post);
     }
     
     /**
-     * Main contructor
+     * Main constructor
      * 
-     * @param array $post   Posted vars or an array of values from a Document object
+     * @param array $post   Associative array of posted data
      */
     private function __construct($post)
     {
@@ -117,12 +110,10 @@ class Form
     /**
      * Return form errors if any
      * 
-     * @param string $ucfirst   Must the method returns errors with first char uppercased ?
      * @return array            An array of errors (or an empty array) 
      */
-    public function getErrors($ucfirst = true)
+    public function getErrors()
     {
-        if($ucfirst) $this->_errors = array_map('ucfirst', $this->_errors);
         return $this->_errors;
     }
     

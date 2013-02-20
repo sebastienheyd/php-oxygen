@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe Controller</h1>
+        <p>
+            Il s'agit de la classe contrôleur principale. C'est elle qui va dispatcher vers les 
+            <a href="../general/controllers.html">contrôleurs</a> (action) des différents modules de l'application.
+        </p>                
+        
+        <h2>Méthodes</h2>
+        <h3>getInstance()</h3>
+        <p>Méthode statique d'instanciation de la classe.</p>
+        
+        <h3>setModule()</h3>
+        <p>Défini le module dans lequel se trouve le <a href="../general/controllers.html">contrôleur</a> à appeler.</p>
+        
+        <h3>setAction()</h3>
+        <p>Défini le <a href="../general/controllers.html">contrôleur</a> (action) du module à appeler.</p>
+        <php>
+            // Appelle la méthode execute() de la classe m_website_action_Display
+            Controller::getInstance()->setModule('website')->setAction('display')->dispatch();
+        </php>
+        
+        <h3>setArgs()</h3>
+        <p>Défini les arguments à passer au <a href="../general/controllers.html">contrôleur</a> du module appelé.</p>
+        <php>
+            // Appelle la méthode execute() de la classe m_website_action_Display et fourni le tableau en argument.
+            Controller::getInstance()->setModule('website')->setAction('display')->setArgs(array('page' => 'homepage')->dispatch();
+        </php>
+        
+        <h3>dispatch()</h3>
+        <p>
+            Exécute l'appel du <a href="../general/controllers.html">contrôleur</a> du module.
+        </p>
+        
+    </body>            
+</html>
