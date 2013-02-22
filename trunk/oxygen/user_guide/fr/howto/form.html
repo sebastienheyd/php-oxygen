@@ -11,7 +11,7 @@
         <h1>Créer un formulaire</h1>
         <p>
             Dans ce tutoriel nous allons créer un simple formulaire de contact qui envoi un mail et que vous pourrez 
-            utiliser dans vos applications.
+            utiliser dans vos applications. <a href="#captcha">Voir le résultat final</a>
         </p>
         <blockquote class="warning">
             Ce tutoriel est prévu pour fonctionner avec une nouvelle installation de PHP-Oxygen.
@@ -76,6 +76,7 @@
         {
             public function execute()
             {
+                // on affiche le gabarit form.html
                 $this->setView('form.html');
             }
         }
@@ -89,7 +90,8 @@
         <h2>Récupération des données postées</h2>
         <p>            
             La récupération des données postées se fera dans notre contrôleur avec la  
-            <a href="../classes/form.html#getvalues">méthode getValues() de la classe Form</a>. La classe Form ne
+            <a href="../classes/form.html#getvalues">méthode getValues()</a> de la classe 
+            <a href="../classes/form.html">Form</a>. La classe <a href="../classes/form.html">Form</a> ne
             s'instancie que lorsque des données sont postées.
         </p>
         
@@ -117,6 +119,7 @@
                     */
                 }
 
+                // on affiche le gabarit form.html
                 $this->setView('form.html');
             }
         }
@@ -130,7 +133,7 @@
         <h2>Vérification des données</h2>
         <p>
             Toujours dans notre contrôleur, nous allons vérifier les données soumises à l'aide de la 
-            <a href="../classes/form.html#check">méthode check() de la classe Form</a>
+            <a href="../classes/form.html#check">méthode check()</a> de la classe <a href="../classes/form.html">Form</a>.
         </p>
         <sub>module/action/index.class.php</sub>
         <pre class='brush: php'>
@@ -156,6 +159,7 @@
                     }
                 }
 
+                // on affiche le gabarit form.html
                 $this->setView('form.html');
             }
         }
@@ -164,12 +168,14 @@
         <h2>Affichage des erreurs / Renvoi des valeurs à la vue</h2>
         <p>
             Il est temps d'informer l'internaute des erreurs qu'il a pu commettre. Pour cela on va les fournir à la vue 
-            (à form.html) en utilisant la <a href="../classes/form.html#geterrors">méthode getErrors() de la classe Form</a>
+            (à form.html) en utilisant la <a href="../classes/form.html#geterrors">méthode getErrors()</a> de la classe 
+            <a href="../classes/form.html">Form</a>.
         </p>
         <p>
             Nous allons également en profiter pour renvoyer les valeurs saisie par l'internaute à la vue pour éviter à 
             ce dernier de se retrouver avec un formulaire vide à chaque fois qu'il fait un erreur. Pour cela nous 
-            utilisons la <a href="../classes/form.html#getvalues">méthode getValues() de la classe Form</a>.
+            utilisons la <a href="../classes/form.html#getvalues">méthode getValues()</a> de la classe 
+            <a href="../classes/form.html">Form</a>.
         </p>
         <sub>module/action/index.class.php</sub>
         <pre class='brush: php'>
@@ -203,6 +209,7 @@
                     }
                 }
 
+                // on affiche le gabarit form.html
                 $this->setView('form.html');
             }
         }
@@ -280,6 +287,9 @@
                         
                         // on dit à la vue d'afficher le message de succès
                         $this->setModel('success', true);
+
+                        // on réinitialise les valeurs
+                        $this->setModel('values', array());
                     }
                     else
                     {
@@ -287,10 +297,11 @@
                         $this->setModel('errors', $form->getErrors());
 
                         // puis les valeurs
-                        $this->setModel('values', values);
+                        $this->setModel('values', $values);
                     }
                 }
 
+                // on affiche le gabarit form.html
                 $this->setView('form.html');
             }
         }
@@ -298,9 +309,131 @@
         <p>
             On ajoute cette ligne au début du gabarit
         </p>
+        <sub>module/template/form.html</sub>
         <pre class="brush: xml">
             {if isset($success)}<p>Merci ! Nous vous répondrons dans les meilleurs délais</p>{/if}
         </pre>
+        
+        <a name="captcha"></a>
+        <h2>Captcha</h2>
+        <p>
+            Dernière étape, on va protéger notre formulaire en utilisant un captcha invisible. Pour cela on va utiliser 
+            les méthodes <a href="../classes/form.html#getcaptchatags">getCaptchaTags()</a> et 
+            <a href="../classes/form.html#checkcaptcha">checkCaptcha()</a> de la classe 
+            <a href="../classes/form.html">Form</a>
+        </p>
+        <sub>module/action/index.class.php</sub>
+        <pre class='brush: php'>
+        &lt;?php
+        class m_form_action_Index extends Action
+        {
+            public function execute()
+            {
+                // on instancie la classe si des données sont postées
+                if($form = Form::getInstance('contact'))
+                {
+                    // on défini les règles de vérification par champ
+                    $form->check('name',    'required|length[3]');
+                    $form->check('email',   'required|email');
+                    $form->check('subject', 'required|length[3]');
+                    $form->check('message', 'required');    
+
+                    // on ajoute la vérification du captcha
+                    $form->checkCaptcha();
+
+                    // on récupère les valeurs dans un tableau associatif
+                    $values = $form->getValues(true);
+
+                    // les données sont valides
+                    if($form->isValid())
+                    {
+                        // on envoi le mail
+                        Email::to('me@example.org')->from($values['email'], $values['nom'])
+                                                   ->subject($values['subject'])
+                                                   ->bodyText($values['message'])
+                                                   ->send();
+
+                        // on dit à la vue d'afficher le message de succès
+                        $this->setModel('success', true);
+
+                        // on réinitialise les valeurs
+                        $this->setModel('values', array());
+                    }
+                    else
+                    {
+                        // on fourni les erreurs à la vue
+                        $this->setModel('errors', $form->getErrors());
+
+                        // puis les valeurs
+                        $this->setModel('values', $values);
+                    }
+                }
+
+                // on envoi le captcha pour affichage
+                $this->setModel('captcha', Form::getCaptchaTags());
+
+                // on affiche le gabarit form.html
+                $this->setView('form.html');
+            }
+        }
+        </pre>
+        <p>
+            Puis on modifie le gabarit pour afficher l'erreur du captcha et le numéro d'erreur retourné. Voir 
+            <a href="../classes/form.html#checkcaptcha">checkCaptcha()</a> de la classe 
+            <a href="../classes/form.html">Form</a>
+        </p>
+        <sub>module/template/form.html</sub>
+        <pre class="brush: xml">
+            {if isset($success)}<p>Merci ! Nous vous répondrons dans les meilleurs délais.</p>{/if}
+            <form action="" method="post">
+                {$captcha}
+                {if isset($errors.captcha)}<p style="color:red">Erreur captcha numéro {$errors.captcha}</p>{/if}
+                <p>
+                    <label for="name">Votre nom</label><br />
+                    <input type="text" name="contact[name]" id="name" value="{$values.name}" />
+                    {if isset($errors.name)}<span style="color:red">{$errors.name}</span>{/if}
+                </p>  
+                <p>
+                    <label for="email">Votre e-mail</label><br />
+                    <input type="text" name="contact[email]" id="email" value="{$values.email}" />
+                    {if isset($errors.email)}<span style="color:red">{$errors.email}</span>{/if}
+                </p>       
+                <p>
+                    <label for="subject">Sujet du message</label><br />
+                    <input type="text" name="contact[subject]" id="subject" value="{$values.subject}" />
+                    {if isset($errors.subject)}<span style="color:red">{$errors.subject}</span>{/if}
+                </p>   
+                <p>
+                    <label for="message">Votre message</label><br />
+                    <textarea name="contact[message]" id="message">{$values.message}</textarea>
+                    {if isset($errors.message)}<span style="color:red">{$errors.message}</span>{/if}
+                </p>   
+                <p>
+                    <button type="submit">Soumettre</button>
+                </p>
+            </form>
+        </pre>
+                
+        <h2>Widget</h2>
+        <p>
+            Comme tous les contrôleurs, vous pouvez appeler le formulaire que l'on viens de créer dans un gabarit, 
+            par exemple :
+        </p>
+        <pre class="brush: xml">
+            &lt;!DOCTYPE html>
+                &lt;head>
+                    &lt;meta charset="utf-8">
+                &lt;/head>    
+                &lt;body>
+                    &lt;h1>Formulaire de contact&lt;/h1>
+                    &lt;p>Veuillez compléter le formulaire ci-dessous pour nous contacter&lt/p>
+                    &lt;div id="contact_form">
+                        {widget module="form" action="index"}
+                    &lt;/div>
+                &lt;/body>
+            &lt;/html>
+        </pre>
+        
         
     </body>            
 </html>

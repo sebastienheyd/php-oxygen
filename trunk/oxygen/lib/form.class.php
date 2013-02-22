@@ -114,6 +114,14 @@ class Form
      */
     public function getErrors()
     {
+        // we have a captcha error
+        if(isset($this->_errors['captcha']) && $this->_errors['captcha'] >= 20)
+        {
+            // reset errors and set only captcha error level
+            $errorValue = $this->_errors['captcha'];
+            $this->_errors = array();            
+            $this->_errors['captcha'] = $errorValue;
+        }
         return $this->_errors;
     }
     
@@ -186,24 +194,33 @@ class Form
     /**
      * Get the hidden captcha tags to insert into form
      * 
+     * @param boolean $imageMode    [optional] if true, will display an image-based captcha instead of an hidden one
      * @param string $fieldId       [optional] hidden captcha hidden field name (default is hcptch)
      * @return string               Return a tag to insert into form to secure
      */
-    public static function getCaptchaTags($fieldId = "hcptch")
+    public static function getCaptchaTags($imageMode = false, $fieldId = 'hcptch')
     {
-        return f_form_Captcha::getFormTags($fieldId);
+        return f_form_Captcha::getFormTags($fieldId, $imageMode);
     }
     
     /**
      * Check a posted hidden captcha made with getCaptchaTags
      * 
-     * @param string $formId        [optional] The id to use to generate input elements (default = "hcptch")
      * @param integer $minLimit     [optional] Submission minimum time limit in seconds (default = 5)
      * @param integer $maxLimit     [optional] Submission maximum time limit in seconds (default = 1200)
+     * @param string $formId        [optional] The id to use to generate input elements (default = "hcptch")
      * @return boolean              Return false if the submitter is a robot 
      */
-    public static function checkCaptcha($fieldId = 'hcptch', $minLimit = 5, $maxLimit = 1200)
+    public function checkCaptcha($minLimit = 2, $maxLimit = 1200, $fieldId = 'hcptch')
     {
-        return f_form_Captcha::checkCaptcha($fieldId, $minLimit, $maxLimit) !== false;
+        if(f_form_Captcha::checkCaptcha($fieldId, $minLimit, $maxLimit)) return true;
+                
+        // set error and reset posted values
+        $this->_errors['captcha'] = f_form_Captcha::getError();
+        
+        // if error is critical, remove post values
+        if($this->_errors['captcha'] >= 20) $this->_post = array();
+        
+        return false;        
     }
 }
