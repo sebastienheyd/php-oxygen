@@ -19,19 +19,19 @@ class f_form_Captcha
     private static $_error = false;
     
     // Errors vars
-    static $CAPTCHA_VALUES_NOT_SUBMITTED = 10;
+    static $CAPTCHA_IMAGE_ERROR = 10;
     static $CAPTCHA_TIME_LIMIT_ERROR = 20;
-    static $CAPTCHA_SPINNER_ERROR = 30;
+    static $CAPTCHA_SPAMBOT_AUTO_FILL = 30;   
     static $CAPTCHA_HFIELD_ERROR = 40;
-    static $CAPTCHA_IMAGE_ERROR = 50;
-    static $CAPTCHA_SPAMBOT_AUTO_FILL = 60;   
+    static $CAPTCHA_SPINNER_ERROR = 50;
+    static $CAPTCHA_VALUES_NOT_SUBMITTED = 60;
 
     /**
      * Returns the hidden captcha tags to put in your form
      * 
-     * @param string $formId    [optional] The id to use to generate input elements (default = "hcptch")
-     * @param boolean $withImage    [optional]
-     * @return string           The tags to put in your form
+     * @param string $formId        [optional] The id to use to generate input elements (default = "hcptch")
+     * @param boolean $withImage    [optional] The captcha use the classic image captcha
+     * @return string               The tags to put in your form
      */
     public static function getFormTags($formId = 'hcptch', $withImage = false)
     {        
@@ -141,25 +141,25 @@ class f_form_Captcha
     public static function checkCaptcha($formId = 'hcptch', $minLimit = 5, $maxLimit = 1200)
     {                
         // get posted values
-        $values = Request::getInstance()->post($formId);
+        $values = Request::getInstance()->post($formId);        
         
         // Check post values
-        if($values === null || !isset($values->spinner) || !isset($values->name))
+        if($values === null || !isset($values['spinner']) || !isset($values['name']))
         {
             self::$_error = self::$CAPTCHA_VALUES_NOT_SUBMITTED;
             return false;
         }
 
         // Hidden field is set
-        if($values->name !== '')
+        if($values['name'] !== '')
         {
             self::$_error = self::$CAPTCHA_SPAMBOT_AUTO_FILL;
             return false;
         }
         
         // Get the spinner values
-        $spinner = Security::decrypt($values->spinner);
-        $spinner = unserialize($spinner); 
+        $spinner = Security::decrypt($values['spinner']);
+        $spinner = @unserialize($spinner); 
         
         // Spinner is null or unserializable
         if(!$spinner || !is_array($spinner) || empty($spinner))
@@ -169,8 +169,8 @@ class f_form_Captcha
         }
         
         // Check the random posted field
-        $hField = $values->{$spinner['hfield_name']};
-        if(!isset($hField) || $hField === '')
+        $hField = $values[$spinner['hfield_name']];
+        if(!isset($spinner['captcha']) && (!isset($hField) || $hField === ''))
         {
             self::$_error = self::$CAPTCHA_VALUES_NOT_SUBMITTED;
             return false;

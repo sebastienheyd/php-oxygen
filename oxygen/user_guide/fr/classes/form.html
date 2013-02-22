@@ -246,19 +246,68 @@
         <h3>setObjProperties()</h3>
         <p>Défini les propriétés d'un objet instancié. L'objet doit étendre Document.</p>
         
+        <a name="getcaptchatags"></a>
         <h3>getCaptchaTags()</h3>
         <p>
-            Méthode statique. Retourne les champs à insérer dans votre formulaire pour mettre en place un catpcha 
-            invisible. La méthode peut prendre comme argument le nom des champs.
+            Méthode statique. Retourne les champs à insérer dans votre formulaire pour mettre en place un captcha. 
+            La méthode peut prendre comme argument un booléen pour indiquer si le captcha doit utiliser une image 
+            aléatoire à la place de champs invisibles (false par défaut). Le second argument permet de modifier le nom
+            des champs qui seront postés. Voir le tutoriel <a href="../howto/form.html#captcha">créer un formulaire</a>.
         </p>
+        <blockquote class="info">
+            En mode invisible, le système captcha va concaténer un certain nombre d'informations permettant d'identifier
+            l'internaute. Ce systême peut être contourné mais présente déjà une excellente protection. Dans le cas ou 
+            des spams arriverait trop fréquemment vous pouvez à tout moment switcher sur la version "image".
+        </blockquote>
         
+        <a name="checkcaptcha"></a>
         <h3>checkCaptcha()</h3>
         <p>
-            Méthode statique. Vérifie les données du captcha invisible postées. La méthode prend en argument le nom du 
-            champ (doit être le même que celui indiqué dans getCaptchaTags()). Les deux arguments suivants permettent 
-            de préciser la durée minimale (défaut 5secs) et la durée maximale (défaut 10mn) pour la soumission du 
-            formulaire.
+            Vérifie les données du captcha. La méthode prend en argument la durée minimale (défaut 2 secondes) et la 
+            durée maximale (défaut 10 minutes) pour la soumission du formulaire. Le dernier argument permet de définir 
+            le nom des champs à récupérer (doit être le même que celui donné à getCaptchaTags(). Voir le tutoriel 
+            <a href="../howto/form.html#captcha">créer un formulaire</a>.
         </p>
+        <p>
+            En utilisant la méthode checkCaptcha(), <a href="#geterrors">getErrors()</a> renverra une erreur "captcha" 
+            contenant un niveau d'erreur :
+        </p>
+        <table>
+            <tr>
+                <td><strong>10</strong></td>
+                <td>En mode image, la valeur saisie ne correspond pas à la valeur de l'image.</td>
+            </tr>
+            <tr>
+                <td><strong>20</strong></td>
+                <td>
+                    Le délai de soumission n'est pas dans la période définie par les arguments de la méthode.
+                    Par défaut entre 2 secondes et 10 minutes.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>30</strong></td>
+                <td>
+                    Le champ "name" situé en dehors des limites de l'écran à été saisi alors que sa valeur doit être 
+                    vide.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>40</strong></td>
+                <td>La valeur du champ nommé aléatoirement ne correspond pas à celui contenu dans le token crypté.</td>
+            </tr>
+            <tr>
+                <td><strong>50</strong></td>
+                <td>Le token crypté n'est pas valide.</td>
+            </tr>
+            <tr>
+                <td><strong>60</strong></td>
+                <td>Aucune valeur de captcha a été postée.</td>
+            </tr>
+        </table>
+        
+        <blockquote class="warning">
+            La méthode checkCaptcha() va nettoyer les données postées si l'erreur est critique (niveau > 10)
+        </blockquote>
         
     </body>            
 </html>
