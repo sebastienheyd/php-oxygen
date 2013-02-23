@@ -81,13 +81,16 @@ class Upload
     {
         return $this->_tmp_name;
     }
+    
     /**
      * Return the original file name
-     *
+     * 
+     * @param boolean $withExtension    [optional] Return with extension or not
      * @return string
      */
-    public function getName()
+    public function getName($withExtension = true)
     {
+        if(!$withExtension) return substr($this->_name, 0, strrpos($this->_name, '.'));
         return $this->_name;
     }
     
