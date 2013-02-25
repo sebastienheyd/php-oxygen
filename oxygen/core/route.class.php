@@ -21,7 +21,7 @@ class Route
     /**
      * Get instance of Router
      * 
-     * @return Router       Get current instance of router (singleton)
+     * @return Route       Get current instance of router (singleton)
      */
     public static function getInstance()
     {
@@ -133,11 +133,14 @@ class Route
     public function byId($id)
     {
         $args = func_get_args();
-        
-        unset($args[0]);
+        if(func_num_args() > 1) 
+        {
+            $id = $args[0];
+            unset($args[0]);
+        }
 
         $route = $this->_routes->xpath('//route[@id="'.$id.'"]');
-        
+       
         if(empty($route)) return '';
         
         if(count($route) > 1) trigger_error('Found more than one route with id '.$id.' in routes.xml');
@@ -145,14 +148,13 @@ class Route
         $rule = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $route[0]->attributes()->rule));
         
         $redirect = preg_replace('#\(.*?\)#i', '|', $rule);
-        
+
         if(empty($args)) return '/'.$redirect;
         
         $segments = explode('/', $redirect);
         
         $res = array();
         foreach ($segments as $k => $s) $res[] = ($s == '|') ? $args[$k] : $s;
-        
         $uri = join('/', $res);
         
         if(preg_match('#'.$rule.'#', $uri)) return '/'.$uri;
