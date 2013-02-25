@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Classe Route</h1>
+        <p>
+           La classe Route permet de définir et appeler vos propres urls. La classe va alors interprêter les règles de 
+           réécriture et appeler le(s) contrôleur(s) correspondant(s).
+        </p>
+        <p>
+            Pour en savoir plus, consultez la documentation sur les <a href="../general/urls.html">URLs</a>
+        </p>
+        
+        <h2>Méthodes</h2>                
+        <h3>buildRoutes()</h3>
+        <p>
+            La méthode buildRoutes() est appelée à l'instanciation de la classe si
+            <ul>
+                <li>aucun fichier routes.xml n'est trouvé dans le dossier webapp/cache</li>
+                <li>la configuration <a href="../general/urls.html#config">cache.routes</a> est définie à false</li>
+            </ul>            
+        </p>
+        <p>
+            La méthode va parcourir les modules à la recherche des fichiers routes.xml, les lire et compiler les règles 
+            dans un fichier de cache si le fichier de cache est plus vieux que le fichier routes.xml le plus récent.
+        </p>
+        <blockquote class="info">
+            La classe Route est appelée par le <a href="controller.html">contrôleur principal</a>, la méthode 
+            buildRoutes() est donc quasiment toujours appelée sauf si la configuration 
+            <a href="../general/urls.html#config">cache.routes</a> est définie à true
+        </blockquote>
+        
+        <h3>parseUrl()</h3>
+        <p>
+            La méthode parseUrl() va lire l'url courante, chercher dans les règles celle qui lui correspond et retourner
+            l'instance d'<a href="uri.html">Uri</a> pour l'url réécrite. Cette méthode est utilisée par le 
+            <a href="controller.html">contrôleur principal</a> pour router vers la paire module/action concernée.
+        </p>
+        
+        <h3>byId()</h3>
+        <p>
+            Permet de récupérer une url par son id. Il est possible de lui passer des arguments supplémentaires pour 
+            construire l'url.
+        </p>
+        <sub>Dans routes.xml</sub>
+        <pre class='brush: xml'>
+            &lt;route rule="produits/(:num)" redirect="product/detail/$1" id="product_detail" />
+        </pre>
+        <sub>Dans le contrôleur php (action)</sub>
+        <php>
+            // Retourne "/produits/12"
+            Route::getInstance()->byId('product_detail', 12);
+        </php>
+    </body>            
+</html>

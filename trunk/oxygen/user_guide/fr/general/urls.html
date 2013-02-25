@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>URLs</h1>
+        <p>
+            Typiquement il y a une relation directe entre l'URL et le contrôleur (action) appelé avec le schéma suivant 
+            : <code>exemple.tld/module/action/argument(s)</code>.
+        </p>  
+        <p>
+            Voir la documentation sur les <a href="controllers.html">Contrôleurs</a>.
+        </p>
+        <p>
+            Cependant il y des cas ou l'on voudra réécrire ces relations, pour cela on utilisera des fichiers XML dans 
+            lesquels on déclarera les règles de réécriture qui seront ensuite traduites par la classe 
+            <a href="../classes/route.html">Route</a>.
+        </p>
+        
+        <a name="config"></a>
+        <h2>Configuration</h2>
+        <p>
+            Dans le fichier de configuration vous trouverez les options suivantes :
+        </p>
+        <pre>
+[route]
+    ; Suffix to remove in request uris
+    suffix      = ".html"
+
+    ; Use only routed uris
+    routed_only = false
+
+[cache]
+    ; Put routes into cache (default is false)
+    ;routes = true
+        </pre>
+        <table>
+            <tr>
+                <td><strong>route.suffix</strong></td>
+                <td>
+                    Cette chaine de caractères sera supprimée de la fin de l'url qui sera comparée aux règles de 
+                    réécriture que vous aurez définies.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>route.routes_only</strong></td>
+                <td>
+                    Si la valeur est true, PHP-Oxygen ne prendra en compte que les urls répondant à une règle de 
+                    réécriture définie. Cela va désactiver l'appel direct aux contrôleurs.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>cache.routes</strong></td>
+                <td>
+                    Si la valeur est true, PHP-Oxygen ne va pas rechercher les fichiers de définition dans les modules et 
+                    utiliser directement le fichier de cache routes.xml se trouvant dans le dossier webapp/cache.
+                </td>
+            </tr>
+        </table>
+        
+        <h2>Définir ses propres règles de réécriture</h2>
+        <p>
+            Les règles de réécriture se déclarent dans des fichiers nommés routes.xml pouvant se trouver...
+            <ul>
+                <li>
+                    dans le dossier config d'un module. Les fichiers seront alors tous compilés automatiquement et mis 
+                    en cache dans le dossier webapp/cache.
+                </li>
+                <li>
+                    dans le dossier webapp/config. Ce fichier sera compilé en plus des fichiers routes.xml des modules.
+                </li>
+            </ul>
+        </p>                
+        <p>
+            Dans un fichier routes.xml on retrouvera un noeud <code>&lt;routes></code> contenant des noeuds 
+            <code>&lt;route></code> ayant pour argument
+        </p>
+        <table>
+            <tr>
+                <td><strong>rule</strong></td>
+                <td>La règle en elle-même. C'est cette chaîne qui sera comparée à l'URL courante.</td>
+            </tr>
+            <tr>
+                <td><strong>redirect</strong></td>
+                <td>
+                    Il s'agit de l'url qui sera envoyée au contrôleur principal. Il s'agit donc de la paire 
+                    module/action.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>id</strong></td>
+                <td>Optionnel. Permet d'identifier une règle pour formatter une url à partir de cette dernière.</td>
+            </tr>
+        </table>
+        <p>Exemple :</p>        
+        <pre class='brush: xml'>
+            &lt;?xml version="1.0" encoding="UTF-8"?>
+            <routes>
+                <route rule="formulaire-de-contact" redirect="contact/form" id="contact" />
+            </routes>
+        </pre>
+        <p>
+            Dans cet exemple la saisi de l'url http://example.tld/formulaire-de-contact.html renverra en fait vers 
+            http://example.tld/contact/form.html
+        </p>  
+                        
+        <blockquote class="warning">
+            Les règles de réécriture sont testées dans l'ordre dans lesquelles elles sont déclarées.
+        </blockquote>
+        
+        <h3>Jokers (wildcards)</h3>
+        <p>
+            Il est possible d'utiliser des jokers pour envoyer des paramètres au contrôleur du module.
+            Il y a trois types de jokers :
+        </p>
+        <table>
+            <tr>
+                <td><strong>(:num)</strong></td>
+                <td>identifie un segment contenant uniquement un nombre entier</td>
+            </tr>
+            <tr>
+                <td><strong>(:any)</strong></td>
+                <td>identifie un segment contenant n'importe quel caractère</td>
+            </tr>
+            <tr>
+                <td><strong>regexp</strong></td>
+                <td>vous pouvez saisir n'importe quel expression régulière pour identifier vos urls</td>
+            </tr>
+        </table>        
+        <p>
+            Il est alors possible de renvoyer les paramètres en les assignant à l'url redirigée. Pour cela on utilisera 
+            des variables numériques précédées du symbole $. Exemples :
+        </p>
+        <sub>/produits &rarr; /product/index</sub>
+        <pre class='brush: xml'>
+            &lt;route rule="produits" redirect="product/index" />
+        </pre>
+        
+        <sub>/produits/34 &rarr; /product/detail/34</sub>
+        <pre class='brush: xml'>
+            &lt;route rule="produits/(:num)" redirect="product/detail/$1" />
+        </pre>
+        
+        <sub>/produits/hifi/34 &rarr; /product/detail/hifi/34</sub>
+        <pre class='brush: xml'>
+            &lt;route rule="produits/(:any)/(:num)" redirect="product/detail/$1/$2" />
+        </pre>
+        
+        <sub>/produits/hifi/34 &rarr; /product/detail/hifi/34</sub>
+        <pre class='brush: xml'>
+            &lt;route rule="produits/([a-z]+)/([0-9]+)" redirect="product/detail/$1/$2" />
+        </pre> 
+        
+        <h3>Route par défaut</h3>
+        <p>
+            La route par défaut répond à toutes les URLs non définies dans les fichiers de règles. En clair, elle agit 
+            comme un "catch-all" de toutes les URLs. Cela est utile si vous gérez par exemple vos URLs à partir d'une 
+            base de données.
+        </p>
+        <p>La règle se définie facilement en utilisant le mot clé "default"</p>
+        <pre class='brush: xml'>
+            &lt;route rule="default" redirect="module/action" />
+        </pre> 
+        <blockquote class="warning">
+            Etant donné son type, la règle "default" doit se placer en dernier après toutes les autres règles.
+        </blockquote>
+        
+        <h2>Récupérer les jokers dans un contrôleur</h2>
+        <p>
+            La récupération des variables dans un contrôleur peut se faire de deux façons. Soit en paramètre de la 
+            méthode execute(), soit en utilisant la class <a href="../classes/uri.html">Uri</a>.
+        </p>
+        <p>Exemple pour la règle suivante</p>
+        <pre class='brush: xml'>
+            &lt;route rule="produits/(:num)" redirect="product/detail/$1" />
+        </pre>
+        <p>
+            On aura pour l'url http://example.tld/product/detail/23
+        </p>
+        <pre class="brush: php">
+            &lt;?php
+            class m_product_action_Detail extends Action
+            {   
+                public function execute($id = null)
+                {                
+                    //$id = 23
+                }   
+            }
+        </pre>
+        <p>
+            Ou en utilisant la classe <a href="../classes/uri.html">Uri</a>
+        </p>
+        <pre class="brush: php">
+            &lt;?php
+            class m_product_action_Detail extends Action
+            {   
+                public function execute()
+                {                                    
+                    $id = Uri::getInstance()->segment(3)
+                }   
+            }
+        </pre>
+        <blockquote class="warning">
+            <strong>ATTENTION !</strong> La classe Uri va utiliser l'url réécrite (celle déclarée dans l'attribut 
+            "redirect" de la règle)
+        </blockquote>
+        
+
+    </body>            
+</html>
