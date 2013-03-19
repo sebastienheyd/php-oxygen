@@ -38,7 +38,10 @@
         <h2>Référence des fonctions</h2>
         
         <h3>to()</h3>
-        <p>Définit l'adresse ou les adresses des destinataires. Cela peut être une seule adresse, une liste d'adresse séparée par des virgules ou un tableau d'adresses</p>
+        <p>
+            Définit l'adresse ou les adresses des destinataires. Cela peut être une seule adresse, une liste d'adresse 
+            séparée par des virgules, point-virgules, espaces ou un tableau contenant les adresses.
+        </p>
         <php>
             // Un seul destinataire
             Email::to('someone@example.com');
@@ -52,7 +55,10 @@
             // Le mix des différentes règles fonctionne aussi
             Email::to('someone@example.com', 'someone@example.com, anotherone@example.com', array('someone@example.com', 'anotherone@example.com'));
         </php>
-        <blockquote class="info">La fonction va automatiquement ajouter qu'une seule fois la même adresse afin d'éviter plusieurs envois à un même destinataire.</blockquote>
+        <blockquote class="info">
+            La fonction va automatiquement ajouter qu'une seule fois la même adresse afin d'éviter 
+            plusieurs envois à un même destinataire.
+        </blockquote>
         
         <h3>from()</h3>
         <p>Définit l'adresse et optionnellement le nom de l'expéditeur du mail.</p>
@@ -79,16 +85,25 @@
         </blockquote>
         
         <h3>cc()</h3>
-        <p>Permet d'ajouter des destinataires en copie carbone. Cela peut être une seule adresse, une liste d'adresse séparée par des virgules ou un tableau d'adresses.</p>
+        <p>
+            Permet d'ajouter des destinataires en copie carbone. Cela peut être une seule adresse, une liste d'adresse 
+            séparée par des virgules ou un tableau d'adresses.
+        </p>
         
         <h3>bcc()</h3>
-        <p>Permet d'ajouter des destinataires en copie carbone cachée. Cela peut être une seule adresse, une liste d'adresse séparée par des virgules ou un tableau d'adresses.</p>
+        <p>
+            Permet d'ajouter des destinataires en copie carbone cachée. Cela peut être une seule adresse, une liste 
+            d'adresse séparée par des virgules ou un tableau d'adresses.
+        </p>
         
         <h3>cci()</h3>
         <p>Alias de bcc().</p>
         
         <h3>addAttachment()</h3>
-        <p>Permet d'ajouter un fichier joint. Le premier paramètre doit être un fichier présent sur le serveur. Pour plusieurs fichiers vous devez définir la fonction plusieurs fois</p>
+        <p>
+            Permet d'ajouter un fichier joint. Le premier paramètre doit être un fichier présent sur le serveur. 
+            Pour plusieurs fichiers vous devez définir la fonction plusieurs fois
+        </p>
         <php>
             $email = Email::to('someone@example.com')->from('me@example.com')->subject('test');
             
@@ -102,13 +117,14 @@
             $email->addAttachment(WWW_DIR.'images/01.jpg', 'image.jpg', 'image/jpeg');
         </php>
         <blockquote class="warning">
-            Si il n'est pas défini, le mimetype est détecté par l'extension du fichier à joindre et non par l'extension du renommage.
+            Si il n'est pas défini, le mimetype est détecté par l'extension du fichier à joindre et non par l'extension 
+            du renommage.
         </blockquote>
         
         <h3>addStringAttachment()</h3>
         <p>
-            Permet d'ajouter une chaine de caractères comme un fichier joint (par exemple avec une génération de PDF à joindre par mail). 
-            Pour plusieurs fichiers vous devez définir la fonction plusieurs fois.
+            Permet d'ajouter une chaine de caractères comme un fichier joint (par exemple avec une génération de PDF à 
+            joindre par mail). Pour plusieurs fichiers vous devez définir la fonction plusieurs fois.
         </p>
         <php>
             $email = Email::to('someone@example.com')->from('me@example.com')->subject('test');
@@ -125,7 +141,8 @@
         
         <h3>send()</h3>
         <p>
-            Envoi le mail. Retourne true en cas de succès. Vous pouvez définir le seul paramètre à false si vous ne désirez pas utiliser le return-path du serveur (true par défaut).
+            Envoi le mail. Retourne true en cas de succès. Vous pouvez définir le seul paramètre à false si vous ne 
+            désirez pas utiliser le return-path du serveur (true par défaut).
         </p>
     </body>            
 </html>
