@@ -37,7 +37,8 @@ class Email
     }
  
     /**
-     * Sets the email address(es) of the recipient(s).<br />Can be a single email, a comma-delimited list or an array.
+     * Sets the email address(es) of the recipient(s).<br />
+     * Can be a single email, a comma, dot-comma, space separated list or an array.
      *
      * @return Email    Return current instance of Email
      */
@@ -52,7 +53,7 @@ class Email
         foreach ($args as $arg)
         {
             if(is_array($arg)) $arg = join(',', $arg);
-            $to = explode(',', $arg);
+            $to = preg_split("/[\s,;]+/", $arg);
             $inst->_to = array_unique(array_merge($inst->_to, array_map('trim', $to)));
         }
  
