@@ -36,7 +36,7 @@
             module. Nous allons l'appeler form.html
         </p>
         
-        <sub>module/template/form.html</sub>
+        <sub>module/form/template/form.html</sub>
         <pre class='brush: xml'>
             &lt;form action="" method="post">
                 &lt;p>
@@ -69,7 +69,7 @@
             module.
         </p>
         
-        <sub>module/action/index.class.php</sub>
+        <sub>module/form/action/index.class.php</sub>
         <pre class='brush: php'>
         &lt;?php
         class m_form_action_Index extends Action
@@ -95,7 +95,7 @@
             s'instancie que lorsque des données sont postées.
         </p>
         
-        <sub>module/action/index.class.php</sub>
+        <sub>module/form/action/index.class.php</sub>
         <pre class='brush: php'>
         &lt;?php
         class m_form_action_Index extends Action
@@ -135,7 +135,7 @@
             Toujours dans notre contrôleur, nous allons vérifier les données soumises à l'aide de la 
             <a href="../classes/form.html#check">méthode check()</a> de la classe <a href="../classes/form.html">Form</a>.
         </p>
-        <sub>module/action/index.class.php</sub>
+        <sub>module/form/action/index.class.php</sub>
         <pre class='brush: php'>
         &lt;?php
         class m_form_action_Index extends Action
@@ -177,7 +177,7 @@
             utilisons la <a href="../classes/form.html#getvalues">méthode getValues()</a> de la classe 
             <a href="../classes/form.html">Form</a>.
         </p>
-        <sub>module/action/index.class.php</sub>
+        <sub>module/form/action/index.class.php</sub>
         <pre class='brush: php'>
         &lt;?php
         class m_form_action_Index extends Action
@@ -218,7 +218,7 @@
         <p>
             On va alors modifier le gabarit pour afficher les erreurs et renvoyer les valeurs soumises champ par champ.
         </p>
-        <sub>module/template/form.html</sub>
+        <sub>module/form/template/form.html</sub>
         <pre class="brush: xml">
             &lt;form action="" method="post">
                 &lt;p>
@@ -257,7 +257,7 @@
             afficher un message de succes.
         </p>
         
-        <sub>module/action/index.class.php</sub>
+        <sub>module/form/action/index.class.php</sub>
         <pre class='brush: php'>
         &lt;?php
         class m_form_action_Index extends Action
@@ -309,7 +309,7 @@
         <p>
             On ajoute cette ligne au début du gabarit
         </p>
-        <sub>module/template/form.html</sub>
+        <sub>module/form/template/form.html</sub>
         <pre class="brush: xml">
             {if isset($success)}<p>Merci ! Nous vous répondrons dans les meilleurs délais</p>{/if}
         </pre>
@@ -322,7 +322,7 @@
             <a href="../classes/form.html#checkcaptcha">checkCaptcha()</a> de la classe 
             <a href="../classes/form.html">Form</a>
         </p>
-        <sub>module/action/index.class.php</sub>
+        <sub>module/form/action/index.class.php</sub>
         <pre class='brush: php'>
         &lt;?php
         class m_form_action_Index extends Action
@@ -382,7 +382,7 @@
             <a href="../classes/form.html#checkcaptcha">checkCaptcha()</a> de la classe 
             <a href="../classes/form.html">Form</a>
         </p>
-        <sub>module/template/form.html</sub>
+        <sub>module/form/template/form.html</sub>
         <pre class="brush: xml">
             {if isset($success)}<p>Merci ! Nous vous répondrons dans les meilleurs délais.</p>{/if}
             <form action="" method="post">
