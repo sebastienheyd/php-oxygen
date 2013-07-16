@@ -18,13 +18,16 @@ class Upload
     private $_name;
     private $_type;
     private $_tmp_name;
-    private $_error;
+    private $_error = 4;
     private $_size;
     
-    const UPLOAD_SUCCESS = 1;
-    const FILE_EXISTS = 10;
-    const FILE_IS_NOT_UPLOADED = 20;
-    const MOVE_UPLOAD_ERROR = 30;
+    private $_extensions = array();
+    private $_max_size;
+    private $_check_image = false;
+    
+    const UPLOAD_ERR_FILE_EXISTS = 9;
+    const UPLOAD_ERR_FILE_NOT_IMAGE = 10;
+    const UPLOAD_ERR_FILE_EXTENSION = 11;
     
     /**
      * Main constructor
@@ -36,7 +39,7 @@ class Upload
     {
         if(preg_match('#(.*?)\[(.*?)\]#i', $name, $match))
         {            
-            if(is_uploaded_file($_FILES[$match[1]]['tmp_name'][$match[2]]))
+            if(isset($_FILES[$match[1]]['tmp_name'][$match[2]]))
             {
                 $fields = array('name', 'type', 'tmp_name', 'error', 'size');
                 foreach($fields as $field)
@@ -48,7 +51,7 @@ class Upload
         }
         else
         {
-            if(is_uploaded_file($_FILES[$name]['tmp_name']))
+            if(isset($_FILES[$name]['tmp_name']))
             {
                 foreach($_FILES[$name] as $k => $v)
                 {
@@ -112,8 +115,34 @@ class Upload
      */
     public function isUploaded()
     {
-        return !empty($this->_tmp_name);
+        return $this->_error === UPLOAD_ERR_OK;
     }    
+    
+    /**
+     * Return upload error
+     * 
+     * @return int
+     */
+    public function getError()
+    {
+        return $this->_error;
+    }
+    
+    public function filterExtensions($extensions)
+    {
+        $extensions = func_get_args();                        
+        $extensions = explode(',', join(',', $extensions)); 
+        $extensions = array_map('trim', $extensions);
+        
+        $this->_extensions = $extensions;
+        return $this;
+    }
+    
+    public function maxSize($size)
+    {
+        $this->_max_size = $size;
+        return $this;
+    }
     
     /**
      * Check if uploaded file has the given extension(s)
@@ -153,6 +182,8 @@ class Upload
      */    
     public function isImage()
     {
+        $this->_check_image = true;
+        return $this;
         return getimagesize($this->_tmp_name) !== false;
     }
     
@@ -164,17 +195,34 @@ class Upload
      * @return integer                      Return an error code
      */
     public function saveTo($file, $checkIfFileExists = false)
-    {
+    {        
+        if(!$this->isUploaded()) return false;
+        
         if($checkIfFileExists)
         {
-            if(is_file($file)) return self::FILE_EXISTS;
+            if(is_file($file)) $this->_error = self::UPLOAD_ERR_FILE_EXISTS;
+            return false;
         }
         
-        if($this->isUploaded())
+        if($this->_check_image && getimagesize($this->_tmp_name) === false)
         {
-            if(@move_uploaded_file($this->_tmp_name, $file)) return self::UPLOAD_SUCCESS;
-            return self::MOVE_UPLOAD_ERROR;
+            $this->_error = self::UPLOAD_ERR_FILE_NOT_IMAGE;
+            return false;
+        }   
+        
+        if(!empty($this->_extensions))
+        {
+            $regexp = '#(\.'.join('|\.', $this->_extensions).')$#i';           
+            if(!preg_match($regexp, $this->_name))
+            {
+                $this->_error = self::UPLOAD_ERR_FILE_EXTENSION;
+                return false;
+            }
         }
-        return self::FILE_IS_NOT_UPLOADED;
+
+        if(@move_uploaded_file($this->_tmp_name, $file)) return true;
+        
+        $this->_error = UPLOAD_ERR_CANT_WRITE;
+        return false;
     }
 }
