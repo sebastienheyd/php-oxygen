@@ -247,8 +247,7 @@ class Db
     public static function throwTransactionException($config = 'db1')
     {
         $exc = self::getInstance($config)->getTransactionException();
-        if ($exc === null)
-            throw $exc;
+        if ($exc !== null) throw $exc;
     }
 
     /**
