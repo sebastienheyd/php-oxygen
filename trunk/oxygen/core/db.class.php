@@ -154,7 +154,7 @@ class Db
      * @param string $fields    [optional] Column(s) name(s) comma separated (multiple method args). Default is empty (null).
      * @return f_db_Select      Return an instance of f_db_Select
      */
-    public static function select($cols = null)
+    public static function select()
     {
         return f_db_Select::getInstance()->select(func_get_args());
     }
@@ -660,6 +660,7 @@ class Db
         if (strpos($var, '`') !== false)
             return preg_replace('/`(.*)`/ise', 'self::quoteIdentifier("$1")', $var);
 
+        $matches = array();
         preg_match("/(.*)\s(.*)/is", $var, $matches);
 
         $operator = '';
