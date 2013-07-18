@@ -66,7 +66,11 @@ class f_db_Insert
         
         $sql .= 'VALUES ('.join(', ', array_keys($vals)).')';
         
-        Db::query($sql, $this->_config)->execute($vals)->reset();
+        $q = Db::query($sql, $this->_config)->execute($vals);
+        
+        if(!is_object($q)) return false;
+        
+        $q->reset();
         
         return Db::getInstance($this->_config)->getLastId();
     }    

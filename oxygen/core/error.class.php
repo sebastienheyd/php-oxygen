@@ -99,7 +99,10 @@ class Error
 
             default:
                 if (CLI_MODE)
-                    $this->_showCliError($label, $message, debug_backtrace());
+                {
+                    $message = $msg.' in '.$file . ' (ln.' . $errline . ')';
+                    $this->_showCliError($label, $message, debug_backtrace());                    
+                }
 
                 $message = '"' . $msg . '" in <i>' . $file . '</i> (ln.' . $errline . ')';
                 while (ob_get_level()) ob_end_clean();
@@ -116,7 +119,7 @@ class Error
                     $this->_showGenericErrorPage();
                 }
 
-                die($error);             
+                die($error);                         
             break;
         }
     }
