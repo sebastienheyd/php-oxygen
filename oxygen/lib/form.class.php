@@ -211,7 +211,7 @@ class Form
      * @param string $formId        [optional] The id to use to generate input elements (default = "hcptch")
      * @return boolean              Return false if the submitter is a robot 
      */
-    public function checkCaptcha($minLimit = 2, $maxLimit = 1200, $fieldId = 'hcptch')
+    public static function checkCaptcha($minLimit = 2, $maxLimit = 1200, $fieldId = 'hcptch')
     {
         if(f_form_Captcha::checkCaptcha($fieldId, $minLimit, $maxLimit)) return true;
                 
