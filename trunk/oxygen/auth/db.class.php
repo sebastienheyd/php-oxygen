@@ -23,7 +23,7 @@ class f_auth_Db extends f_auth_Driver
     {
         if($hash = $this->retrieveUser($login))
         {
-            if(Security::check($password, $hash)) return $this->login($login, $remember);
+            if(Security::check($login.$password, $hash)) return $this->login($login, $remember);
         }
         
         return false;
