@@ -96,7 +96,8 @@ class Json
 
         for ($i = 0; $i <= $strLen; $i++) 
         {
-            $char = $json[$i];
+            $char = '';
+            if(isset($json[$i])) $char = $json[$i];
             
             if ($char === '"' && $prevChar !== '\\' || (!$indentArrays && ($char === '[' || $char === ']')))
             {

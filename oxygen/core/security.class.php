@@ -33,13 +33,11 @@ class Security
 
         // If zlib is active we compress the value to crypt
         if(function_exists('gzdeflate')) $text = gzdeflate($text, 9);        
-                
+        
         // Use openssl_encrypt with PHP >= 5.3.0
         if(function_exists('openssl_encrypt') && in_array('BF-OFB', openssl_get_cipher_methods()))
-        {   
-            $iv = substr(openssl_random_pseudo_bytes(8), 0, 16);
-            $ciphertext = openssl_encrypt($text, 'BF-OFB', $key, true, $iv);
-            return rtrim(strtr(base64_encode($iv.$ciphertext), '+/', '-_'), '=');
+        {
+            return strtr(openssl_encrypt($text, 'BF-OFB', $key), '+/', '-_');
         }
         // ... or use mcrypt if available
         else if (function_exists('mcrypt_encrypt'))
@@ -75,9 +73,7 @@ class Security
         // Use openssl_decrypt with PHP >= 5.3.0
         if(function_exists('openssl_decrypt') && in_array('BF-OFB', openssl_get_cipher_methods()))
         {
-            $text  = base64_decode(str_pad(strtr($text, '-_', '+/'), strlen($text) % 4, '=', STR_PAD_RIGHT));
-            $iv = substr($text, 0, 8);
-            $msg = openssl_decrypt(substr($text, 8), 'BF-OFB', $key, true, $iv);
+            $msg = openssl_decrypt(strtr($text, '-_', '+/'), 'BF-OFB', $key);
         }
         // ... or use mcrypt if available
         else if (function_exists('mcrypt_encrypt'))
@@ -120,8 +116,10 @@ class Security
     {
         $salt = function_exists('openssl_random_pseudo_bytes') ? 
             openssl_random_pseudo_bytes(16) : String::random(array('length' => 40));
-
+        
         $salt = substr(strtr(base64_encode($salt), '+', '.'), 0 , 22);
+        
+        $data .= self::_getKey();
 
         // Better use Blowfish with PHP >= 5.3.0 or if configuration is defined for retrocompatibility
         if(CRYPT_BLOWFISH === 1 && Config::get('general.hash_force_md5') === false) 
@@ -140,7 +138,7 @@ class Security
      */
     public static function check($value, $hash)
     {
-        return crypt(base64_encode($value), $hash) === $hash;
+        return crypt(base64_encode($value.self::_getKey()), $hash) === $hash;
     }    
     
     /**
