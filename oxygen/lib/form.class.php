@@ -108,6 +108,19 @@ class Form
     }
     
     /**
+     * Add an error without passing by a rule
+     * 
+     * @param string $fieldName     Field name
+     * @param string $error         Error message
+     * @return Form
+     */
+    public function addError($fieldName, $message)
+    {
+        $this->_errors[$fieldName] = $message;
+        return $this;
+    }
+    
+    /**
      * Return form errors if any
      * 
      * @return array            An array of errors (or an empty array) 
