@@ -29,7 +29,11 @@ class f_cache_File implements f_cache_Interface
     {        
         if(isset($this->_cacheArr[$id])) return $this->_cacheArr[$id];
         
-        $file = $this->_cachePath.DS.$id.'.cache';
+        $n = md5($id);
+        $path = $this->_cachePath.DS.$n[0];
+        if(!is_dir($path)) return false;
+        
+        $file = $path.DS.$id.'.cache';
         
         if(!is_file($file)) return false;
         
@@ -58,7 +62,11 @@ class f_cache_File implements f_cache_Interface
         if($type === 'NULL' || $type === 'resource') $data = false;        
         if($type === 'array' || $type === 'object') $data = serialize($data);
                 
-        return file_put_contents($this->_cachePath.DS.$id.'.cache', serialize(array(time(), $ttl, $type, $data)), LOCK_EX) !== false;
+        $n = md5($id);
+        $path = $this->_cachePath.DS.$n[0];
+        if(!is_dir($path)) mkdir($path, 0777, true);
+        
+        return file_put_contents($path.DS.$id.'.cache', serialize(array(time(), $ttl, $type, $data)), LOCK_EX) !== false;
     }
     
     public function delete($id)
@@ -69,7 +77,10 @@ class f_cache_File implements f_cache_Interface
     public function flush()
     {        
         $this->_timeToken = time();        
-        return file_put_contents($this->_cachePath.DS.'time_token', $this->_timeToken, LOCK_EX) !== false;
+        file_put_contents($this->_cachePath.DS.'time_token', $this->_timeToken, LOCK_EX) !== false;
+        $files = Search::file('.cache')->in($this->_cachePath)->setDepth(1,1)->fetch();
+        if(empty($files)) return;
+        foreach($files as $file) unlink($file);
     }
     
     public function isSupported()
