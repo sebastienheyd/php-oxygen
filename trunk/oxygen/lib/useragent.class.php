@@ -312,6 +312,7 @@ class UserAgent
                         $this->device = $device['value'];
                         $this->deviceType = $device['type'];
                         $this->isMobile = true;
+                        break;
                     }
                 }
             }
