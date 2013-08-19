@@ -14,11 +14,19 @@
 $robots = array(
     "googlebot" => "Googlebot",
     "msnbot" => "MSNBot",
+    "bingbot" => "BingBot",
     "spiderbot" => "SpiderBot",
+    "baiduspider" => "BaiduSpider",
     "slurp" => "Inktomi-Slurp",
     "jeeves" => "Jeeves",
     "yahoo" => "Yahoo",
     "fastcrawler" => "FastCrawler",
     "infoseek" => "InfoSeek Robot 1.0",
-    "lycos" => "Lycos"
+    "lycos" => "Lycos",
+    "yandex" => "Yandex",
+    "seznam" => "SeznamBot",
+    "zookabot" => "SookaBot",
+    "ahrefsbot" => "AhrefsBot",
+    "bot" => "Generic Bot",
+    "spider" => "Generic Spider"
 );

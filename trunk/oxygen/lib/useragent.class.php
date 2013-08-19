@@ -161,7 +161,7 @@ class UserAgent
 
             foreach ($platforms as $rule => $platform)
             {
-                if (preg_match("|" . preg_quote($rule) . "|i", $this->_agent, $match))
+                if (preg_match("#" . preg_quote($rule) . "#i", $this->_agent, $match))
                 {
                     $this->platform = $platform;
                     break;
@@ -189,7 +189,7 @@ class UserAgent
             include(FW_DIR . DS . 'lib' . DS . 'data' . DS . 'browsers.php');
             foreach ($browsers as $rule => $browser)
             {
-                if (preg_match("|" . preg_quote($rule) . ".*?([0-9\.]+)|i", $this->_agent, $match))
+                if (preg_match("#" . preg_quote($rule) . ".*?([0-9\.]+)#i", $this->_agent, $match))
                 {
                     $this->isBrowser = true;
                     $this->browser = $browser;
@@ -242,7 +242,7 @@ class UserAgent
             foreach ($robots as $rule => $robot)
             {
                 /* @var $robot SimpleXMLElement */
-                if (preg_match("|" . preg_quote($rule) . "|i", $this->_agent))
+                if (preg_match("#" . preg_quote($rule) . "#i", $this->_agent))
                 {
                     $this->isRobot = true;
                     $this->robot = $robot;
