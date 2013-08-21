@@ -79,8 +79,9 @@ class f_cache_File implements f_cache_Interface
         $this->_timeToken = time();        
         file_put_contents($this->_cachePath.DS.'time_token', $this->_timeToken, LOCK_EX) !== false;
         $files = Search::file('.cache')->in($this->_cachePath)->setDepth(1,1)->fetch();
-        if(empty($files)) return;
+        if(empty($files)) return true;
         foreach($files as $file) unlink($file);
+        return true;
     }
     
     public function isSupported()
