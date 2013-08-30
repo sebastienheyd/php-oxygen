@@ -134,6 +134,16 @@ class Uri
     }
     
     /**
+     * Return all segments
+     * 
+     * @return array
+     */
+    public function getSegments()
+    {
+        return $this->_segments;
+    }
+
+    /**
      * Return a slice of uri segments
      * 
      * @param integer $offset   Start point of the array slice

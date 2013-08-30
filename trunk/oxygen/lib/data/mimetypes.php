@@ -21,6 +21,7 @@ $mimes = array(
     "tiff" => "image/tiff",
     "tif" => "image/tif",
     "css" => "text/css",
+    "less" => "text/css",
     "csv" => "text/csv",
     "htm" => "text/html",
     "html" => "text/html",

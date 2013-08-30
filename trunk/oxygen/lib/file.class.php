@@ -183,24 +183,20 @@ class File
         
         header("Last-Modified: $gmDate", true, 200);
         
-        // special case on js and css files to minify them
-        if($this->_extension === 'js' || $this->_extension === 'css')
-        {         
-            if($gzip = $this->_checkGzip()) header("Content-Encoding: " . $gzip);                        
+        // special case on js, css or less files to compile/minify them
+        if($this->_extension === 'js' || $this->_extension === 'css' || $this->_extension === 'less')
+        {           
+            if($gzip = $this->_checkGzip()) header("Content-Encoding: " . $gzip);
             echo $this->getMinify($lastModified, $useCache);
+            exit();
         }
-        else
-        {
-            readfile($this->_file);    
-        }
-                
-        // Exit the script, you cannot display anything after that
-        exit();
+
+        readfile($this->_file);        
     }
     
     public function getMinify($lastModified, $useCache = true)
     {
-        $gzip = $this->_checkGzip();
+        $gzip = $this->_checkGzip();        
         
         // if we want and we can compress
         if($useCache && $gzip) 
@@ -213,14 +209,24 @@ class File
             {
                 // generate a new cache file
                 if(!is_dir(CACHE_DIR.DS.'assets')) mkdir(CACHE_DIR.DS.'assets');
-                if($this->_extension === 'css')
+                
+                $str = file_get_contents($this->_file);
+                
+                switch ($this->_extension)
                 {
-                    $content = $this->_minifyCss(file_get_contents($this->_file));   
+                    case 'css':
+                        $content = $this->_minifyCss($str);   
+                    break;
+
+                    case 'js':
+                        $content = $this->_minifyJs($str);
+                    break;
+                
+                    case 'less':
+                        $content = $this->_compileLess($str);
+                    break;
                 }
-                else
-                {
-                    $content = $this->_minifyJs(file_get_contents($this->_file));   
-                }
+
                 file_put_contents($cacheFile, gzencode($content));
                 touch($cacheFile, $lastModified);
             }
@@ -247,6 +253,14 @@ class File
         }
         
         return false;
+    }
+    
+    private function _compileLess($content)
+    {
+        require_once(FW_DIR.DS."lib".DS.'vendor'.DS."lessphp".DS."lessc.inc.php");         
+        $less = new lessc;
+        $str = $less->compile($content);
+        return $this->_minifyCss($str);
     }
     
     /**

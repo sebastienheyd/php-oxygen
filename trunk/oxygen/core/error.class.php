@@ -245,6 +245,7 @@ class Error
     private function _showError($type, $message, $backtrace)
     {
         set_header(503);
+        header('content-type: text/html');
         header('Retry-after: 28800');     
         
         $bt = $this->_parseBacktrace($backtrace);
