@@ -47,6 +47,14 @@ class Uri
     }
     
     /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->_origin;
+    }
+    
+    /**
      * Define uri to use and parse
      * 
      * @param string $uri   [optional] Uri string or null. If null will parse from REQUEST_URI

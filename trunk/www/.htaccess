@@ -50,6 +50,8 @@ RewriteEngine on
 # path relative to web root
 RewriteBase /
 
+RewriteRule ^(.*\.(?:css|less|js))$ index.php?assetLoad=/$1 [L,QSA,NC]
+
 # never rewrite for existing files, directories and links
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

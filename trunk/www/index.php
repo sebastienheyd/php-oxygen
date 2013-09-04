@@ -14,5 +14,15 @@
 // Load the framework
 require_once('../oxygen/bootstrap.php');
 
-// Run the dispatcher
-Controller::getInstance()->dispatch();
+if(isset($_REQUEST['assetLoad']))
+{
+    $asset = Asset::getInstance();
+    $assets = explode(',', $_REQUEST['assetLoad']);
+    foreach($assets as $a) $asset->add($a);
+    $asset->output();   
+}
+else
+{
+    // Run the dispatcher
+    Controller::getInstance()->dispatch();    
+}
