@@ -60,7 +60,7 @@ class Controller
             // No uri found, try to load asset
             if (!$uri->isDefined() && Config::get('route.routed_only') == '1' && $uri->getUri(false) != '/')
             {
-                $this->_loadAsset();
+                $this->_loadAsset($uri);
                 Error::show404();
             }
 
@@ -135,7 +135,7 @@ class Controller
         else
         {
             $nb = $uri->nbSegments();
-            if ($nb >= 1) $this->_loadAsset();
+            if ($nb >= 1) $this->_loadAsset($uri);
             if ($nb > 2 && empty($this->_args)) $this->_args = $uri->segmentsSlice(3);
         }
     }
@@ -153,7 +153,7 @@ class Controller
         if ($uri->nbSegments() === 0) Error::showConfigurationError();
 
         // load asset if exists
-        $this->_loadAsset();
+        $this->_loadAsset($uri);
         $this->_module = strtolower($uri->segment(1));
         $this->_action = ucfirst_last($uri->segment(2, 'index'));
         $this->_args = $uri->segmentsSlice(3);
@@ -164,25 +164,10 @@ class Controller
      * 
      * @return void
      */
-    private function _loadAsset()
+    private function _loadAsset(Uri $uri)
     {
-        $uri      = Uri::getInstance()->getUri();
-        $segments = explode('/', trim($uri, '/'));
-
-        if (!empty($segments))
-        {
-            if (preg_match('#(.js|.css)$#', $segments[0]))
-            {
-                $f    = CACHE_DIR . DS . 'merged' . DS . $segments[0];
-                if ($file = File::load($f))
-                {
-                    Log::info('{Controller->_loadAsset()} ' . $f);
-                    $file->output();
-                }
-            }
-        }
-
-        $mUri = join('/', array_slice($segments, 1));
+        $segments = $uri->getSegments();
+        $mUri = join('/', $uri->segmentsSlice(2));
 
         $paths = array(
             FW_DIR . DS . 'assets' . $uri,

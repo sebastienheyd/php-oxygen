@@ -43,13 +43,10 @@ class File
      */
     private function __construct($file)
     {
-        $this->_file = $file;
-        
+        $this->_file = $file;        
         $infos = pathinfo($file);
-
-		$infos['_dirname'] = realpath($infos['dirname']);
-
-		foreach ($infos as $key => $info) $this->{'_'.$key} = $info;
+        $infos['_dirname'] = realpath($infos['dirname']);
+        foreach ($infos as $key => $info) $this->{'_'.$key} = $info;
     }     
     
     /**
@@ -156,7 +153,7 @@ class File
      * @param boolean $useCache         [optional] True to use minimized cached files for js and css
      * @return void                     Return void but output the file content to the navigator
      */
-    public function output($restrictToDir = APP_DIR, $useCache = true)
+    public function output($restrictToDir = APP_DIR, $useCache = true, $minify = true)
     {
         $this->isInDir($restrictToDir);
                 
@@ -171,36 +168,43 @@ class File
         // Set the file header and read the file
         header("Pragma: public");
         header("Vary: Accept-Encoding");       
-        header("Cache-Control: maxage=".$expires);
-        header("content-type: ".$this->getMimeType());              
+        header("Cache-Control: maxage=".$expires);           
         header("Expires: " . gmdate($format, time()+$expires));              
 
-        if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $_SERVER['HTTP_IF_MODIFIED_SINCE'] === $gmDate)
+        if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $_SERVER['HTTP_IF_MODIFIED_SINCE'] === $gmDate && $useCache)
         {
             header("Last-Modified: $gmDate", true, 304);
-            exit();
+            exit(1);
         }        
         
         header("Last-Modified: $gmDate", true, 200);
-        
-        // special case on js, css or less files to compile/minify them
-        if($this->_extension === 'js' || $this->_extension === 'css' || $this->_extension === 'less')
-        {           
-            if($gzip = $this->_checkGzip()) header("Content-Encoding: " . $gzip);
-            echo $this->getMinify($lastModified, $useCache);
-            exit();
-        }
 
+        // special case on js, css or less files to compile/minify them
+        if($minify && ($this->_extension === 'js' || $this->_extension === 'css' || $this->_extension === 'less'))
+        {     
+            echo $this->getMinify($lastModified, $useCache);
+            exit(1);
+        }
+        
+        if($this->_extension === 'less')
+        {
+            echo $this->_compileLess(file_get_contents($this->_file), dirname($this->_file), false);
+            exit(1);
+        }
+        
+        header("content-type: ".$this->getMimeType());   
         readfile($this->_file);        
     }
     
     public function getMinify($lastModified, $useCache = true)
     {
         $gzip = $this->_checkGzip();        
-        
+
         // if we want and we can compress
         if($useCache && $gzip) 
         {            
+            header("Content-Encoding: " . $gzip);
+            
             // save into a cache file
             $cacheFile = CACHE_DIR.DS.'assets'.DS.md5($this->_file).'.'.$this->_extension.'.gz';
 
@@ -223,12 +227,16 @@ class File
                     break;
                 
                     case 'less':
-                        $content = $this->_compileLess($str);
+                        $content = $this->_compileLess($str, dirname($this->_file));
                     break;
                 }
 
                 file_put_contents($cacheFile, gzencode($content));
                 touch($cacheFile, $lastModified);
+            }
+            else
+            {
+                header("content-type: ".$this->getMimeType());   
             }
 
             return file_get_contents($cacheFile);
@@ -236,7 +244,8 @@ class File
         else
         {
             // no gzip compression...
-            if($this->_extension === 'css') return $this->_minifyCss(file_get_contents($this->_file));             
+            if($this->_extension === 'css') return $this->_minifyCss(file_get_contents($this->_file));    
+            if($this->_extension === 'less') return $this->_compileLess(file_get_contents($this->_file), dirname($this->_file));
             return $this->_minifyJs(file_get_contents($this->_file)); 
         }
     }
@@ -255,11 +264,14 @@ class File
         return false;
     }
     
-    private function _compileLess($content)
+    private function _compileLess($content, $fileDir, $minify = true)
     {
+        header("content-type: text/css");   
         require_once(FW_DIR.DS."lib".DS.'vendor'.DS."lessphp".DS."lessc.inc.php");         
         $less = new lessc;
+        $less->addImportDir($fileDir);
         $str = $less->compile($content);
+        if(!$minify) return $str;
         return $this->_minifyCss($str);
     }
     
@@ -271,6 +283,7 @@ class File
      */
     private function _minifyJs($content)
     {
+        header("content-type: text/javascript");   
         require_once(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."jsminplus.php"); 
         return JSMinPlus::minify($content);
     }
@@ -283,6 +296,7 @@ class File
      */    
     private function _minifyCss($content)
     {
+        header("content-type: text/css");   
         require_once(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."cssmin.php");        
         return CssMin::minify($content, array('ConvertLevel3Properties' => true));
     }
