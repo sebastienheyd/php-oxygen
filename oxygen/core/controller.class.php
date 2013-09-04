@@ -167,7 +167,7 @@ class Controller
     private function _loadAsset(Uri $uri)
     {
         $segments = $uri->getSegments();
-        $mUri = join('/', $uri->segmentsSlice(2));
+        $mUri = join('/', $uri->segmentsSlice(3));
 
         $paths = array(
             FW_DIR . DS . 'assets' . $uri,
