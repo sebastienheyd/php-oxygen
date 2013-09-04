@@ -199,5 +199,44 @@ class Cli
         $clearscreen = chr(27) . "[H" . chr(27) . "[2J";
         print $clearscreen;
     }
+    
+    /**
+     * Download a file and show progression, require cURL
+     * 
+     * @param string $href          File to download
+     * @param string $destFile      Destination file
+     */
+    public function download($href, $destFile)
+    {
+        $fp = fopen($destFile, 'w');
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $href);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, array('cli', '_progress'));
+        curl_setopt($ch, CURLOPT_NOPROGRESS, false);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        fclose($fp);
+        echo PHP_EOL;
+    }
+
+    /**
+     * cURL download progression function required by download method
+     * 
+     * @param integer $download_size
+     * @param integer $downloaded
+     * @param integer $upload_size
+     * @param integer $uploaded
+     */
+    private function _progress($download_size, $downloaded, $upload_size, $uploaded)
+    {
+        $str = '';
+        if($download_size > 0) $str = $downloaded.'kb / '.$download_size.'kb ('.round($downloaded / $download_size  * 100).' %)';
+        $l = strlen($str);
+        for ($i = 0; $i <= $l; $i++) echo "\010";
+        echo $str;
+    }    
 
 }
