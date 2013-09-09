@@ -77,7 +77,7 @@ class Asset
             if($this->_mime === 'text/css')
             {  
                 require_once(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."cssmin.php");        
-                $content = CssMin::minify($content, array('ConvertLevel3Properties' => true));
+                $content = CssMin::minify($content, array('ConvertLevel3Properties' => false, 'Variables' => false));
             }
             else
             {
@@ -97,7 +97,7 @@ class Asset
     private function _getCacheFilePath()
     {        
         if(isset($this->_cacheFile)) return $this->_cacheFile;
-        $this->_cacheFile = CACHE_DIR.DS.'assets'.DS.md5(serialize($this)).'.'.array_search($this->_mime, self::$_mimes);        
+        $this->_cacheFile = CACHE_DIR.DS.'assets'.DS.md5(serialize($this->_files)).'.'.array_search($this->_mime, self::$_mimes);        
         if($this->_checkGzip()) $this->_cacheFile .= '.gz';
         return $this->_cacheFile;
     }

@@ -298,7 +298,7 @@ class File
     {
         header("content-type: text/css");   
         require_once(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."cssmin.php");        
-        return CssMin::minify($content, array('ConvertLevel3Properties' => true));
+        return CssMin::minify($content, array('ConvertLevel3Properties' => false, 'Variables' => false));
     }
     
     /**
