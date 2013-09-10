@@ -33,17 +33,20 @@ class Db
      */
     protected function __construct($config, $throwException)
     {
-        $config = Config::get($config);
+        $cfg = Config::get($config);
 
-        if ($config === false)
-            trigger_error('Database config ' . $config . ' does not exists in config file', E_USER_ERROR);
+        if ($cfg === false)
+            throw new Exception('Database config ' . $config . ' does not exists in config file');
+        
+        if( $cfg->base === '')
+            throw new Exception('Database name is empty config file');
 
         try
-        {
-            $this->_connexion = new PDO($config->driver . ':' . $config->type . '=' . $config->host . ';dbname=' . $config->base,
-                            $config->login,
-                            $config->password,
-                            array(PDO::ATTR_PERSISTENT => (int) $config->persist));
+        {                
+            $this->_connexion = new PDO($cfg->driver . ':' . $cfg->type . '=' . $cfg->host . ';dbname=' . $cfg->base,
+                            $cfg->login,
+                            $cfg->password,
+                            array(PDO::ATTR_PERSISTENT => (int) $cfg->persist));
 
             $this->_connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -51,8 +54,7 @@ class Db
         }
         catch (PDOException $e)
         {
-            if (!$throwException)
-                return false;
+            if (!$throwException) return false;
             throw new PDOException($e->getMessage());
         }
         return true;
@@ -188,7 +190,8 @@ class Db
      */
     private function checkConnexion()
     {
-        return $this->_connexion !== null;
+        if($this->_connexion === null) return false;
+        return true;
     }
     
     /**
