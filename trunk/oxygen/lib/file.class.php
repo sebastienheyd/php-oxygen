@@ -181,6 +181,7 @@ class File
         header("content-type: ".$this->getMimeType());   
         
         readfile($this->_file);        
+        exit(1);
     }            
     
     /**
