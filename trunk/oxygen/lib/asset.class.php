@@ -15,13 +15,14 @@ class Asset
      * 
      * @return Asset
      */
-    public static function getInstance($options = array())
+    public static function getInstance()
     {
-        return new self($options);
+        return new self();
     }
     
-    private function __construct($options)
+    private function __construct()
     {                   
+        $options = to_array(Config::get('asset'));
         $this->_options = array_merge($this->_options, $options);
     }
     
@@ -71,8 +72,8 @@ class Asset
                 $content .= file_get_contents($file['path']);
             }
         }        
-        
-        if($this->_options['minify'] === true)
+
+        if($this->_options['minify'] == true)
         {
             if($this->_mime === 'text/css')
             {  
@@ -97,7 +98,9 @@ class Asset
     private function _getCacheFilePath()
     {        
         if(isset($this->_cacheFile)) return $this->_cacheFile;
-        $this->_cacheFile = CACHE_DIR.DS.'assets'.DS.md5(serialize($this->_files)).'.'.array_search($this->_mime, self::$_mimes);        
+        $this->_cacheFile = CACHE_DIR.DS.'assets'.DS.md5(serialize($this->_files));
+        if($this->_options['minify'] == true) $this->_cacheFile .= '.min';
+        $this->_cacheFile .= '.'.array_search($this->_mime, self::$_mimes);
         if($this->_checkGzip()) $this->_cacheFile .= '.gz';
         return $this->_cacheFile;
     }
@@ -140,7 +143,7 @@ class Asset
             header("Content-Encoding: $gzip");
         }
         
-        if($this->_options['cache'] === true)
+        if($this->_options['cache'] === true || $this->_options['cache'] === '1')
         {
             $gmDate = gmdate('D, d M Y H:i:s', $this->_timestamp).' GMT';
             
@@ -182,7 +185,7 @@ class Asset
     
     private function _checkGzip()
     {
-        if($this->_options['gzip'] === false) return false;
+        if($this->_options['gzip'] != true) return false;
         
         if(isset($this->_gzip)) return $this->_gzip;
         
