@@ -167,11 +167,12 @@ class Controller
     private function _loadAsset()
     {
         $segments = explode('/', ltrim(str_replace('..', '',$_SERVER['REQUEST_URI']), '/'));
-
+        
+        $uri = join('/', $segments);
         $mUri = join('/', array_slice($segments, 1));       
 
         $paths = array(
-            FW_DIR . DS . 'assets' . $uri,
+            FW_DIR . DS . 'assets' .DS. $uri,
             WEBAPP_MODULES_DIR . DS . $segments[0] . DS . 'assets' . DS . $mUri,
             MODULES_DIR . DS . $segments[0] . DS . 'assets' . DS . $mUri
         );

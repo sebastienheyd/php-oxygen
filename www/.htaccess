@@ -50,6 +50,8 @@ RewriteEngine on
 # path relative to web root
 RewriteBase /
 
+# parse, compile and process assets
+# comment if you want to use assets directly from www folder
 RewriteRule ^(.*\.(?:css|less|js))$ index.php?assetLoad=/$1 [L,QSA,NC]
 
 # never rewrite for existing files, directories and links
