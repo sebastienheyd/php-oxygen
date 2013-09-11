@@ -161,7 +161,8 @@ class Asset
             if($this->_mime === 'text/css')
             {  
                 require_once(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."cssmin.php");        
-                $content = CssMin::minify($content, array('ConvertLevel3Properties' => false, 'Variables' => false));
+                $compressor = new CSSmin();
+                $content = $compressor->run($content);
             }
             else
             {
