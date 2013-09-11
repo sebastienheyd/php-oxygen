@@ -40,6 +40,8 @@ class Config
                 $value = self::$_cache->$section->$name;
         }
 
+        if(isset($value) && $value === '') return false;
+        
         if (!isset($value) || empty($value) || $value == '')
             return $defaultValue;
 
