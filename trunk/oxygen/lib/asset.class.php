@@ -41,6 +41,7 @@ class Asset
         $f = array();
         
         // get file extension
+        $f['uri'] = $file;  
         $f['ext'] = substr($file, strrpos($file, '.')+1);  
         $f['basename'] = ltrim(substr($file, 0, strrpos($file, '.')), '/');         
         
@@ -58,13 +59,14 @@ class Asset
         // get file path
         if(($f['path'] = $this->_getFilePath($file)) === false)
         {
-            $cache = $this->_getCacheFilePath($f['basename']);            
+            $cache = $this->_getCacheFilePath($f['basename']);
             if(is_file($cache))
             {
                 $this->_cacheFile = $cache;  
                 $this->_timestamp = filemtime($cache);
                 return;
             }
+            trigger_error('Asset file not found !', E_USER_ERROR);
         }
         else
         {
@@ -101,7 +103,7 @@ class Asset
     public function output()
     {   
         $content = $this->compile();
-        
+
         while (ob_get_level()) { ob_end_clean(); }
         
         header("Content-Type: ".$this->_mime);
@@ -143,17 +145,25 @@ class Asset
         if(is_file($cache)) return file_get_contents($cache);      
 
         $content = '';
-        
+
         foreach($this->_files as $file)
         {
             if($file['ext'] === 'less')
             {
-                $content .= $this->_getLess($file['path']);
+                $tmp = $this->_getLess($file['path']);
             }
             else
             {
-                $content .= file_get_contents($file['path']);
+                $tmp = file_get_contents($file['path']);
             }
+            
+            if($file['ext'] === 'less' || $file['ext'] === 'css')
+            {
+                
+                $tmp = $this->fixRelativePaths($tmp, $file['uri']);
+            }
+            
+            $content .= $tmp.PHP_EOL;
         }        
 
         if($this->_options['minify'] == true)
@@ -171,7 +181,7 @@ class Asset
             }
         }        
         
-        if($content === '') Error::show404();
+        if($content === '') return '';
         
         $content = $this->_checkGzip() ? gzencode($content) : $content;
         
@@ -180,6 +190,21 @@ class Asset
         
         return $content;
     }   
+    
+    /**
+     * Convert relative to absolute path in CSS content
+     * 
+     * @param string $css               CSS content to fix
+     * @param string $absolutePath      Absolute path
+     * @return string
+     */
+    public function fixRelativePaths($css, $uri)
+    {
+        $absolutePath = dirname($uri).'/';
+        $search = '#url\((?!\s*[\'"]?(?:https?:)?/)\s*([\'"])?#i';
+        $replace = "url($1{$absolutePath}$2";
+        return preg_replace($search, $replace, $css);
+    }
     
     /**
      * Clear all assets caches
