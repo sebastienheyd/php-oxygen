@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Add an html tag for the given asset(s)
  * 
@@ -9,14 +10,14 @@
 function smarty_function_asset($params, &$smarty)
 {
     if(!isset($params['href'])) throw new SmartyException('No parameter href is set');
-    
+
     // Getting files list
     $files = explode(',', $params['href']);
     if(empty($files)) throw new SmartyException('href parameter is empty');
-    
+
     $dir = '';
-    if(isset($params['dir'])) $dir = rtrim($params['dir'], '/').'/';
-    
+    if(isset($params['dir'])) $dir = '/' . trim($params['dir'], '/') . '/';
+
     // Getting file type
     if(!isset($params['type']))
     {
@@ -27,7 +28,7 @@ function smarty_function_asset($params, &$smarty)
             case 'css':
                 $type = 'css';
                 break;
-            
+
             case 'js':
                 $type = 'js';
                 break;
@@ -37,27 +38,29 @@ function smarty_function_asset($params, &$smarty)
     {
         $type = $params['type'];
     }
-    
-    if(!isset($type) || ($type !== 'js' && $type !== 'css') )
-        throw new SmartyException('Type is not defined');
+
+    if(!isset($type) || ($type !== 'js' && $type !== 'css')) throw new SmartyException('Type is not defined');
 
     if(Config::get('asset.combine', true) === false || count($files) === 1) // combining is off
     {
-        if($type === 'css')
+        foreach($files as $file)
         {
-            foreach($files as $file) 
-                echo '<link rel="stylesheet" type="text/css" href="'.$dir.$file.'" />'.PHP_EOL;            
+            if($type === 'css')
+            {
+                $timestamp = Asset::getInstance()->add($dir . $file)->getLastModified();
+                echo '<link rel="stylesheet" type="text/css" href="' . $timestamp . $dir . $file . '" />' . PHP_EOL;
+            }
         }
     }
     else  // combining is on
     {
         $asset = Asset::getInstance();
-        foreach($files as $file) $asset->add($dir.$file);
+        foreach($files as $file) $asset->add($dir . $file);
         $asset->compile();
-        
+
         if($type === 'css')
         {
-            echo '<link rel="stylesheet" type="text/css" href="/'.$asset->getUid().'.css" />'.PHP_EOL;
+            echo '<link rel="stylesheet" type="text/css" href="/' . $asset->getUid() . '.css" />' . PHP_EOL;
         }
     }
 }

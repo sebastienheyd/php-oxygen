@@ -35,6 +35,7 @@ class Asset
      * Add an asset to the collection
      * 
      * @param string $file      Asset URI to add
+     * @return Asset
      */
     public function add($file)
     {    
@@ -47,7 +48,7 @@ class Asset
         
         // verify if file extension is authorized
         if(!in_array($f['ext'], array_keys(self::$_mimes))) 
-                trigger_error('Filetype not supported', E_USER_ERROR);
+                trigger_error('Filetype not supported '.$f['ext'], E_USER_ERROR);
         
         // get mime type
         $mime = self::$_mimes[$f['ext']];
@@ -74,7 +75,9 @@ class Asset
             $ftime = $f['ext'] === 'less' ? $this->_compileLess($f['path']) : filemtime($f['path']);        
             $this->_timestamp = max(array($this->_timestamp, $ftime));           
             $this->_files[] = $f;     
-        }               
+        }    
+        
+        return $this;
     }   
     
     /**

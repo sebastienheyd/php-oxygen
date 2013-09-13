@@ -14,10 +14,10 @@
 // Load the framework
 require_once('../oxygen/bootstrap.php');
 
-if(isset($_REQUEST['assetLoad']))
+if(isset($_GET['asset']))
 {
     $asset = Asset::getInstance();
-    $assets = explode(',', $_REQUEST['assetLoad']);
+    $assets = explode(',', $_GET['asset']);
     foreach($assets as $a) $asset->add($a);
     $asset->output();   
 }
