@@ -51,8 +51,9 @@ RewriteEngine on
 RewriteBase /
 
 # parse, compile and process assets
-# comment if you want to use assets directly from www folder
-RewriteRule ^(.*\.(?:css|less|js))$ index.php?assetLoad=/$1 [L,QSA,NC]
+# comment if you want to use assets directly from the www folder
+RewriteRule ^([0-9]*)/(.*\.(?:css|less|js))$ index.php?asset=/$2    [L,QSA,NC]
+RewriteRule ^(.*\.(?:css|less|js))$ index.php?asset=/$1             [L,QSA,NC]
 
 # never rewrite for existing files, directories and links
 RewriteCond %{REQUEST_FILENAME} !-f
