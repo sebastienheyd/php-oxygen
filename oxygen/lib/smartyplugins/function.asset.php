@@ -68,7 +68,7 @@ function smarty_function_asset($params, &$smarty)
         }
         else
         {
-            echo '<script src="' . $asset->getUid(). '.js"></script>' . PHP_EOL;
+            echo '<script src="/' . $asset->getUid(). '.js"></script>' . PHP_EOL;
         }
     }
 }
