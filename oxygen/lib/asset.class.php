@@ -42,9 +42,10 @@ class Asset
         $f = array();
         
         // get file extension
-        $f['uri'] = $file;  
-        $f['ext'] = substr($file, strrpos($file, '.')+1);  
-        $f['basename'] = ltrim(substr($file, 0, strrpos($file, '.')), '/');         
+        $f['uri']       = $file;  
+        $f['ext']       = substr($file, strrpos($file, '.')+1);  
+        $f['basename']  = ltrim(substr($file, 0, strrpos($file, '.')), '/');         
+        $f['minified']  = preg_match('#(min\.js|min\.css)$#i', $file);
         
         // verify if file extension is authorized
         if(!in_array($f['ext'], array_keys(self::$_mimes))) 
@@ -148,41 +149,29 @@ class Asset
         if(is_file($cache)) return file_get_contents($cache);      
 
         $content = '';
+        
+        if($this->_mime === 'text/css')
+        {
+            include(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."cssmin.php"); 
+            $compressor = new CSSmin();
+        }
+        else
+        {
+            include(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."jsminplus.php");
+        }
 
         foreach($this->_files as $file)
         {
-            if($file['ext'] === 'less')
+            $tmp = ($file['ext'] === 'less') ? $this->_getLess($file['path']) : file_get_contents($file['path']);            
+            if($this->_mime === 'text/css') $tmp = $this->fixRelativePaths($tmp, $file['uri']);
+
+            if($this->_options['minify'] == true && $file['minified'] == false)
             {
-                $tmp = $this->_getLess($file['path']);
-            }
-            else
-            {
-                $tmp = file_get_contents($file['path']);
-            }
-            
-            if($file['ext'] === 'less' || $file['ext'] === 'css')
-            {
-                
-                $tmp = $this->fixRelativePaths($tmp, $file['uri']);
-            }
+                $tmp = $this->_mime === 'text/css' ? $compressor->run($tmp) : JSMinPlus::minify($tmp);
+            }     
             
             $content .= $tmp.PHP_EOL;
-        }        
-
-        if($this->_options['minify'] == true)
-        {
-            if($this->_mime === 'text/css')
-            {  
-                require_once(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."cssmin.php");        
-                $compressor = new CSSmin();
-                $content = $compressor->run($content);
-            }
-            else
-            {
-                require_once(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."jsminplus.php"); 
-                $content = JSMinPlus::minify($content);
-            }
-        }        
+        }             
         
         if($content === '') return '';
         
