@@ -45,7 +45,7 @@ class Asset
         $f['uri']       = $file;  
         $f['ext']       = substr($file, strrpos($file, '.')+1);  
         $f['basename']  = ltrim(substr($file, 0, strrpos($file, '.')), '/');         
-        $f['minified']  = preg_match('#(min\.js|min\.css)$#i', $file);
+        $f['minified']  = preg_match('#[\.-](min\.js|min\.css)$#i', $file);
         
         // verify if file extension is authorized
         if(!in_array($f['ext'], array_keys(self::$_mimes))) 
@@ -68,7 +68,7 @@ class Asset
                 $this->_timestamp = filemtime($cache);
                 return;
             }
-            trigger_error('Asset file not found !', E_USER_ERROR);
+            Error::show404();
         }
         else
         {
@@ -91,11 +91,21 @@ class Asset
         return $this->_timestamp;
     }
     
+    /**
+     * Return the mime type of the assets collection
+     * 
+     * @return string
+     */
     public function getMimeType()
     {
         return $this->_mime;
     }
     
+    /**
+     * Return the UID of the assets collection
+     * 
+     * @return string
+     */
     public function getUid()
     {
         return md5(serialize($this->_files).$this->_timestamp);

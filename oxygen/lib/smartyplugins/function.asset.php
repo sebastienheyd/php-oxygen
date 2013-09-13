@@ -48,11 +48,11 @@ function smarty_function_asset($params, &$smarty)
             $timestamp = Asset::getInstance()->add($dir . $file)->getLastModified();
             if($type === 'css')
             {
-                echo '<link rel="stylesheet" type="text/css" href="' . $timestamp . $dir . $file . '" />' . PHP_EOL;
+                echo '<link rel="stylesheet" type="text/css" href="/' . $timestamp . $dir . $file . '" />' . PHP_EOL;
             }
             else
             {
-                echo '<script src="' . $timestamp . $dir . $file . '"></script>' . PHP_EOL;
+                echo '<script src="/' . $timestamp . $dir . $file . '"></script>' . PHP_EOL;
             }
         }
     }
