@@ -45,10 +45,14 @@ function smarty_function_asset($params, &$smarty)
     {
         foreach($files as $file)
         {
+            $timestamp = Asset::getInstance()->add($dir . $file)->getLastModified();
             if($type === 'css')
             {
-                $timestamp = Asset::getInstance()->add($dir . $file)->getLastModified();
                 echo '<link rel="stylesheet" type="text/css" href="' . $timestamp . $dir . $file . '" />' . PHP_EOL;
+            }
+            else
+            {
+                echo '<script src="' . $timestamp . $dir . $file . '"></script>' . PHP_EOL;
             }
         }
     }
@@ -61,6 +65,10 @@ function smarty_function_asset($params, &$smarty)
         if($type === 'css')
         {
             echo '<link rel="stylesheet" type="text/css" href="/' . $asset->getUid() . '.css" />' . PHP_EOL;
+        }
+        else
+        {
+            echo '<script src="' . $asset->getUid(). '.js"></script>' . PHP_EOL;
         }
     }
 }
