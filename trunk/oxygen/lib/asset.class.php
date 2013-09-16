@@ -153,9 +153,9 @@ class Asset
      * 
      * @return string       Content of the cached file
      */
-    public function compile()
+    public function compile($uid = null)
     {
-        $cache = $this->_getCacheFilePath();
+        $cache = $this->_getCacheFilePath($uid);
         if(is_file($cache)) return file_get_contents($cache);      
 
         $content = '';
