@@ -162,12 +162,12 @@ class Asset
         
         if($this->_mime === 'text/css')
         {
-            include(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."cssmin.php"); 
+            include_once(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."cssmin.php"); 
             $compressor = new CSSmin();
         }
         else
         {
-            include(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."jsminplus.php");
+            include_once(FW_DIR.DS."lib".DS.'vendor'.DS."minify".DS."jsminplus.php");
         }
 
         foreach($this->_files as $file)
