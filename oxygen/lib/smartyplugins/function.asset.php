@@ -60,15 +60,19 @@ function smarty_function_asset($params, &$smarty)
     {
         $asset = Asset::getInstance();
         foreach($files as $file) $asset->add($dir . $file);
-        $asset->compile();
+        
+        $uid = isset($params['name']) ? str_replace('.'.$type, '', $params['name']) : $asset->getUid();
+        $timestamp = $asset->getLastModified();
+        
+        $asset->compile($uid);
 
         if($type === 'css')
         {
-            echo '<link rel="stylesheet" type="text/css" href="/' . $asset->getUid() . '.css" />' . PHP_EOL;
+            echo '<link rel="stylesheet" type="text/css" href="/'.$timestamp.'/' .$uid . '.css" />' . PHP_EOL;
         }
         else
         {
-            echo '<script src="/' . $asset->getUid(). '.js"></script>' . PHP_EOL;
+            echo '<script src="/'.$timestamp.'/' . $uid. '.js"></script>' . PHP_EOL;
         }
     }
 }
