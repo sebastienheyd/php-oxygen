@@ -1,6 +1,10 @@
 <?php
 
 /**
+ * MODIFICATIONS FOR RELATIVE PATHS BASED ON THE NODGE FORK : https://github.com/Nodge/lessphp
+ */
+
+/**
  * lessphp v0.4.0
  * http://leafo.net/lessphp
  *
@@ -9,7 +13,6 @@
  * Copyright 2012, Leaf Corcoran <leafot@gmail.com>
  * Licensed under MIT or GPLv3, see LICENSE
  */
-
 
 /**
  * The less compiler and parser.
@@ -68,14 +71,16 @@ class lessc {
 
 	// attempts to find the path of an import url, returns null for css files
 	protected function findImport($url) {
-		foreach ((array)$this->importDir as $dir) {
-			$full = $dir.(substr($dir, -1) != '/' ? '/' : '').$url;
-			if ($this->fileExists($file = $full.'.less') || $this->fileExists($file = $full)) {
-				return $file;
-			}
-		}
+            foreach((array) $this->importDir as $dir)
+            {
+                $full = $dir . (substr($dir, -1) != '/' ? '/' : '') . $url;
+                if($this->fileExists($file = $full . '.less') || $this->fileExists($file = $full))
+                {
+                    return $file;
+                }
+            }
 
-		return null;
+            return null;
 	}
 
 	protected function fileExists($name) {
@@ -817,7 +822,11 @@ class lessc {
 					$part = $this->compileValue($part);
 				}
 			}
-			return $delim . implode($content) . $delim;
+                        
+                        $content = implode($content);
+                        $content = $this->rewriteUrls($content);                        
+                        
+			return $delim . $content . $delim;
 		case 'color':
 			// [1] - red component (either number or a %)
 			// [2] - green component
@@ -1826,9 +1835,8 @@ class lessc {
 		$this->importDir[] = $pi['dirname'].'/';
 
 		$this->addParsedFile($fname);
-
 		$out = $this->compile(file_get_contents($fname), $fname);
-
+                
 		$this->importDir = $oldImport;
 
 		if ($outFname !== null) {
@@ -1837,6 +1845,30 @@ class lessc {
 
 		return $out;
 	}
+        
+        /**
+         * Added to auto rewrite URL
+         */
+	protected function rewriteUrls($url) {
+		$baseImportDir = realpath(isset($this->baseUrlPath) ? $this->baseUrlPath : end($this->importDir));
+		$lastImportDir = realpath(reset($this->importDir));
+
+		if ($baseImportDir === $lastImportDir) return $url;
+
+		$arguments = null;
+		if(strpos($url,'?') !== false) list($url, $arguments) = explode('?', $url);
+
+		$urlPath = realpath($lastImportDir.DIRECTORY_SEPARATOR.$url);
+		if ($urlPath === false) return $arguments ? $url.'?'.$arguments : $url;
+
+		$baseArray = explode(DIRECTORY_SEPARATOR, $baseImportDir);
+		$urlArray = explode(DIRECTORY_SEPARATOR, $urlPath);
+                
+                $newUrl = implode('/', $urlArray);
+                $newUrl = str_replace(WWW_DIR, '', $newUrl);
+
+		return $arguments ? $newUrl.'?'.$arguments : $newUrl;
+	}     
 
 	// compile only if changed input has changed or output doesn't exist
 	public function checkedCompile($in, $out) {
