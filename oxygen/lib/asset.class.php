@@ -173,7 +173,6 @@ class Asset
         foreach($this->_files as $file)
         {
             $tmp = ($file['ext'] === 'less') ? $this->_getLess($file['path']) : file_get_contents($file['path']);            
-            if($this->_mime === 'text/css') $tmp = $this->fixRelativePaths($tmp, $file['uri']);
 
             if($this->_options['minify'] == true && $file['minified'] == false)
             {
@@ -192,21 +191,6 @@ class Asset
         
         return $content;
     }   
-    
-    /**
-     * Convert relative to absolute path in CSS content
-     * 
-     * @param string $css               CSS content to fix
-     * @param string $absolutePath      Absolute path
-     * @return string
-     */
-    public function fixRelativePaths($css, $uri)
-    {
-        $absolutePath = dirname($uri).'/';
-        $search = '#url\((?!\s*[\'"]?(?:https?:)?/)\s*([\'"])?#i';
-        $replace = "url($1{$absolutePath}$2";
-        return preg_replace($search, $replace, $css);
-    }
     
     /**
      * Clear all assets caches
@@ -248,6 +232,7 @@ class Asset
 
         require_once(FW_DIR.DS."lib".DS.'vendor'.DS."lessphp".DS."lessc.inc.php");         
         $less = new lessc;                
+        $less->addImportDir(WWW_DIR);                        
         $less->addImportDir(dirname($file));                        
         $compiled = $less->cachedCompile($cache);
         
