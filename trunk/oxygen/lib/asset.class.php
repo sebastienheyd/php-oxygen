@@ -173,7 +173,8 @@ class Asset
         foreach($this->_files as $file)
         {
             $tmp = ($file['ext'] === 'less') ? $this->_getLess($file['path']) : file_get_contents($file['path']);            
-
+            if($file['ext'] === 'css') $tmp = $this->fixRelativePaths($tmp, $file['uri']);
+            
             if($this->_options['minify'] == true && $file['minified'] == false)
             {
                 $tmp = $this->_mime === 'text/css' ? $compressor->run($tmp) : JSMinPlus::minify($tmp);
@@ -191,6 +192,21 @@ class Asset
         
         return $content;
     }   
+    
+    /**
+     * Convert relative to absolute path in CSS content
+     *
+     * @param string $css               CSS content to fix
+     * @param string $absolutePath      Absolute path
+     * @return string
+     */
+    public function fixRelativePaths($css, $uri)
+    {
+        $absolutePath = dirname($uri).'/';
+        $search = '#url\((?!\s*[\'"]?(?:https?:)?/)\s*([\'"])?#i';
+        $replace = "url($1{$absolutePath}$2";
+        return preg_replace($search, $replace, $css);
+    }  
     
     /**
      * Clear all assets caches
