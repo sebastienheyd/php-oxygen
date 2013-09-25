@@ -61,6 +61,16 @@ class File
     }
     
     /**
+     * Return current file extension
+     * 
+     * @return string
+     */
+    public function getExtension()
+    {
+        return $this->_extension;
+    }
+    
+    /**
      * Returns the mimetype base from the file extension
      * 
      * @param string $extOrFileName     The extension or filename
