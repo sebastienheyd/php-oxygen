@@ -207,11 +207,11 @@ class Form
     /**
      * Get the hidden captcha tags to insert into form
      * 
-     * @param boolean $imageMode    [optional] if true, will display an image-based captcha instead of an hidden one
      * @param string $fieldId       [optional] hidden captcha hidden field name (default is hcptch)
+     * @param boolean $imageMode    [optional] if true, will display an image-based captcha instead of an hidden one (default = false)
      * @return string               Return a tag to insert into form to secure
      */
-    public static function getCaptchaTags($imageMode = false, $fieldId = 'hcptch')
+    public static function getCaptchaTags($fieldId = 'hcptch', $imageMode = false)
     {
         return f_form_Captcha::getFormTags($fieldId, $imageMode);
     }
@@ -219,14 +219,18 @@ class Form
     /**
      * Check a posted hidden captcha made with getCaptchaTags
      * 
+     * @param string $fieldId       [optional] The id to use to generate input elements (default = "hcptch")
      * @param integer $minLimit     [optional] Submission minimum time limit in seconds (default = 5)
      * @param integer $maxLimit     [optional] Submission maximum time limit in seconds (default = 1200)
-     * @param string $formId        [optional] The id to use to generate input elements (default = "hcptch")
      * @return boolean              Return false if the submitter is a robot 
      */
-    public static function checkCaptcha($minLimit = 2, $maxLimit = 1200, $fieldId = 'hcptch')
+    public function checkCaptcha($fieldId = 'hcptch', $minLimit = 2, $maxLimit = 1200)
     {
-        if(f_form_Captcha::checkCaptcha($fieldId, $minLimit, $maxLimit)) return true;
+        if(f_form_Captcha::checkCaptcha($fieldId, $minLimit, $maxLimit)) 
+        {
+            unset($this->_post->$fieldId);
+            return true;
+        }
                 
         // set error and reset posted values
         $this->_errors['captcha'] = f_form_Captcha::getError();
