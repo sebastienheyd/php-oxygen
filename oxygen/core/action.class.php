@@ -16,7 +16,7 @@ abstract class Action
     public $cacheId;
     public $cacheLifetime = 3600;
     public $model = array();
-
+    
     /**
      * Magic method to call non existent class methods
      * 
@@ -70,6 +70,13 @@ abstract class Action
         }
     }
 
+    /**
+     * Check if we have a cached file for the given view
+     * 
+     * @param string $viewName      View name
+     * @param string $cacheId       Cache ID to verify
+     * @return boolean
+     */
     public function hasCache($viewName, $cacheId)
     {
         preg_match('/^m_(.*)_action_(.*)/', get_class($this), $matches);
