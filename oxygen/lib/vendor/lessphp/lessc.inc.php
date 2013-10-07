@@ -1859,7 +1859,7 @@ class lessc {
 		$baseImportDir = realpath(isset($this->baseUrlPath) ? $this->baseUrlPath : end($this->importDir));
 		$lastImportDir = realpath(reset($this->importDir));
 
-		if ($baseImportDir === $lastImportDir) return $url;
+		if ($baseImportDir === $lastImportDir || $url === '' || $url === '.') return $url;
 
 		$arguments = null;
 		if(strpos($url,'?') !== false) list($url, $arguments) = explode('?', $url);
