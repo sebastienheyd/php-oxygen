@@ -15,11 +15,15 @@ abstract class AjaxAction extends Action
     public function isAuthorized()
     {
         // Check if we have an XMLHttpRequest context
-        if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') 
+        if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+           $_SERVER['HTTP_X_REQUESTED_WITH'] !== '' && 
+           strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') 
             return false;
         
         // Check if we call from the same referer
-        if(!isset($_SERVER['HTTP_REFERER']) || !preg_match('#^https?://'.$_SERVER['HTTP_HOST']."#", $_SERVER['HTTP_REFERER']))
+        if(isset($_SERVER['HTTP_REFERER']) && 
+           $_SERVER['HTTP_REFERER'] !== '' && 
+           !preg_match('#^https?://'.$_SERVER['HTTP_HOST']."#", $_SERVER['HTTP_REFERER']))
             return false;
         
         return true;
