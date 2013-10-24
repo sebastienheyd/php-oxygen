@@ -17,16 +17,16 @@ abstract class AjaxAction extends Action
         // Check if we have an XMLHttpRequest context
         if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
            $_SERVER['HTTP_X_REQUESTED_WITH'] !== '' && 
-           strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') 
-            return false;
+           strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') 
+            return true;
         
         // Check if we call from the same referer
         if(isset($_SERVER['HTTP_REFERER']) && 
            $_SERVER['HTTP_REFERER'] !== '' && 
-           !preg_match('#^https?://'.$_SERVER['HTTP_HOST']."#", $_SERVER['HTTP_REFERER']))
-            return false;
+           preg_match('#^https?://'.$_SERVER['HTTP_HOST']."#", $_SERVER['HTTP_REFERER']))
+            return true;
         
-        return true;
+        return false;
     }
     
     public function errorHandler() 
