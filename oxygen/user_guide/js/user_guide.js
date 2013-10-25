@@ -4,6 +4,7 @@ $(document).ready(function(){
    breadCrumbItems();
    variablesDisplay();
    parseCode();
+   headingToAnchor();
    SyntaxHighlighter.all();
 });
 
@@ -30,6 +31,17 @@ function parseCode()
     $.each($('sql'), function(){
         $(this).replaceWith('<pre class="brush:sql;">'+$(this).text()+'</pre>');
     });
+}
+
+function headingToAnchor()
+{
+    $('h1,h2,h3,h4,h5').each(function(i){
+        var val = $(this).text().toLowerCase();        
+        val = val.replace(/[^a-zA-Z0-9]/g, '_');
+        $(this).before('<a name="'+val+'"></a>');
+    });
+    
+    if(window.location.hash !== '')  window.location.href = window.location.hash;
 }
 
 function display()
