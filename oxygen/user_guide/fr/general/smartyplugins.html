@@ -131,5 +131,33 @@
                 <td>Si true, utilise la compression gzip si elle est disponible sur le serveur.</td>
             </tr>
         </table>
+            
+        <h3>html_select</h3>
+        <p>
+            La balise {html_select} est un helper pour générer rapidement une balise de type &lt;select> et ses options 
+            à partir d'un tableau PHP. Son utilisation est très simple : 
+        </p>
+        <table>
+            <tr>
+                <td><strong>name</strong></td>
+                <td>Attribut name de la balise select qui sera générée. Utile pour les formulaires.</td>
+            </tr>
+            <tr>
+                <td><strong>options</strong></td>
+                <td>Tableau associatif des options. L'utilisation d'un tableau multi-niveaux génèrera des groupes d'options.</td>
+            </tr>
+            <tr>
+                <td><strong>selected</strong></td>
+                <td>Valeur de l'option sélectionnée par défaut.</td>
+            </tr>
+            <tr>
+                <td><strong>label_as_value</strong></td>
+                <td>Utiliser les libellés comme valeur des options</td>
+            </tr>
+            <tr>
+                <td><strong>empty_option</strong></td>
+                <td>La première option est une valeur vide</td>
+            </tr>
+        </table>
     </body>            
 </html>
