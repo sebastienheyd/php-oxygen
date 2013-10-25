@@ -4,7 +4,8 @@
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
         <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
-        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript">var basepath = '../../';
+            var lang = 'fr';</script>        
         <script type="text/javascript" src="../../js/loader.js"></script>        
     </head>
     <body>     
@@ -14,12 +15,12 @@
             cela que PHP-Oxygen en fourni un certain nombre. Il existe deux types de plugins Smarty, les balises et les 
             modificateurs.
         </p>
-        
+
         <blockquote class="warning">
             Les balises ou les modificateurs Smarty ne fonctionnent bien entendu que lors de l'affichage des vues via la 
             classe <a href="../classes/template.html">Template</a>.
         </blockquote>
-        
+
         <h2>Balises Smarty</h2>
         <h3>widget</h3>
         <p>
@@ -29,21 +30,106 @@
         </p>
         <xml>
             &lt;div>
-                &lt;!-- Exécute le contrôleur form du module contact (m_contact_action_Form) -->
-                {widget module="contact" action="form"}
-                
-                &lt;!-- Idem mais fourni idContact=12 en argument de execute() -->
-                {widget module="contact" action="form" idContact=12}
-                
-                &lt;!-- Affiche le gabarit address.html du module contact en fournissant idContact=12 -->
-                {widget module="contact" template="address.html" idContact=12}
+            &lt;!-- Exécute le contrôleur form du module contact (m_contact_action_Form) -->
+            {widget module="contact" action="form"}
+
+            &lt;!-- Idem mais fourni idContact=12 en argument de execute() -->
+            {widget module="contact" action="form" idContact=12}
+
+            &lt;!-- Affiche le gabarit address.html du module contact en fournissant idContact=12 -->
+            {widget module="contact" template="address.html" idContact=12}
             &lt;/div>
         </xml>
-            
+
         <h3>setLocale et t</h3>
         <p>
             Il s'agit de balises de localisation. Voir <a href="../general/l10n/template.html">localisation d'un gabarit (template)</a>.
         </p>
-            
+
+        <h3>asset</h3>
+        <p>
+            La balise {asset} permet d'insérer un ou des fichiers javascript, less ou css à votre html. L'avantage de cette 
+            balise est qu'elle permet de gérer efficacement le cache navigateur, la minification des fichiers et la 
+            combinaison de ces derniers. Les paramètres sont :          
+        </p>   
+        <table>
+            <tr>
+                <td><strong>href</strong></td>
+                <td>Le(s) fichier(s) à importer. Pour plusieurs fichiers utilisez la virgule comme séparateur.</td>
+            </tr>
+            <tr>
+                <td><strong>dir</strong></td>
+                <td>
+                    Permet de définir un dossier où chercher les fichiers afin d'éviter de resaisir le chemin complet 
+                    pour les listes de fichiers
+                </td>
+            </tr>
+            <tr>
+                <td><strong>type</strong></td>
+                <td>Permet de forcer un type. Les valeurs acceptées sont css, less et js</td>
+            </tr>
+        </table>
+        <xml>
+            &lt;!-- &lt;link rel="stylesheet" type="text/css" href="/css/style.css" /> -->
+            {asset href="/css/style.css"}
+
+            &lt;!-- &lt;script src="/js/jquery.min.js"&gt;&lt;/script&gt; -->
+            {asset href="/js/jquery.min.js"}
+
+            &lt;!-- &lt;script src="/js/jquery.min.js"&gt;&lt;/script&gt; -->
+            {asset dir="/js" href="jquery.min.js"}
+
+            &lt;!-- 
+            Version combinée
+            &lt;script src="/106546546/df64565e654svf065tb6406tb.js"&gt;&lt;/script&gt; 
+            -->
+            {asset dir="/js" href="jquery.min.js,plugin1.js,plugin2.js"}
+        </xml>
+        <h4>Configuration</h4>
+        <p>
+            La balise {asset} utilise des paramètres du <a href="../installation/configuration.html">fichier de configuration</a> pour son fonctionnement :            
+        </p>
+        <bash>
+            [asset]
+            ; Combine files when using Smarty tags (Default is true)
+            combine = true
+
+            ; Use browser cache (Default is true)
+            cache = true
+
+            ; Minify CSS and JS assets (Default is true)
+            minify = true
+
+            ; Browser cache expires
+            ;expires = 31536000
+
+            ; Use GZIP compression if available (Default is true)
+            ;gzip = false
+        </bash>
+        <table>
+            <tr>
+                <td><strong>combine</strong></td>
+                <td>Si true alors on combine les fichiers déclarés dans la même balise {asset} pour en faire qu'un seul.</td>
+            </tr>
+            <tr>
+                <td><strong>cache</strong></td>
+                <td>
+                    Si true, le cache navigateur est activé. A noter que si le cache est activé et que le(s) fichier(s) 
+                    déclaré(s) change(nt) le cache est rafraichit automatiquement.
+                </td>
+            </tr>
+            <tr>
+                <td><strong>minify</strong></td>
+                <td>Si true, minifie le(s) fichier(s) déclaré(s)</td>
+            </tr>
+            <tr>
+                <td><strong>expires</strong></td>
+                <td>Durée maximale de la mise en cache dans le navigateur. Par défaut = 31536000 (un an)</td>
+            </tr>
+            <tr>
+                <td><strong>gzip</strong></td>
+                <td>Si true, utilise la compression gzip si elle est disponible sur le serveur.</td>
+            </tr>
+        </table>
     </body>            
 </html>
