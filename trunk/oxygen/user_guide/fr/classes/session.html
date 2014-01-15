@@ -83,6 +83,27 @@
              Session::delete('login');            // Supprime la clé login et sa valeur de la session
         </php>
         
+        <h3>addFlash()</h3>
+        <p>
+            Stocke une variable (message "flash") en session pour la requête suivante uniquement. Ceci est utile 
+            lors du traitement d'un formulaire si vous souhaitez rediriger l'utilisateur et afficher un message spécial 
+            lors de la prochaine requête. Le deuxième argument permet de définir un type.
+        </p>
+        <php>
+             Session::addFlash('Votre page à bien été enregistrée');                 // enregistre avec le type par défaut
+             Session::addFlash("Vous n'avez pas saisi votre identifiant", 'error');  // enregistre avec le type error
+        </php>
+        
+        <h3>getFlash()</h3>
+        <p>
+            Récupère un tableau des messages "flash" du type donné. Le deuxième argument permet de définir le type à 
+            retourner.
+        </p>  
+        <php>
+             Session::getFlash();           // récupère les messages du type par défaut
+             Session::getFlash('error');    // récupère les messages du type error
+        </php>        
+        
         <h3>start()</h3>
         <p>Démarre une session, si une session existe déjà la méthode ne fait rien.</p>
         

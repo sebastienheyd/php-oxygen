@@ -17,6 +17,7 @@ class Session
     private static $_handlers = array('database', 'files', 'cookie', 'memcached');
     private static $_sessionActive = false;
     private static $_data;
+    private static $_flash = array();
 
     /**
      * Get instance of Session
@@ -55,6 +56,24 @@ class Session
 
         self::_start();            
     }
+    
+    /**
+     * Start a new session
+     *
+     * @return bool      Return true if session is started
+     */
+    private static function _start()
+    {
+        if(!self::$_sessionActive)
+        {
+            session_name('O2_SESSION');
+            self::$_sessionActive = session_start();
+            self::$_data = $_SESSION;
+            self::_loadFlash();
+            $_SESSION = array();
+        }
+        return self::$_sessionActive;
+    }    
 
     /**
      * Shortcut to set var in session
@@ -66,7 +85,7 @@ class Session
     public static function set($name, $value)
     {
         self::$_data[$name] = $value;
-    }
+    }        
 
     /**
      * Shortcut to get value from session
@@ -89,23 +108,6 @@ class Session
     public static function delete($name)
     {
         if(isset(self::$_data[$name])) unset(self::$_data[$name]);
-    }
-
-    /**
-     * Start a new session
-     *
-     * @return bool      Return true if session is started
-     */
-    private static function _start()
-    {
-        if(!self::$_sessionActive)
-        {
-            session_name('O2_SESSION');
-            self::$_sessionActive = session_start();
-            self::$_data = $_SESSION;
-            $_SESSION = array();
-        }
-        return self::$_sessionActive;
     }
 
     /**
@@ -160,6 +162,43 @@ class Session
         }
 
         return false;
+    }
+    
+    /**
+     * Store a flash message into session. Use getFlash() to retrieve.
+     * 
+     * @param mixed $message        Message to store into flash bag
+     * @param string $type          Type of message to store (ex: notice, alert, etc...)
+     */
+    public static function addFlash($message, $type = 'notice')
+    {
+        if(!isset(self::$_data['o2_flash'][$type])) self::$_data['o2_flash'][$type] = array();
+        self::$_data['o2_flash'][$type][] = $message;
+        self::$_flash[$type][] = $message;
+    }
+    
+    /**
+     * Get an array of flash messages from the given key
+     * 
+     * @param type $type            Type of messages to get
+     * @return array|false
+     */
+    public static function getFlash($type = 'notice')
+    {
+        if(isset(self::$_flash[$type])) return self::$_flash[$type];
+        return false;        
+    }
+    
+    /**
+     * Load flash message into temporary var
+     */
+    private static function _loadFlash()
+    {
+        if(isset(self::$_data['o2_flash']))
+        {
+            self::$_flash = self::$_data['o2_flash'];
+            unset(self::$_data['o2_flash']);
+        }
     }
     
     /**
