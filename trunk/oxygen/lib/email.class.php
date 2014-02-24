@@ -21,6 +21,8 @@ class Email
     private $_to = array();
     private $_cc = array();
     private $_bcc = array();
+    private $_priorities = array( 1 => '1 (Highest)', '2 (High)', '3 (Normal)', '4 (Low)', '5 (Lowest)' );
+    private $_priority;
     private $_subject;
     private $_bodyText;
     private $_bodyHtml;
@@ -74,6 +76,18 @@ class Email
         $this->_returnPath = $emailAddress;
         return $this;
     }
+    
+    /**
+     * Define the mail priority.
+     * 
+     * @param integert $priority
+     * @return Email                Return current instance of Email
+     */
+    public function priority($priority)
+    {
+        if(intval($priority) && isset( $this->_priorities[$priority])) $this->_priority= $this->_priorities[$priority];
+        return $this;
+    }    
     
     /**
      * Sets the email address(es) of the carbon copy recipient(s).<br />Can be a single email, a comma-delimited list or an array.
@@ -281,6 +295,7 @@ class Email
         if(!empty($this->_bcc))         $h[] = 'Bcc: '.join(',', $this->_bcc);     
         if(isset($this->_messageId))    $h[] = 'Message-ID: '.$this->_messageId;
         if(isset($this->_reference))    $h[] = 'References: ' . $this->_reference;
+        if(isset($this->_priority))     $h[] = 'X-Priority: ' . $this->_priority;
         
         $h[] = 'MIME-Version: 1.0';
         
