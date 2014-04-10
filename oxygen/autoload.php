@@ -16,6 +16,9 @@ define('PS', PATH_SEPARATOR);
 
 // include paths
 set_include_path(get_include_path().PS.
+                 HOOKS_DIR.DS.'core'.PS.
+                 HOOKS_DIR.DS.'lib'.PS.
+                 HOOKS_DIR.DS.'lib'.DS.'vendor'.DS.'smarty'.DS.'sysplugins'.PS.
                  FW_DIR.DS.'core'.PS.
                  FW_DIR.DS.'lib'.PS.
                  FW_DIR.DS.'lib'.DS.'vendor'.DS.'smarty'.DS.'sysplugins'.PS.
