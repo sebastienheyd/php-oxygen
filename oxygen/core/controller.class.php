@@ -291,17 +291,7 @@ class Controller
 
         if (!is_string($viewName) || $viewName === '') return '';
 
-        if(!$file = get_module_file($this->_module, 'template' . DS . $viewName))
-        {
-            $viewName = lcfirst($this->_action).ucfirst($viewName).'.html';
-            $file = get_module_file($this->_module, 'template' . DS . $viewName);
-        }
-  
-        if(!$file && is_file($model->view)) $file = $model->view;
-        
-        if(!$file) trigger_error($model->view.' not found in module '.$this->_module, E_USER_ERROR);  
-        
-        $tpl = Template::getInstance($file, $this->_module);
+        $tpl = Template::getInstance($model->view, $this->_module);
 
         $tpl->cache_lifetime = $model->cacheLifetime;
 
@@ -312,43 +302,7 @@ class Controller
         }
 
         return $tpl->get($model->cacheId);
-    }
-
-    /**
-     * Return the view content by the class name and model name
-     *
-     * @param string $className The class name
-     * @param string $model     The model name to output
-     * @return string           Return the processed view content
-     */
-    private function _renderView($className, $model)
-    {
-        preg_match('/^m_(.*)_view_(.*)/', $className, $matches);
-        $module   = $matches[1];
-        $l        = explode('_', $matches[2]);
-        $filename = lcfirst(end($l)) . '.html';
-
-        if ($file = get_module_file($module, 'template' . DS . $filename))
-        {
-            $tpl = Template::getInstance($file, $module);
-
-            $tpl->cache_lifetime = $model->cacheLifetime;
-
-            $modelContent = $model->getModel();
-
-            // Assign all models to template
-            if (is_array($modelContent) && !empty($modelContent))
-            {
-                foreach ($modelContent as $k => $v)
-                    $tpl->assign($k, $v);
-            }
-
-            $tpl->render($model->cacheId);
-            return true;
-        }
-
-        return false;
-    }
+    }    
 
 // ============================================================ CHAINING
 

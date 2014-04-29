@@ -35,20 +35,26 @@ class Template extends Smarty
         $this->compile_dir = WEBAPP_DIR.DS.'cache'.DS.'templates_c'.DS;
                       
         // Get plugins directories
-        $pluginsDir = array();        
-        if(is_dir(HOOKS_DIR.DS.'lib'.DS.'smartyplugins')) $pluginsDir[] = HOOKS_DIR.DS.'lib'.DS.'smartyplugins';
-        $pluginsDir[] = FW_DIR.DS.'lib'.DS.'smartyplugins';         
-        $pluginsDir = array_merge($pluginsDir, Search::dir('smartyplugins')->in(WEBAPP_MODULES_DIR)->setDepth(1,1)->fetch());        
-        $pluginsDir = array_merge($pluginsDir, Search::dir('smartyplugins')->in(MODULES_DIR)->setDepth(1,1)->fetch());        
-        $this->addPluginsDir($pluginsDir); 
+        $this->addPluginsDir($this->_getPluginsDirs());
         
         if($module !== null)
         {
-            $this->module = $module;
-            $this->addTemplateDir(dirname($template));
-            if(is_dir(WEBAPP_MODULES_DIR.DS.$module.DS.'template')) $this->addTemplateDir(WEBAPP_MODULES_DIR.DS.$module.DS.'template');
-            $this->addTemplateDir(MODULES_DIR.DS.$module.DS.'template');
-        }
+            $this->module = $module;               
+            $this->template_dir = array();
+            
+            $dir = '';
+            $subs = explode(DS, preg_replace('#^/#', '', $template));
+            if(count($subs) > 1) 
+            {
+                $template = array_pop($subs);
+                $dir = DS.join(DS, $subs);
+            }
+            
+            if(is_dir(WEBAPP_MODULES_DIR.DS.$module.DS.'template'.$dir)) 
+                    $this->addTemplateDir(WEBAPP_MODULES_DIR.DS.$module.DS.'template'.$dir);            
+            
+            $this->addTemplateDir(MODULES_DIR.DS.$module.DS.'template'.$dir);
+        }        
          
         if($template !== null) $this->setTemplate($template);
     }
@@ -128,5 +134,29 @@ class Template extends Smarty
         $this->assign('HTTP_PREFIX', HTTP_PREFIX);
         if($cacheId !== null) $this->setCaching(Smarty::CACHING_LIFETIME_SAVED);
         $this->display($this->_templateFile, $cacheId);
+    }
+    
+    /**
+     * Get Smarty plugins dirs
+     * Remove webapp/cache/smartyplugins.cache if needed
+     * 
+     * @return array
+     */
+    private function _getPluginsDirs()
+    {
+        $cacheFile = WEBAPP_DIR.DS.'cache'.DS.'smartyplugins.cache';
+        $mustCache = Config::get('cache.smartyplugins', true);
+
+        if($mustCache && is_file($cache)) return unserialize(file_get_contents($cacheFile));
+
+        $pluginsDir = array();        
+        if(is_dir(HOOKS_DIR.DS.'lib'.DS.'smartyplugins')) $pluginsDir[] = HOOKS_DIR.DS.'lib'.DS.'smartyplugins';
+        $pluginsDir[] = FW_DIR.DS.'lib'.DS.'smartyplugins';         
+        $pluginsDir = array_merge($pluginsDir, Search::dir('smartyplugins')->in(WEBAPP_MODULES_DIR)->setDepth(1,1)->fetch());        
+        $pluginsDir = array_merge($pluginsDir, Search::dir('smartyplugins')->in(MODULES_DIR)->setDepth(1,1)->fetch());        
+        
+        if($mustCache) file_put_contents($cacheFile, serialize($pluginsDir), LOCK_EX);
+        
+        return $pluginsDir;
     }
 }
