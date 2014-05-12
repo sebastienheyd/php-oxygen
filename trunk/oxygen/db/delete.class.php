@@ -82,7 +82,7 @@ class f_db_Delete extends f_db_Where
      */
     public function execute($config = 'db1')
     {        
-        $sql  = 'DELETE FROM '.$this->_from.' ';     
+        $sql  = 'DELETE FROM '.Db::quoteTable($this->_from, $config).' ';     
 
         $sql .= $this->_buildWhere();        
 
