@@ -86,7 +86,7 @@ class f_db_Update extends f_db_Where
      */
     public function execute($config = 'db1')
     {
-        $sql = 'UPDATE '.DB::quoteTable($this->_table).' SET ';
+        $sql = 'UPDATE '.DB::quoteTable($this->_table, $config).' SET ';
         
         $i = 0;
         $fields = array();
