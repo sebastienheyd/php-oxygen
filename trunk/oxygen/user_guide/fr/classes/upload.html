@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />        
+        <link rel="stylesheet" type="text/css" href="../../css/guide.css" />        
+        <script type="text/javascript">var basepath = '../../'; var lang = 'fr';</script>        
+        <script type="text/javascript" src="../../js/loader.js"></script>        
+    </head>
+    <body>     
+        <h1>Upload</h1>
+        <p>
+           La classe Upload permet de gérer le(s) téléchargement(s) via http. Elle permet de filtrer par extension, taille, 
+           poids, etc...
+        </p>             
+        <blockquote class="info">
+            Pour fonctionner la classe nécessite l'attribut <strong>enctype="multipart/form-data"</strong> dans
+            la balise &lt;form&gt; de votre formulaire HTML
+        </blockquote>
+        
+        <h2>Exemple d'utilisation</h2>
+        <php>
+            if($upload = Upload::get('file_field'))
+            {
+                $upload->config(array(
+                    'type_whitelist' => 'image/jpeg', 
+                    'max_size' => 300000, 
+                    'is_image' => true,
+                    'overwrite' => true,
+                    'normalize' => true));
+
+                if($upload->saveTo('profil de démonstration.jpg'))
+                {
+                    echo $upload->saved_to;     // chemin complet du fichier enregistré
+                    echo $upload->saved_as;     // nom du fichier enregistré (ici "profil-de-demonstration.jpg")
+                }
+                else
+                {
+                    print_r($upload->errors);   // tableau des erreurs
+                }
+            }        
+        </php>        
+        
+        <h2>Méthodes</h2>
+        
+        <h3>get()</h3>
+        <p>Méthode statique. Instancie Upload. La méthode prend en argument le nom du champ de type file provenant du formulaire posté.</p>
+        <php>
+            Upload::get('fieldname');       // Va récupérer $_FILES['fieldname']
+            Upload::get('form[fieldname]');
+        </php>
+        
+        <h3>config()</h3>
+        <p>Permet de configurer les filtres, les limites et les options de téléchargement</p>
+        <php>
+            Upload::get('fieldname');
+            
+            $upload->config(array('type_whitelist' => 'image/jpeg', 'max_size' => 300000));
+        </php>
+        <p>Les options possibles sont :</p>
+        <table>
+            <tr><th>max_size</th><td>integer</td><td>La taille maximum en bytes du fichier téléchargé. Si l'option n'est pas définie la taille n'est pas limitée.</td></tr>
+            <tr><th>is_image</th><td>boolean</td><td>Si true, vérifie si le fichier téléchargé est une image. Par défaut la vérification n'est pas effectuée.</td></tr>
+            <tr><th>overwrite</th><td>boolean</td><td>Si true, si le fichier existe il sera écrasé. Par défaut le fichier n'est pas écrasé.</td></tr>
+            <tr><th>auto_rename</th><td>boolean</td><td>Appelé que si overwrite=true. Si true, le fichier sera suffixé par un nombre séquenciel.</td></tr>
+            <tr><th>normalize</th><td>boolean</td><td>Si true, normalise le nom du fichier téléchargé pour être compatible avec les navigateurs.</td></tr>
+            <tr><th>ext_whitelist</th><td>string</td><td>Une liste d'extensions autorisées séparées par une virgule. La liste n'est pas sensible à la casse.</td></tr>
+            <tr><th>ext_blacklist</th><td>string</td><td>Une liste d'extensions interdites séparées par une virgule. La liste n'est pas sensible à la casse.</td></tr>
+            <tr><th>type_whitelist</th><td>string</td><td>Une liste de types autorisés séparés par une virgule. Exemple : si le mimetype est "text/plain" saisissez "text"</td></tr>
+            <tr><th>type_blacklist</th><td>string</td><td>Une liste de types interdits séparés par une virgule. Exemple : si le mimetype est "text/plain" saisissez "text"</td></tr>
+            <tr><th>mime_whitelist</th><td>string</td><td>Une liste de mimetypes autorisés séparés par une virgule.</td></tr>
+            <tr><th>mime_blacklist</th><td>string</td><td>Une liste de mimetypes interdits séparés par une virgule.</td></tr>
+        </table>
+        
+        <h3>saveTo()</h3>
+        <p>Lance l'enregistrement du fichier. La méthode prend en argument le chemin complet du fichier et retourne false en cas d'erreur.</p>
+        <php>
+            Upload::get('fieldname')->saveTo('file.ext');
+        </php>
+        
+        <h3>getOriginalName()</h3>
+        <p>Retourne le nom du fichier original</p>
+        
+        <h3>getOriginalExtension()</h3>
+        <p>Retourne l'extension du fichier original</p>
+        
+        <h3>getSaveTo()</h3>
+        <p>Après l'enregistrement par saveTo(), retourne le chemin du fichier enregistré.</p>
+        
+        <h3>getSaveAs()</h3>
+        <p>Après l'enregistrement par saveTo(), retourne le nom du fichier enregistré.</p>
+        
+        <h3>getErrors()</h3>
+        <p>Après l'enregistrement par saveTo(), retourne un tableau contenant les erreurs.</p>                
+        
+    </body>            
+</html>

@@ -6,223 +6,384 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @copyright   Copyright (c) 2011-2012 Sébastien HEYD <sheyd@php-oxygen.com>
+ * @copyright   Copyright (c) 2011-2014 Sébastien HEYD <sheyd@php-oxygen.com>
  * @author      Sébastien HEYD <sheyd@php-oxygen.com>
  * @package     PHP Oxygen
  */
 
 class Upload
-{
-    private static $_instances;
-    
+{    
+    private $_config = array();
     private $_name;
     private $_type;
     private $_tmp_name;
-    private $_error = 4;
+    private $_error;
     private $_size;
     
-    private $_extensions = array();
-    private $_max_size;
-    private $_check_image = false;
+    public $errors = array();
+    public $saved_to;
+    public $saved_as;
     
-    const UPLOAD_ERR_FILE_EXISTS = 9;
-    const UPLOAD_ERR_FILE_NOT_IMAGE = 10;
-    const UPLOAD_ERR_FILE_EXTENSION = 11;
+    const UPLOAD_ERR_MAX_SIZE = 10;
+    const UPLOAD_ERR_FILE_EXTENSION = 20;
+    const UPLOAD_ERR_FILE_TYPE = 30;            
+    const UPLOAD_ERR_FILE_NOT_IMAGE = 40;
+    const UPLOAD_ERR_MOVE_FAILED = 50;
+    const UPLOAD_ERR_OVERWRITE = 60;
     
     /**
      * Main constructor
      * 
-     * @param string $name      Name of the field to get
+     * @param string $name      Name of the form field to get
      * @return Upload 
      */
     private function __construct($name)
     {
         if(preg_match('#(.*?)\[(.*?)\]#i', $name, $match))
         {            
-            if(isset($_FILES[$match[1]]['tmp_name'][$match[2]]))
-            {
-                $fields = array('name', 'type', 'tmp_name', 'error', 'size');
-                foreach($fields as $field)
-                {
-                    $prop = '_'.$field;
-                    $this->$prop = $_FILES[$match[1]][$field][$match[2]];
-                }
-            }
+            $fields = array('name', 'type', 'tmp_name', 'error', 'size');
+            foreach($fields as $field) $this->{"_$field"} = $_FILES[$match[1]][$field][$match[2]];
         }
         else
         {
-            if(isset($_FILES[$name]['tmp_name']))
-            {
-                foreach($_FILES[$name] as $k => $v)
-                {
-                    $prop = '_'.$k;
-                    $this->$prop = $v;
-                }                
-            }            
+            foreach($_FILES[$name] as $k => $v) $this->{"_$k"} = $v;                   
         }
+        
+        if($this->_error !== UPLOAD_ERR_OK) $this->errors[] = $this->_getErrorMessage($this->_error);
+        
+        unset($this->_error);
     }        
       
     /**
-     * Get instance of uploaded file
+     * Get instance of Upload
      * 
-     * @param string $name      Name of the field to get
-     * @return Upload 
+     * @param string $name      Name of the form field to get
+     * @return Upload|false     Return instance or false if there is no file upload
      */
     public static function get($name)
     {
-        $k = md5($name);
-        if(!isset(self::$_instances[$k]))  self::$_instances[$k] = new self($name);
-        return self::$_instances[$k];
-    }
-    
-    /**
-     * Return the uploaded file temp file name
-     *
-     * @return string
-     */
-    public function getTempName()
-    {
-        return $this->_tmp_name;
-    }
-    
-    /**
-     * Return the original file name
-     * 
-     * @param boolean $withExtension    [optional] Return with extension or not
-     * @return string
-     */
-    public function getName($withExtension = true)
-    {
-        if(!$withExtension) return substr($this->_name, 0, strrpos($this->_name, '.'));
-        return $this->_name;
-    }
-    
-    
-    /**
-     * Return the original file extension
-     *
-     * @return string
-     */
-    public function getExtension()
-    {
-        return substr($this->_name, strrpos($this->_name, '.') + 1);
-    }    
-    
-    /**
-     * Check if file is correctly uploaded
-     * 
-     * @return boolean 
-     */
-    public function isUploaded()
-    {
-        return $this->_error === UPLOAD_ERR_OK;
-    }    
-    
-    /**
-     * Return upload error
-     * 
-     * @return int
-     */
-    public function getError()
-    {
-        return $this->_error;
-    }
-    
-    public function filterExtensions($extensions)
-    {
-        $extensions = func_get_args();                        
-        $extensions = explode(',', join(',', $extensions)); 
-        $extensions = array_map('trim', $extensions);
+        if(empty($_FILES)) return false;
         
-        $this->_extensions = $extensions;
-        return $this;
-    }
-    
-    public function maxSize($size)
-    {
-        $this->_max_size = $size;
-        return $this;
-    }
-    
-    /**
-     * Check if uploaded file has the given extension(s)
-     * 
-     * @param mixed $extensions     Array or comma separated list
-     * @return boolean
-     */
-    public function hasExtension($extensions)
-    {        
-        if($this->isUploaded())
-        {
-            $extensions = func_get_args();                        
-            $extensions = explode(',', join(',', $extensions)); 
-            $extensions = array_map('trim', $extensions);
-            $regexp = '#(\.'.join('|\.', $extensions).')$#i';           
-            return preg_match($regexp, $this->_name);
+        if(preg_match('#(.*?)\[(.*?)\]#i', $name, $match))
+        {            
+            if(isset($_FILES[$match[1]]['error'][$match[2]]) &&
+               $_FILES[$match[1]]['error'][$match[2]] == UPLOAD_ERR_NO_FILE) return false;
         }
-        return false;
-    }
-    
-    
+        else
+        {
+            if(isset($_FILES[$name]) && $_FILES[$name]['error'] == UPLOAD_ERR_NO_FILE) return false;           
+        }
+        
+        $k = md5($name);
+        return new self($name);
+    }    
+        
     /**
-     * Check if uploaded file has weight less than given size
+     * Return the original uploaded file name
      * 
-     * @param int $size     Size in octets
-     * @return boolean
+     * @param boolean $withExtension    [optional] If true, return fully qualified. Default is true.
+     * @return string
      */
-    public function sizeIsLessThan($size)
+    public function getOriginalName($withExtension = true)
     {
-        return $this->_size <= $size;
+        return $this->_getFileName($this->_name, $withExtension);
     }    
     
     /**
-     * Check if uploaded file is an image
-     * 
-     * @return boolean
-     */    
-    public function isImage()
+     * Return the original uploaded file extension
+     *
+     * @return string
+     */
+    public function getOriginalExtension()
     {
-        $this->_check_image = true;
+        return $this->_getFileExtension($this->_name);
+    }    
+    
+    /**
+     * Fully qualified path where the uploaded file was saved 
+     *  
+     * @return string
+     */
+    public function getSaveTo()
+    {
+        return $this->saved_to;
+    }
+    
+    /**
+     * Name of the file that was saved
+     * 
+     * @return string
+     */
+    public function getSaveAs()
+    {
+        return $this->saved_as;
+    }
+        
+    /**
+     * Return the errors array
+     * 
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+    
+    /**
+     * Define configuration settings
+     * 
+     * @param array $config     Configuration array, see documentation for parameters
+     */
+    public function config(array $config)
+    {
+        $this->_config = $config;
         return $this;
-        return getimagesize($this->_tmp_name) !== false;
     }
     
     /**
      * Save uploaded file to destination file
      * 
-     * @param string $file                  Destination file path
-     * @param boolean $checkIfFileExists    [optional] If true, return Upload::$FILE_EXISTS error code if file exists. Default is false
-     * @return integer                      Return an error code
+     * @param string $file                  Destination file
+     * @return boolean                      Return true if file saving is complete
      */
-    public function saveTo($file, $checkIfFileExists = false)
+    public function saveTo($file)
     {        
-        if(!$this->isUploaded()) return false;
-        
-        if($checkIfFileExists)
+        if(!empty($this->_config))
         {
-            if(is_file($file)) $this->_error = self::UPLOAD_ERR_FILE_EXISTS;
-            return false;
-        }
-        
-        if($this->_check_image && getimagesize($this->_tmp_name) === false)
-        {
-            $this->_error = self::UPLOAD_ERR_FILE_NOT_IMAGE;
-            return false;
-        }   
-        
-        if(!empty($this->_extensions))
-        {
-            $regexp = '#(\.'.join('|\.', $this->_extensions).')$#i';           
-            if(!preg_match($regexp, $this->_name))
+            foreach($this->_config as $filter => $value)
             {
-                $this->_error = self::UPLOAD_ERR_FILE_EXTENSION;
-                return false;
+                $method =  '_'.ucfirst(preg_replace('/(?:^|_)(.?)/e', "strtoupper('$1')", $filter));
+                if(method_exists($this, $method)) $this->$method($value);                                    
             }
         }
-
-        if(@move_uploaded_file($this->_tmp_name, $file)) return true;
         
-        $this->_error = UPLOAD_ERR_CANT_WRITE;
-        return false;
+        if(isset($this->_config['normalize']) && $this->_config['normalize'] === true)
+        {
+            $dir = dirname($file);
+            $file = $dir.DS.String::toUrl($this->_getFileName($file, false)).'.'.$this->_getFileExtension($file);
+        }        
+        
+        if(!isset($this->_config['overwrite']) || $this->_config['overwrite'] === false)
+        {
+            if(is_file($file))
+            {
+                if(isset($this->_config['auto_rename']) && $this->_config['auto_rename'] === true)
+                {
+                    $dir = realpath(dirname($file));
+                    $files = glob($dir.DS.$this->_getFileName($file, false).'-*.'.$this->_getFileExtension($file));
+                    $file = $dir.DS.$this->_getFileName($file, false).'-'.(count($files)+1).'.'.$this->_getFileExtension($file);
+                }
+                else
+                {
+                    $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_OVERWRITE);
+                }
+            }
+        }        
+
+        if(!empty($this->errors)) return false;        
+
+        if(!@move_uploaded_file($this->_tmp_name, $file)) 
+        {
+            $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_MOVE_FAILED);
+            return false;
+        }     
+        
+        $this->saved_to = realpath($file);
+        $this->saved_as = basename($file);
+        
+        return true;
+    }       
+    
+    /**
+     * Check allowed file extensions
+     * 
+     * @param string $extensions    Comma separated list
+     * @return void
+     */
+    private function _ExtWhitelist($extensions)
+    {
+        $extensions = $this->_parseList($extensions);
+        $regexp = '#(\.'.join('|\.', $extensions).')$#i';           
+        if(!preg_match($regexp, $this->_name)) 
+                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_EXTENSION);
+    }
+    
+    /**
+     * Check disallowed file extensions
+     * 
+     * @param string $extensions    Comma separated list
+     * @return void
+     */
+    private function _ExtBlacklist($extensions)
+    {
+        $extensions = $this->_parseList($extensions);
+        $regexp = '#(\.'.join('|\.', $extensions).')$#i';           
+        if(preg_match($regexp, $this->_name)) 
+                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_EXTENSION);
+    }
+    
+    /**
+     * Check allowed mimetype
+     * 
+     * @param type $types   Comma separated list
+     * @return void
+     */
+    private function _TypeWhitelist($types)
+    {
+        $types = $this->_parseList($types);
+        list($type, $sub) = explode('/', $this->_type);
+        if(!in_array($type, $types)) 
+                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_TYPE);
+    }
+    
+    /**
+     * Check disallowed mimetype
+     * 
+     * @param type $types   Comma separated list
+     * @return void
+     */
+    private function _TypeBlacklist($types)
+    {
+        $types = $this->_parseList($types);
+        list($type, $sub) = explode('/', $this->_type);
+        if(in_array($type, $types)) 
+                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_TYPE);
+    }
+    
+    /**
+     * Check allowed mimetype
+     * 
+     * @param type $types   Comma separated list
+     * @return void
+     */
+    private function _MimeWhitelist($types)
+    {
+        $types = $this->_parseList($types);
+        if(!in_array($this->_type, $types)) 
+                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_TYPE);
+    }
+    
+    /**
+     * Check disallowed mimetype
+     * 
+     * @param type $types   Comma separated list
+     * @return void
+     */
+    private function _MimeBlacklist($types)
+    {
+        $types = $this->_parseList($types);
+        if(in_array($this->_type, $types)) 
+                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_TYPE);
+    }
+    
+    /**
+     * Check maximum size
+     * 
+     * @param integer $size     Size in bytes
+     * @return void
+     */
+    private function _MaxSize($size)
+    {
+        if($this->_size > $size) 
+            $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_MAX_SIZE);
+    }
+    
+    /**
+     * Check if file is an image
+     * 
+     * @return void
+     */    
+    private function _IsImage()
+    {
+        if(function_exists('exif_imagetype'))
+        {
+            if(exif_imagetype($this->_tmp_name) === false) 
+                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_NOT_IMAGE);
+        }
+        else
+        {
+            if(getimagesize($this->_tmp_name) === false) 
+                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_NOT_IMAGE);
+        }
+    }
+    
+    /**
+     * Define if file must be overwrited
+     * 
+     * @param boolean $value
+     * @return void
+     */
+    private function _Overwrite($value)
+    {
+        $this->_config['overwrite'] = $value;
+    }
+    
+    /**
+     * Parse a comma/space/pipe/dotcomma separated list
+     * 
+     * @param string $list
+     * @return type
+     */
+    private function _parseList($list)
+    {
+        $list = func_get_args();                        
+        $list = preg_split('#[\s,|;]+#', join(',', $list)); 
+        $list = array_map('trim', $list);
+        $list = array_unique($list);
+        return $list;
+    }   
+    
+    /**
+     * Get filename from a fully qualified path
+     * 
+     * @param string $file              Absolute path or filename
+     * @param boolean $withExtension    [optional] If true, return with extension. Default is true
+     * @return string
+     */
+    private function _getFileName($file, $withExtension = true)
+    {
+        $file = basename($file);
+        if(!$withExtension) return mb_substr($file, 0, mb_strrpos($file, '.', 0, 'utf-8'), 'utf-8');
+        return $file;
+    }
+    
+    /**
+     * Get extension from a fully qualified path
+     * 
+     * @param string $file              Absolute path or filename
+     * @return string
+     */
+    private function _getFileExtension($file)
+    {
+        $file = basename($file);
+        return mb_strtolower(mb_substr($file, mb_strrpos($file, '.', 0, 'utf-8') + 1, 15, 'utf-8'));
+    }
+    
+    /**
+     * Return code and message from a given error code
+     * 
+     * @param integer $code
+     * @return array            Array containing the error code and the error text
+     */
+    private function _getErrorMessage($code)
+    {
+        $codes = array(
+            UPLOAD_ERR_OK           => 'There is no error, the file uploaded with success',
+            UPLOAD_ERR_INI_SIZE     => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
+            UPLOAD_ERR_FORM_SIZE    => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
+            UPLOAD_ERR_PARTIAL      => 'The uploaded file was only partially uploaded',
+            UPLOAD_ERR_NO_FILE      => 'No file was uploaded',
+            UPLOAD_ERR_NO_TMP_DIR   => 'Missing a temporary folder',
+            UPLOAD_ERR_CANT_WRITE   => 'Failed to write file to disk',
+            UPLOAD_ERR_EXTENSION    => 'A PHP extension stopped the file upload',
+            self::UPLOAD_ERR_MAX_SIZE       => 'The file uploaded exceeds the maximum file size defined in the configuration',
+            self::UPLOAD_ERR_FILE_EXTENSION => 'The extension of the file uploaded is blacklisted or not whitelisted',
+            self::UPLOAD_ERR_FILE_TYPE      => 'The type of the file uploaded is blacklisted or not whitelisted',
+            self::UPLOAD_ERR_FILE_NOT_IMAGE => 'The file uploaded is not an image',
+            self::UPLOAD_ERR_MOVE_FAILED    => 'The uploaded filename could not be moved from temporary storage to the path specified',
+            self::UPLOAD_ERR_OVERWRITE      => 'The uploaded filename could not be saved because a file with that name already exists'        
+        );
+        
+        return array('code' => $code, 'message' => $codes[$code]);
     }
 }
