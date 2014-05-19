@@ -64,6 +64,8 @@
             <tr><th>overwrite</th><td>boolean</td><td>Si true, si le fichier existe il sera écrasé. Par défaut le fichier n'est pas écrasé.</td></tr>
             <tr><th>auto_rename</th><td>boolean</td><td>Appelé que si overwrite=true. Si true, le fichier sera suffixé par un nombre séquenciel.</td></tr>
             <tr><th>normalize</th><td>boolean</td><td>Si true, normalise le nom du fichier téléchargé pour être compatible avec les navigateurs.</td></tr>
+            <tr><th>path</th><td>string</td><td>Permet de définir le chemin ou uploader le(s) fichier(s).</td></tr>
+            <tr><th>create_path</th><td>boolean</td><td>Si true, crée le dossier d'upload si il n'existe pas. True par défaut.</td></tr>
             <tr><th>ext_whitelist</th><td>string</td><td>Une liste d'extensions autorisées séparées par une virgule. La liste n'est pas sensible à la casse.</td></tr>
             <tr><th>ext_blacklist</th><td>string</td><td>Une liste d'extensions interdites séparées par une virgule. La liste n'est pas sensible à la casse.</td></tr>
             <tr><th>type_whitelist</th><td>string</td><td>Une liste de types autorisés séparés par une virgule. Exemple : si le mimetype est "text/plain" saisissez "text"</td></tr>
@@ -71,6 +73,9 @@
             <tr><th>mime_whitelist</th><td>string</td><td>Une liste de mimetypes autorisés séparés par une virgule.</td></tr>
             <tr><th>mime_blacklist</th><td>string</td><td>Une liste de mimetypes interdits séparés par une virgule.</td></tr>
         </table>
+        
+        <h3>isValid()</h3>
+        <p>Vérifie que le fichier téléchargé est valide par rapport au règles définie dans la configuration de la classe Upload.</p>
         
         <h3>saveTo()</h3>
         <p>Lance l'enregistrement du fichier. La méthode prend en argument le chemin complet du fichier et retourne false en cas d'erreur.</p>

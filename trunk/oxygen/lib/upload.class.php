@@ -49,7 +49,7 @@ class Upload
             foreach($_FILES[$name] as $k => $v) $this->{"_$k"} = $v;                   
         }
         
-        if($this->_error !== UPLOAD_ERR_OK) $this->errors[] = $this->_getErrorMessage($this->_error);
+        if($this->_error !== UPLOAD_ERR_OK) $this->errors[] = $this->_addErrorMessage($this->_error);
         
         unset($this->_error);
     }        
@@ -141,13 +141,14 @@ class Upload
     }
     
     /**
-     * Save uploaded file to destination file
+     * Return true if uploaded file have passed the upload validation
      * 
-     * @param string $file                  Destination file
-     * @return boolean                      Return true if file saving is complete
+     * @return boolean
      */
-    public function saveTo($file)
-    {        
+    public function isValid()
+    {
+        if(!empty($this->errors)) return false;
+        
         if(!empty($this->_config))
         {
             foreach($this->_config as $filter => $value)
@@ -157,9 +158,26 @@ class Upload
             }
         }
         
+        return empty($this->errors);
+    }
+    
+    /**
+     * Save uploaded file to destination file
+     * 
+     * @param string $file                  Destination file
+     * @return boolean                      Return true if file saving is complete
+     */
+    public function saveTo($file)
+    {
+        if(!$this->isValid()) return false;
+        
+        $dir = isset($this->_config['path']) ? $this->_config['path'] : dirname($file);
+        
+        if((!isset($this->_config['create_path']) || $this->_config['create_path'] === true ) && !is_dir($dir))
+            mkdir($dir, 0777, true);
+        
         if(isset($this->_config['normalize']) && $this->_config['normalize'] === true)
         {
-            $dir = dirname($file);
             $file = $dir.DS.String::toUrl($this->_getFileName($file, false)).'.'.$this->_getFileExtension($file);
         }        
         
@@ -169,13 +187,13 @@ class Upload
             {
                 if(isset($this->_config['auto_rename']) && $this->_config['auto_rename'] === true)
                 {
-                    $dir = realpath(dirname($file));
+                    $dir = realpath($dir);
                     $files = glob($dir.DS.$this->_getFileName($file, false).'-*.'.$this->_getFileExtension($file));
                     $file = $dir.DS.$this->_getFileName($file, false).'-'.(count($files)+1).'.'.$this->_getFileExtension($file);
                 }
                 else
                 {
-                    $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_OVERWRITE);
+                    $this->_addErrorMessage(self::UPLOAD_ERR_OVERWRITE);
                 }
             }
         }        
@@ -184,7 +202,7 @@ class Upload
 
         if(!@move_uploaded_file($this->_tmp_name, $file)) 
         {
-            $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_MOVE_FAILED);
+            $this->_addErrorMessage(self::UPLOAD_ERR_MOVE_FAILED);
             return false;
         }     
         
@@ -205,7 +223,7 @@ class Upload
         $extensions = $this->_parseList($extensions);
         $regexp = '#(\.'.join('|\.', $extensions).')$#i';           
         if(!preg_match($regexp, $this->_name)) 
-                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_EXTENSION);
+            $this->_addErrorMessage(self::UPLOAD_ERR_FILE_EXTENSION);
     }
     
     /**
@@ -219,7 +237,7 @@ class Upload
         $extensions = $this->_parseList($extensions);
         $regexp = '#(\.'.join('|\.', $extensions).')$#i';           
         if(preg_match($regexp, $this->_name)) 
-                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_EXTENSION);
+            $this->_addErrorMessage(self::UPLOAD_ERR_FILE_EXTENSION);
     }
     
     /**
@@ -233,7 +251,7 @@ class Upload
         $types = $this->_parseList($types);
         list($type, $sub) = explode('/', $this->_type);
         if(!in_array($type, $types)) 
-                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_TYPE);
+            $this->_addErrorMessage(self::UPLOAD_ERR_FILE_TYPE);
     }
     
     /**
@@ -247,7 +265,7 @@ class Upload
         $types = $this->_parseList($types);
         list($type, $sub) = explode('/', $this->_type);
         if(in_array($type, $types)) 
-                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_TYPE);
+            $this->_addErrorMessage(self::UPLOAD_ERR_FILE_TYPE);
     }
     
     /**
@@ -260,7 +278,7 @@ class Upload
     {
         $types = $this->_parseList($types);
         if(!in_array($this->_type, $types)) 
-                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_TYPE);
+            $this->_addErrorMessage(self::UPLOAD_ERR_FILE_TYPE);
     }
     
     /**
@@ -273,7 +291,7 @@ class Upload
     {
         $types = $this->_parseList($types);
         if(in_array($this->_type, $types)) 
-                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_TYPE);
+            $this->_addErrorMessage(self::UPLOAD_ERR_FILE_TYPE);
     }
     
     /**
@@ -285,7 +303,7 @@ class Upload
     private function _MaxSize($size)
     {
         if($this->_size > $size) 
-            $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_MAX_SIZE);
+            $this->_addErrorMessage(self::UPLOAD_ERR_MAX_SIZE);
     }
     
     /**
@@ -298,26 +316,15 @@ class Upload
         if(function_exists('exif_imagetype'))
         {
             if(exif_imagetype($this->_tmp_name) === false) 
-                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_NOT_IMAGE);
+                $this->_addErrorMessage(self::UPLOAD_ERR_FILE_NOT_IMAGE);
         }
         else
         {
             if(getimagesize($this->_tmp_name) === false) 
-                $this->errors[] = $this->_getErrorMessage(self::UPLOAD_ERR_FILE_NOT_IMAGE);
+                $this->_addErrorMessage(self::UPLOAD_ERR_FILE_NOT_IMAGE);
         }
     }
-    
-    /**
-     * Define if file must be overwrited
-     * 
-     * @param boolean $value
-     * @return void
-     */
-    private function _Overwrite($value)
-    {
-        $this->_config['overwrite'] = $value;
-    }
-    
+        
     /**
      * Parse a comma/space/pipe/dotcomma separated list
      * 
@@ -365,17 +372,17 @@ class Upload
      * @param integer $code
      * @return array            Array containing the error code and the error text
      */
-    private function _getErrorMessage($code)
+    private function _addErrorMessage($code)
     {
         $codes = array(
-            UPLOAD_ERR_OK           => 'There is no error, the file uploaded with success',
-            UPLOAD_ERR_INI_SIZE     => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
-            UPLOAD_ERR_FORM_SIZE    => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
-            UPLOAD_ERR_PARTIAL      => 'The uploaded file was only partially uploaded',
-            UPLOAD_ERR_NO_FILE      => 'No file was uploaded',
-            UPLOAD_ERR_NO_TMP_DIR   => 'Missing a temporary folder',
-            UPLOAD_ERR_CANT_WRITE   => 'Failed to write file to disk',
-            UPLOAD_ERR_EXTENSION    => 'A PHP extension stopped the file upload',
+            UPLOAD_ERR_OK                   => 'There is no error, the file uploaded with success',
+            UPLOAD_ERR_INI_SIZE             => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
+            UPLOAD_ERR_FORM_SIZE            => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
+            UPLOAD_ERR_PARTIAL              => 'The uploaded file was only partially uploaded',
+            UPLOAD_ERR_NO_FILE              => 'No file was uploaded',
+            UPLOAD_ERR_NO_TMP_DIR           => 'Missing a temporary folder',
+            UPLOAD_ERR_CANT_WRITE           => 'Failed to write file to disk',
+            UPLOAD_ERR_EXTENSION            => 'A PHP extension stopped the file upload',
             self::UPLOAD_ERR_MAX_SIZE       => 'The file uploaded exceeds the maximum file size defined in the configuration',
             self::UPLOAD_ERR_FILE_EXTENSION => 'The extension of the file uploaded is blacklisted or not whitelisted',
             self::UPLOAD_ERR_FILE_TYPE      => 'The type of the file uploaded is blacklisted or not whitelisted',
@@ -383,7 +390,7 @@ class Upload
             self::UPLOAD_ERR_MOVE_FAILED    => 'The uploaded filename could not be moved from temporary storage to the path specified',
             self::UPLOAD_ERR_OVERWRITE      => 'The uploaded filename could not be saved because a file with that name already exists'        
         );
-        
-        return array('code' => $code, 'message' => $codes[$code]);
+
+        $this->errors[$code] = I18n::t(FW_DIR.DS.'lib'.DS.'locales'.DS.'upload.'.I18n::getLocale().'.xml', $codes[$code], array(), 'en_US');
     }
 }

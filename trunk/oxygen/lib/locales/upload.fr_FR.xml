@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en_US" datatype="plaintext" original="default">
+    <body>
+      <trans-unit id="1">
+        <source>There is no error, the file uploaded with success</source>
+        <target>Aucune erreur, le fichier à été téléchargé avec succès</target>
+      </trans-unit>
+      <trans-unit id="2">
+        <source>The uploaded file exceeds the upload_max_filesize directive in php.ini</source>
+        <target>Le poids du fichier téléchargé dépasse la directive upload_max_filesize du fichier php.ini</target>
+      </trans-unit>
+      <trans-unit id="3">
+        <source>The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form</source>
+        <target>Le poids du fichier téléchargé dépasse la directive MAX_FILE_SIZE spécifiée dans le formulaire HTML</target>
+      </trans-unit>
+      <trans-unit id="4">
+        <source>The uploaded file was only partially uploaded</source>
+        <target>Le fichier à été partiellement téléchargé</target>
+      </trans-unit>
+      <trans-unit id="5">
+        <source>No file was uploaded</source>
+        <target>Aucun fichier téléchargé</target>
+      </trans-unit>
+      <trans-unit id="6">
+        <source>Missing a temporary folder</source>
+        <target>Le dossier temporaire est introuvable</target>
+      </trans-unit>
+      <trans-unit id="7">
+        <source>Failed to write file to disk</source>
+        <target>Erreur d'écriture sur le disque</target>
+      </trans-unit>
+      <trans-unit id="8">
+        <source>A PHP extension stopped the file upload</source>
+        <target>Une extension PHP à stoppée le téléchargement</target>
+      </trans-unit>
+      <trans-unit id="9">
+        <source>The file uploaded exceeds the maximum file size defined in the configuration</source>
+        <target>Le fichier téléchargé dépasse le poids maximum défini</target>
+      </trans-unit>
+      <trans-unit id="10">
+        <source>The extension of the file uploaded is blacklisted or not whitelisted</source>
+        <target>L'extension du fichier téléchargé n'est pas autorisée</target>
+      </trans-unit>
+      <trans-unit id="11">
+        <source>The type of the file uploaded is blacklisted or not whitelisted</source>
+        <target>Le type du fichier téléchargé n'est pas autorisé</target>
+      </trans-unit>
+      <trans-unit id="12">
+        <source>The file uploaded is not an image</source>
+        <target>Le fichier téléchargé n'est pas une image</target>
+      </trans-unit>
+      <trans-unit id="13">
+        <source>The uploaded filename could not be moved from temporary storage to the path specified</source>
+        <target>Le fichier téléchargé ne peut pas être déplacé dans le dossier final</target>
+      </trans-unit>
+      <trans-unit id="14">
+        <source>The uploaded filename could not be saved because a file with that name already exists</source>
+        <target>Le fichier téléchargé existe déjà sur le serveur et ne peut être écrasé</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
