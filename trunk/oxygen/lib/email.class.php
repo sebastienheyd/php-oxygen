@@ -264,7 +264,7 @@ class Email
      */
     public function send($useReturnPath = true)
     {
-        if (($this->_bodyText !== '' || $this->_bodyHtml !== '') && isset($this->_to) && isset($this->_from))
+        if (($this->_bodyText !== '' || $this->_bodyHtml !== '') && !empty($this->_to) && !empty($this->_from))
         {
             if(version_compare(phpversion(), '5.3.0', '>=') || ini_get("safe_mode") || $useReturnPath == false)
             {
