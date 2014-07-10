@@ -174,7 +174,6 @@ class Session
     {
         if(!isset(self::$_data['o2_flash'][$type])) self::$_data['o2_flash'][$type] = array();
         self::$_data['o2_flash'][$type][] = $message;
-        self::$_flash[$type][] = $message;
     }
     
     /**

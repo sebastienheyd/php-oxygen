@@ -35,7 +35,7 @@ class Security
         if(function_exists('gzdeflate')) $text = gzdeflate($text, 9);        
         
         // Use openssl_encrypt with PHP >= 5.3.0
-        if(function_exists('openssl_encrypt') && in_array('BF-OFB', openssl_get_cipher_methods()))
+        if(Config::get('general.crypt_method', 'openssl') === 'openssl' && function_exists('openssl_encrypt') && in_array('BF-OFB', openssl_get_cipher_methods()))
         {
             return strtr(openssl_encrypt($text, 'BF-OFB', $key), '+/', '-_');
         }
@@ -71,7 +71,7 @@ class Security
         if($key === null) $key = self::_getKey();
         
         // Use openssl_decrypt with PHP >= 5.3.0
-        if(function_exists('openssl_decrypt') && in_array('BF-OFB', openssl_get_cipher_methods()))
+        if(Config::get('general.crypt_method', 'openssl') === 'openssl' && function_exists('openssl_decrypt') && in_array('BF-OFB', openssl_get_cipher_methods()))
         {
             $msg = openssl_decrypt(strtr($text, '-_', '+/'), 'BF-OFB', $key);
         }
