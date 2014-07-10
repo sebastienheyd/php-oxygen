@@ -38,6 +38,10 @@
             si openssl_encrypt n'est pas disponible c'est mcrypt qui sera utilisé sinon le cas échéant un cryptage par 
             xor sera effectué.
         </blockquote>
+        <blockquote class="warning">
+            Si vous migrez de PHP 5.2 à PHP >= 5.3 les données cryptées ne seront plus reconnues, 
+            définissez alors crypt_method à mcrypt dans le fichier de configuration.
+        </blockquote>
         <php>
             Security::encrypt('password');          // Utilisera la clé par défaut de l'application
             Security::encrypt('password', 'clé');   // Utilisera la clé "clé"
@@ -57,7 +61,7 @@
             Avec PHP >= 5.3.0 la signature utilisera le chiffrement Blowfish sinon MD5 le cas échéant.
         </blockquote>
         <blockquote class="warning">
-            Si vous migrez de PHP 5.2 à PHP 5.3 les signatures ne seront plus reconnues, 
+            Si vous migrez de PHP 5.2 à PHP >= 5.3 les signatures ne seront plus reconnues, 
             définissez alors hash_force_md5 à true dans le fichier de configuration.
         </blockquote>
         
