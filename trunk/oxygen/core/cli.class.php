@@ -138,11 +138,9 @@ class Cli
      */
     public function meter($current, $max, $prefix = '')
     {
-        $str = $prefix . $current . '/' . $max . ' (' . ceil(($current / $max) * 100) . '%)';
-        $l = strlen($str);
-        for ($i = 0; $i <= $l; $i++)
-            echo "\010";
-        echo $str;
+        ob_start(); echo $prefix.$current.'/'.$max.' ('.ceil(($current/$max) * 100).'%)'; $content = ob_get_clean();        
+        for($i=0;$i <= mb_strlen($content, 'utf-8'); $i++) echo "\010";
+        echo $content;
     }
 
     /**
