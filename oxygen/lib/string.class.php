@@ -13,6 +13,8 @@
 
 class String
 {
+    
+    private static $_accents;
 
     /**
      * Check if given ip is well formated
@@ -34,8 +36,8 @@ class String
     public static function checkEmail($address)
     {
         return preg_match("/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix", $address);
-    }
-
+    }  
+    
     /**
      * Strips accents from string
      * 
@@ -45,8 +47,13 @@ class String
     public static function stripAccents($string)
     {
         if(!mb_detect_encoding($string, 'UTF-8', true)) trigger_error ('String is not valid UTF-8');        
-        include(FW_DIR.DS.'lib'.DS.'data'.DS.'accents.php');        
-        return preg_replace(array_keys($accents), array_values($accents), $string);        
+        if(self::$_accents === null) 
+        {
+            include(FW_DIR.DS.'lib'.DS.'data'.DS.'accents.php');        
+            self::$_accents = $accents;
+            unset($accents);
+        }
+        return preg_replace(array_keys(self::$_accents), array_values(self::$_accents), $string);        
     }
 
     /**
