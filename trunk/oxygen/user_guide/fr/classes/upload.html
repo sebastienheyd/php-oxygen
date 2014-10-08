@@ -13,7 +13,7 @@
            La classe Upload permet de gérer le(s) téléchargement(s) via http. Elle permet de filtrer par extension, taille, 
            poids, etc...
         </p>             
-        <blockquote class="info">
+        <blockquote class="warning">
             Pour fonctionner la classe nécessite l'attribut <strong>enctype="multipart/form-data"</strong> dans
             la balise &lt;form&gt; de votre formulaire HTML
         </blockquote>
@@ -23,7 +23,7 @@
             if($upload = Upload::get('file_field'))
             {
                 $upload->config(array(
-                    'type_whitelist' => 'image/jpeg', 
+                    'type_whitelist' => 'image', 
                     'max_size' => 300000, 
                     'is_image' => true,
                     'overwrite' => true,
@@ -55,15 +55,15 @@
         <php>
             Upload::get('fieldname');
             
-            $upload->config(array('type_whitelist' => 'image/jpeg', 'max_size' => 300000));
+            $upload->config(array('type_whitelist' => 'image', 'max_size' => 300000));
         </php>
         <p>Les options possibles sont :</p>
         <table>
             <tr><th>max_size</th><td>integer</td><td>La taille maximum en bytes du fichier téléchargé. Si l'option n'est pas définie la taille n'est pas limitée.</td></tr>
             <tr><th>is_image</th><td>boolean</td><td>Si true, vérifie si le fichier téléchargé est une image. Par défaut la vérification n'est pas effectuée.</td></tr>
-            <tr><th>overwrite</th><td>boolean</td><td>Si true, si le fichier existe il sera écrasé. Par défaut le fichier n'est pas écrasé.</td></tr>
-            <tr><th>auto_rename</th><td>boolean</td><td>Appelé que si overwrite=true. Si true, le fichier sera suffixé par un nombre séquenciel.</td></tr>
-            <tr><th>normalize</th><td>boolean</td><td>Si true, normalise le nom du fichier téléchargé pour être compatible avec les navigateurs.</td></tr>
+            <tr><th>overwrite</th><td>boolean</td><td>Si true, si le fichier existe il sera écrasé. Par défaut = false, le fichier n'est pas écrasé.</td></tr>
+            <tr><th>auto_rename</th><td>boolean</td><td>Appelé que si overwrite = false. Si true, le fichier sera suffixé par un nombre séquenciel.</td></tr>
+            <tr><th>normalize</th><td>boolean</td><td>Si true, normalise le nom du fichier (sans accents, sans espaces, etc...)</td></tr>
             <tr><th>path</th><td>string</td><td>Permet de définir le chemin ou uploader le(s) fichier(s).</td></tr>
             <tr><th>create_path</th><td>boolean</td><td>Si true, crée le dossier d'upload si il n'existe pas. True par défaut.</td></tr>
             <tr><th>ext_whitelist</th><td>string</td><td>Une liste d'extensions autorisées séparées par une virgule. La liste n'est pas sensible à la casse.</td></tr>
