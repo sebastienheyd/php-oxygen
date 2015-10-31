@@ -111,7 +111,7 @@ class f_date_Format
                 {
                     // Day of the month, 1 digit
                     case 'j' :
-                        $result .= $this->_date->getDay();
+                        $result .= (int) $this->_date->getDay();
                         break;
 
                     // Day of the month, 2 digits with leading zeros
@@ -129,15 +129,15 @@ class f_date_Format
                         $result .= $this->_vars['dayNames'][$this->_date->getDayOfWeek()];
                         break;
 
-                    // English ordinal suffix for the day of the month, 2 characters
-                    case 'S' :
-                        if (isset(self::$englishOrdinalSuffixArray[strval($this->_date->getDay())]))
+                    // Ordinal suffix for the day of the month
+                    case 'S' :     
+                        if (isset($this->_vars['suffix'][intval($this->_date->getDay())]))
                         {
-                            $result .= self::$englishOrdinalSuffixArray[strval($this->_date->getDay())];
+                            $result .= $this->_vars['suffix'][intval($this->_date->getDay())];
                         }
                         else
                         {
-                            $result .= self::$englishOrdinalSuffixArray['default'];
+                            if(isset($this->_vars['suffix']['default'])) $result .= $this->_vars['suffix']['default'];
                         }
                         break;
 
@@ -405,23 +405,4 @@ class f_date_Format
                 return sprintf($this->_vars['relativeTime'][$unit . $unit], $value);
         }
     }
-
-    /**
-     * Array of english ordinal suffix for a given day
-     * Used by toFormat method
-     * 
-     * @var string 
-     */
-    private static $englishOrdinalSuffixArray = array(
-        '1' => 'st',
-        '21' => 'st',
-        '31' => 'st',
-        '2' => 'nd',
-        '22' => 'nd',
-        '3' => 'rd',
-        '13' => 'rd',
-        '23' => 'rd',
-        'default' => 'th'
-    );
-
 }

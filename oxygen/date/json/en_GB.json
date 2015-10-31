@@ -5,6 +5,17 @@
 	"dayNamesShort":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
 	"dayNamesMin":["Su","Mo","Tu","We","Th","Fr","Sa"],
 	"firstDay":1,
+    "suffix": {
+        "1" : "st",
+        "21" : "st",
+        "31" : "st",
+        "2" : "nd",
+        "22" : "nd",
+        "3" : "rd",
+        "13" : "rd",
+        "23" : "rd",
+        "default" : "th"  
+    },    
 	"smartFormat":{
 		"shortDate":"d/m/Y",
 		"longDate":"d F Y",

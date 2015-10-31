@@ -5,6 +5,9 @@
 	"dayNamesShort":["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"],
 	"dayNamesMin":["Di","Lu","Ma","Me","Je","Ve","Sa"],
 	"firstDay":1,
+    "suffix":{
+        "1":"er"
+     },
 	"smartFormat":{
 		"shortDate":"d/m/Y",
 		"longDate":"l d F Y",
