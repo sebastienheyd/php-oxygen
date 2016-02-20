@@ -235,8 +235,8 @@ class Controller
         if (!method_exists($this->_classInstance, self::DEFAULT_AUTHORIZATION_METHOD)) return true;
         
         // If authorization method is found, return method result
-        $result = $this->_classInstance->{self::DEFAULT_AUTHORIZATION_METHOD}();
-        
+        $result = call_user_func_array(array($this->_classInstance, self::DEFAULT_AUTHORIZATION_METHOD), $this->_args);
+
         // Check return method value
         if(!is_bool($result)) return false;
         return $result;
@@ -271,7 +271,7 @@ class Controller
         if (!method_exists($this->_classInstance, self::DEFAULT_ERRORHANDLER_METHOD)) Error::show401();
         
         // Else execute error handler method
-        $execute = $this->_classInstance->{self::DEFAULT_ERRORHANDLER_METHOD}();
+        $execute = call_user_func_array(array($this->_classInstance, self::DEFAULT_ERRORHANDLER_METHOD), $this->_args);
         
         // If method result is a string return it else return the instance
         return is_string($execute) ? $execute : $this->_classInstance;
