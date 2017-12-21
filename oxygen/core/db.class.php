@@ -649,7 +649,7 @@ class Db
             trigger_error('quoteIdentifier : string is null or empty', E_USER_ERROR);
 
         // parenthesis : return as is
-        if (preg_match('/\((.*)\)|([^a-zA-Z0-9\.`\'\\s"])/i', $var))
+        if (preg_match('/\((.*)\)|([^a-zA-Z0-9\._-`\'\\s"])/i', $var))
             return $var;
 
         // for schema
